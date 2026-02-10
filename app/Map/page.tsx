@@ -5,8 +5,20 @@ import RenderMapillary from '../Map/renderMapillary';
 import './page.css';
 import { NextResponse } from 'next/server';
 
-export async function getImageIds(): Promise<any> {
-    const URL: string = 'https://graph.mapillary.com/images?' + 'access_token=' + process.env.NEXT_PUBLIC_MAPILLARY_ACCESS_TOKEN + '&fields=id&bbox=12.967,55.597,13.008,55.607'; 
+export async function getImageIds(Lon: number, Lat: number): Promise<any> {
+
+    const bbox_offset: number = 0.006
+
+    //vancouver: Lon: -123.1207 Lat: 49.2827
+
+    const minLon: number = Lon - bbox_offset;
+    const maxLon: number = Lon + bbox_offset;
+
+    const minLat: number  =  Lat - bbox_offset; 
+    const maxLat: number =  Lat + bbox_offset; 
+
+    const bbox: string = "-123.1247,49.2787,-123.1167,49.2867"
+    const URL: string = 'https://graph.mapillary.com/images?' + 'access_token=' + process.env.NEXT_PUBLIC_MAPILLARY_ACCESS_TOKEN + '&fields=id&bbox=' + bbox; 
 
     const res = await fetch(URL);
 
