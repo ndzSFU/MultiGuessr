@@ -18,17 +18,43 @@ export async function getImageIds(): Promise<any> {
 
 const Map: React.FC = () => {
 
+    const [imageIds, setImageIds] = React.useState<string[]>([]);
+
+    interface imageID{
+        id: string;
+    };
+
+    interface imageIdData{
+        data: imageID[]
+    }
+
+
+    function SetAndLogImages(data: any){
+        console.log(data);
+
+        const dataObj: imageIdData = data;
+
+        setImageIds(dataObj.data.map(dataPoint => dataPoint.id));
+
+    }
+
     useEffect(() => {
-        getImageIds().then(data => console.log(data)).catch(error => console.error('Error fetching image IDs:', error));
+        getImageIds().then(data => SetAndLogImages(data)).catch(error => console.error('Error fetching image IDs:', error));
     }, []);
+
 
     return (
         <div>
-            <div className='mapWrapper'>
-                <RenderMapillary accessToken={process.env.NEXT_PUBLIC_MAPILLARY_ACCESS_TOKEN ?? ''} widthPercent={95} heightPercent={90}/>
 
+            {
+                imageIds.length > 0 && (
+                    <div className='mapWrapper'>
+                        <RenderMapillary accessToken={process.env.NEXT_PUBLIC_MAPILLARY_ACCESS_TOKEN ?? ''} widthPercent={95} heightPercent={90} imageID={imageIds[320]}/>                
+                    </div>
+                ) 
                 
-            </div>
+            }
+            
             
         </div>
     );

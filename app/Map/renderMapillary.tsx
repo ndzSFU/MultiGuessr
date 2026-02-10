@@ -30,6 +30,16 @@ class ViewerComponent extends React.Component<ViewerComponentProps> {
     });
   }
 
+  componentDidUpdate(prevProps: ViewerComponentProps): void {
+    if (
+      this.viewer &&
+      prevProps.imageId !== this.props.imageId &&
+      (this.viewer as any).isNavigable
+    ) {
+      this.viewer.moveTo(this.props.imageId);
+    }
+  }
+
   componentWillUnmount(): void {
     if (this.viewer) {
       this.viewer.remove();
@@ -45,14 +55,18 @@ interface RenderMapillaryProps {
   accessToken: string;
   widthPercent: number;   // width as %
   heightPercent: number;  // height as %
-  imageID?: string;
+  imageID: string;
 }
 
 function RenderMapillary({ accessToken, widthPercent, heightPercent, imageID }: RenderMapillaryProps): React.ReactNode {
+    console.log(imageID, typeof imageID);
+    if(imageID === '259165075963150'){
+      console.log("I am going crazy")
+    }
     return (
       <ViewerComponent
         accessToken={accessToken}
-        imageId={imageID || '498763468214164'}
+        imageId={imageID || '259165075963150'}
         style={{ 
           width: `${widthPercent}%`, 
           height: `${heightPercent}vh` 
