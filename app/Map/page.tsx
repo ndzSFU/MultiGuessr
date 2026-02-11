@@ -4,10 +4,11 @@ import React, { useEffect } from 'react';
 import RenderMapillary from '../Map/renderMapillary';
 import './page.css';
 import { NextResponse } from 'next/server';
+import {cities, City} from './cities';
 
 export async function getImageIds(Lon: number, Lat: number): Promise<any> {
 
-    const bbox_offset: number = 0.006
+    const bbox_offset: number = 0.008
 
     //vancouver: Lon: -123.1207 Lat: 49.2827
 
@@ -17,7 +18,7 @@ export async function getImageIds(Lon: number, Lat: number): Promise<any> {
     const minLat: number  =  Lat - bbox_offset; 
     const maxLat: number =  Lat + bbox_offset; 
 
-    const bbox: string = "-123.1247,49.2787,-123.1167,49.2867"
+    const bbox: string = minLon.toString() + "," + minLat.toString() + "," + maxLon.toString() + "," + maxLat.toString();   
     const URL: string = 'https://graph.mapillary.com/images?' + 'access_token=' + process.env.NEXT_PUBLIC_MAPILLARY_ACCESS_TOKEN + '&fields=id&bbox=' + bbox; 
 
     const res = await fetch(URL);
@@ -25,12 +26,15 @@ export async function getImageIds(Lon: number, Lat: number): Promise<any> {
     return res.json()
 }
 
-
+function getRandomIdx(array_size: number): number{
+    return Math.floor(Math.random() * array_size);
+}
 
 
 const Map: React.FC = () => {
 
     const [imageIds, setImageIds] = React.useState<string[]>([]);
+    const [chosenCitiesIdxs, setChosenCitiesIdxs] = React.useState<number[]>([]);
 
     interface imageID{
         id: string;
@@ -51,7 +55,17 @@ const Map: React.FC = () => {
     }
 
     useEffect(() => {
-        getImageIds().then(data => SetAndLogImages(data)).catch(error => console.error('Error fetching image IDs:', error));
+        let idx: number = getRandomIdx(cities.length);
+
+        while(chosenCitiesIdxs.includes(idx, 0)){
+            idx = getRandomIdx(cities.length);
+        }
+
+        chosenCitiesIdxs.push(idx);
+
+        console.log("Chosen City: " + cities[idx].name)
+
+        getImageIds(cities[idx].lon, cities[idx].lat).then(data => SetAndLogImages(data)).catch(error => console.error('Error fetching image IDs:', error));
     }, []);
 
 
