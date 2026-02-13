@@ -14,17 +14,14 @@ interface GuessingMapProps{
     long: number
 }
 
+
 export default function GuessingMap({lat, long}: GuessingMapProps): React.ReactNode{
     const mapRef = useRef<HTMLDivElement>(null);
 
-    function OnMapClick(e: Event): void{
-
-    }
-
     useEffect(() => {
-        import('leaflet').then(L => {
-            
+        let curMarker: L.Marker<any>;
 
+        import('leaflet').then(L => {
             L.Icon.Default.mergeOptions({
                 iconUrl,
                 iconRetinaUrl,
@@ -35,7 +32,12 @@ export default function GuessingMap({lat, long}: GuessingMapProps): React.ReactN
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 }).addTo(map);
-                L.marker([lat, long]).addTo(map);
+
+                function OnMapClick(e: L.LeafletMouseEvent): void {
+                    if(curMarker) curMarker.remove();
+                    curMarker = L.marker(e.latlng).addTo(map);
+                }
+                map.on('click', OnMapClick);
             }
         });
     }, [lat, long]);
