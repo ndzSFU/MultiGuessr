@@ -5,10 +5,11 @@ import RenderMapillary from '../Map/renderMapillary';
 import './page.css';
 import { NextResponse } from 'next/server';
 import {cities, City} from './cities';
+import GuessingMap from './GuessingMap';
 
-export async function getImageIds(Lon: number, Lat: number): Promise<any> {
+export async function getImageIds(Lat: number, Lon: number): Promise<any> {
 
-    const bbox_offset: number = 0.008
+    const bbox_offset: number = 0.005
 
     //vancouver: Lon: -123.1207 Lat: 49.2827
 
@@ -35,6 +36,7 @@ const Map: React.FC = () => {
 
     const [imageIds, setImageIds] = React.useState<string[]>([]);
     const [chosenCitiesIdxs, setChosenCitiesIdxs] = React.useState<number[]>([]);
+    const [chosenCity, setChosenCity] = React.useState<City>();
 
     interface imageID{
         id: string;
@@ -65,7 +67,9 @@ const Map: React.FC = () => {
 
         console.log("Chosen City: " + cities[idx].name)
 
-        getImageIds(cities[idx].lon, cities[idx].lat).then(data => SetAndLogImages(data)).catch(error => console.error('Error fetching image IDs:', error));
+        setChosenCity(cities[idx]);
+
+        getImageIds(cities[idx].lat, cities[idx].long).then(data => SetAndLogImages(data)).catch(error => console.error('Error fetching image IDs:', error));
     }, []);
 
 
@@ -73,8 +77,9 @@ const Map: React.FC = () => {
         <div>
 
             {
-                imageIds.length > 0 && (
+                imageIds.length > 0 && chosenCity && (
                     <div className='mapWrapper'>
+                        <GuessingMap lat={chosenCity.lat} long={chosenCity.long}></GuessingMap> 
                         <RenderMapillary accessToken={process.env.NEXT_PUBLIC_MAPILLARY_ACCESS_TOKEN ?? ''} widthPercent={95} heightPercent={90} imageID={imageIds[320]}/>                
                     </div>
                 ) 
