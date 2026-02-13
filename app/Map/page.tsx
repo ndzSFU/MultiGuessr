@@ -56,7 +56,7 @@ const Map: React.FC = () => {
 
     }
 
-    useEffect(() => {
+    function rerollCity(): void{
         let idx: number = getRandomIdx(cities.length);
 
         while(chosenCitiesIdxs.includes(idx, 0)){
@@ -67,9 +67,16 @@ const Map: React.FC = () => {
 
         console.log("Chosen City: " + cities[idx].name)
 
+        console.log("Chosen Cities:" + chosenCitiesIdxs);
+
         setChosenCity(cities[idx]);
 
         getImageIds(cities[idx].lat, cities[idx].long).then(data => SetAndLogImages(data)).catch(error => console.error('Error fetching image IDs:', error));
+
+    }
+
+    useEffect(() => {
+        rerollCity();
     }, []);
 
 
@@ -79,8 +86,8 @@ const Map: React.FC = () => {
             {
                 imageIds.length > 0 && chosenCity && (
                     <div className='mapWrapper'>
-                        <GuessingMap lat={chosenCity.lat} long={chosenCity.long}></GuessingMap> 
-                        <RenderMapillary accessToken={process.env.NEXT_PUBLIC_MAPILLARY_ACCESS_TOKEN ?? ''} widthPercent={95} heightPercent={90} imageID={imageIds[320]}/>                
+                        <GuessingMap lat={chosenCity.lat} long={chosenCity.long} rerollCity={rerollCity}></GuessingMap> 
+                        <RenderMapillary accessToken={process.env.NEXT_PUBLIC_MAPILLARY_ACCESS_TOKEN ?? ''} widthPercent={55} heightPercent={90} imageID={imageIds[320]}/>                
                     </div>
                 ) 
                 
