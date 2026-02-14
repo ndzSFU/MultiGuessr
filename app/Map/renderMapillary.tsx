@@ -56,9 +56,10 @@ interface RenderMapillaryProps {
   widthPercent: number;   // width as %
   heightPercent: number;  // height as %
   imageID: string;
+  key: string;
 }
 
-function RenderMapillary({ accessToken, widthPercent, heightPercent, imageID }: RenderMapillaryProps): React.ReactNode {
+function RenderMapillary({ accessToken, widthPercent, heightPercent, imageID, key }: RenderMapillaryProps): React.ReactNode {
     console.log(imageID, typeof imageID);
     if(imageID === '259165075963150'){
       console.log("I am going crazy")

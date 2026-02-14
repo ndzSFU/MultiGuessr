@@ -143,7 +143,6 @@ export const cities: City[] = [
   { name: 'Abbotsford', lat: 49.0504, long: -122.3045 },
   { name: 'Kelowna', lat: 49.8880, long: -119.4960 },
   { name: 'Red Deer', lat: 52.2681, long: -113.8112 },
-  { name: 'Lethbridge', lat: 49.6956, long: -112.8451 },
   { name: 'Saskatoon', lat: 52.1579, long: -106.6702 },
   { name: 'Regina', lat: 50.4452, long: -104.6189 },
   { name: 'Kitchener', lat: 43.4516, long: -80.4925 },

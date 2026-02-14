@@ -38,6 +38,9 @@ const Map: React.FC = () => {
     const [chosenCitiesIdxs, setChosenCitiesIdxs] = React.useState<number[]>([]);
     const [chosenCity, setChosenCity] = React.useState<City>();
 
+    const [nextChosenCity, setNextChosenCity] = React.useState<City>();
+    const [nextImageIds, setNextImageIds] = React.useState<string[]>([]);
+
     interface imageID{
         id: string;
     };
@@ -71,6 +74,8 @@ const Map: React.FC = () => {
 
         setChosenCity(cities[idx]);
 
+        setImageIds([]);
+
         getImageIds(cities[idx].lat, cities[idx].long).then(data => SetAndLogImages(data)).catch(error => console.error('Error fetching image IDs:', error));
 
     }
@@ -87,10 +92,17 @@ const Map: React.FC = () => {
                 imageIds.length > 0 && chosenCity && (
                     <div className='mapWrapper'>
                         <GuessingMap lat={chosenCity.lat} long={chosenCity.long} rerollCity={rerollCity}></GuessingMap> 
-                        <RenderMapillary accessToken={process.env.NEXT_PUBLIC_MAPILLARY_ACCESS_TOKEN ?? ''} widthPercent={55} heightPercent={90} imageID={imageIds[320]}/>                
+                        <RenderMapillary accessToken={process.env.NEXT_PUBLIC_MAPILLARY_ACCESS_TOKEN ?? ''} widthPercent={55} heightPercent={90} imageID={imageIds[getRandomIdx(imageIds.length)]} key={chosenCity.name}/>                
                     </div>
-                ) 
-                
+                )                 
+            }
+
+            {
+                imageIds.length == 0 && (
+                    <div>
+                        Loading Images Please Wait
+                    </div>
+                )
             }
             
             

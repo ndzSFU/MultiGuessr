@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import L from "leaflet";
 import "./GuessingMap.css"
 import 'leaflet/dist/leaflet.css';
@@ -9,6 +9,7 @@ const iconRetinaUrl = 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2
 const shadowUrl = 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png';
 
 import {City} from './cities';
+import ScoreBox from "./ScoreBox";
 
 interface GuessingMapProps{
     lat: number,
@@ -21,6 +22,7 @@ export default function GuessingMap({lat, long, rerollCity}: GuessingMapProps): 
     const divRef = useRef<HTMLDivElement>(null);
     const mapRef = useRef<L.Map | null>(null);
     const curMarker = useRef<L.Marker<any> | null>(null);
+    const [hasGuessed, setHasGuessed] = useState<boolean>(false);
 
     // Create the map only once on mount
     useEffect(() => {
@@ -49,10 +51,14 @@ export default function GuessingMap({lat, long, rerollCity}: GuessingMapProps): 
     function handleGuess(): void{
         console.log("Chosen Coords: " + curMarker.current?.getLatLng());
         console.log("Actual coords: " + lat, long)
+        setHasGuessed(true);
     }
 
     function handleNext(): void{
-        if(curMarker.current) curMarker.current.remove();
+        if(curMarker.current){
+            curMarker.current.remove();
+            curMarker.current = null;
+        }
         if (mapRef.current) mapRef.current.setView([0, 0], 1);
         rerollCity();
     }
@@ -61,7 +67,15 @@ export default function GuessingMap({lat, long, rerollCity}: GuessingMapProps): 
         <div style={{height: '300px', width: '100%'}}>
             <div id="map" ref={divRef} style={{height: '300px', width: '100%'}}></div>
             <button className="GuessBtn" onClick={handleGuess}>Guess</button>
-            <button className="NextBtn" onClick={handleNext}>Next Guess</button>
+            { 
+                hasGuessed && (
+                    <div>
+                         <button className="NextBtn" onClick={handleNext}>Next</button> 
+                        <ScoreBox chosenLatLng={{lat: curMarker.current?.getLatLng().lat || 0, long: curMarker.current?.getLatLng().lng || 0}} actualLatLng={{lat: lat, long: long}}></ScoreBox>
+                    </div>
+                )
+            } 
+            
         </div>
         
     );
