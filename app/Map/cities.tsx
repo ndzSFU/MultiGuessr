@@ -198,4 +198,49 @@ export const cities: City[] = [
   { name: 'Chennai', lat: 13.0827, long: 80.2707 },
   { name: 'Pune', lat: 18.5204, long: 73.8567 },
 
+  //Africa
+  { name: 'Dakar', lat: 14.7167, long: -17.4677 },
+{ name: 'Conakry', lat: 9.6412, long: -13.5784 },
+{ name: 'Abidjan', lat: 5.3600, long: -4.0083 },
+{ name: 'Accra', lat: 5.6037, long: -0.1870 },
+{ name: 'Lagos', lat: 6.5244, long: 3.3792 },
+{ name: 'Abuja', lat: 9.0765, long: 7.3986 },
+{ name: 'Kano', lat: 12.0022, long: 8.5920 },
+{ name: 'Bamako', lat: 12.6392, long: -8.0029 },
+{ name: 'Ouagadougou', lat: 12.3714, long: -1.5197 },
+
+{ name: 'Yaounde', lat: 3.8480, long: 11.5021 },
+{ name: 'Douala', lat: 4.0511, long: 9.7679 },
+{ name: 'Kinshasa', lat: -4.4419, long: 15.2663 },
+{ name: 'Lubumbashi', lat: -11.6876, long: 27.5026 },
+
+{ name: 'Nairobi', lat: -1.2921, long: 36.8219 },
+{ name: 'Mombasa', lat: -4.0435, long: 39.6682 },
+{ name: 'Kampala', lat: 0.3476, long: 32.5825 },
+{ name: 'Kigali', lat: -1.9706, long: 30.1044 },
+{ name: 'Addis Ababa', lat: 8.9806, long: 38.7578 },
+{ name: 'Dar es Salaam', lat: -6.7924, long: 39.2083 },
+
+{ name: 'Lusaka', lat: -15.3875, long: 28.3228 },
+{ name: 'Harare', lat: -17.8252, long: 31.0335 },
+
+//North Africa
+{ name: 'Casablanca', lat: 33.5731, long: -7.5898 },
+{ name: 'Rabat', lat: 34.0209, long: -6.8416 },
+{ name: 'Marrakesh', lat: 31.6295, long: -7.9811 },
+{ name: 'Tangier', lat: 35.7595, long: -5.8340 },
+{ name: 'Fes', lat: 34.0181, long: -5.0078 },
+{ name: 'Agadir', lat: 30.4278, long: -9.5981 },
+
+{ name: 'Algiers', lat: 36.7538, long: 3.0588 },
+{ name: 'Oran', lat: 35.6981, long: -0.6348 },
+
+
+{ name: 'Tunis', lat: 36.8065, long: 10.1815 },
+{ name: 'Sfax', lat: 34.7406, long: 10.7603 },
+{ name: 'Sousse', lat: 35.8256, long: 10.6360 },
+
+{ name: 'Cairo', lat: 30.0444, long: 31.2357 },
+
+
 ];

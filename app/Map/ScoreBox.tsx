@@ -2,6 +2,8 @@
 import { useEffect, useRef } from "react";
 
 const Earth_Radius = 6371; 
+const Max_Guess_Dist = 4000;
+const Dampner = 1.22;
 
 
 function getDistanceKm(lat1: number, lon1: number, lat2: number, lon2: number): number {
@@ -33,11 +35,11 @@ export default function ScoreBox({chosenLatLng, actualLatLng}: ScoreBoxProps){
 
     const kmDiff = getDistanceKm(chosenLatLng!.lat, chosenLatLng!.long, actualLatLng!.lat, actualLatLng!.long);
 
-    if(kmDiff > 10){
-        let accuracy = kmDiff/13000;
+    if(kmDiff > 5){
+        let accuracy = kmDiff/Max_Guess_Dist;
         console.log("Km diff: " + kmDiff);
         console.log("Acc: " + accuracy)
-        score = Math.round(score - (score * accuracy));
+        score = Math.round(score - (score * accuracy * Dampner));
         if(score < 0) score = 0;
     }
 
