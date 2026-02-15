@@ -242,5 +242,51 @@ export const cities: City[] = [
 
 { name: 'Cairo', lat: 30.0444, long: 31.2357 },
 
+// Turkey
+{ name: 'Istanbul', lat: 41.0082, long: 28.9784 },
+{ name: 'Ankara', lat: 39.9334, long: 32.8597 },
+{ name: 'Izmir', lat: 38.4237, long: 27.1428 },
+{ name: 'Antalya', lat: 36.8969, long: 30.7133 },
+{ name: 'Adana', lat: 37.0000, long: 35.3213 },
+{ name: 'Sanliurfa', lat: 37.1591, long: 38.7969 },
+
+// Georgia
+{ name: 'Tbilisi', lat: 41.7151, long: 44.8271 },
+
+// Iran
+{ name: 'Tehran', lat: 35.6892, long: 51.3890 },
+{ name: 'Mashhad', lat: 36.2605, long: 59.6168 },
+{ name: 'Isfahan', lat: 32.6546, long: 51.6680 },
+{ name: 'Shiraz', lat: 29.5918, long: 52.5837 },
+
+// Iraq
+{ name: 'Baghdad', lat: 33.3152, long: 44.3661 },
+{ name: 'Basra', lat: 30.5085, long: 47.7804 },
+{ name: 'Erbil', lat: 36.1911, long: 44.0090 },
+
+// Saudi Arabia
+{ name: 'Riyadh', lat: 24.7136, long: 46.6753 },
+{ name: 'Jeddah', lat: 21.4858, long: 39.1925 },
+{ name: 'Dammam', lat: 26.4207, long: 50.0888 },
+{ name: 'Mecca', lat: 21.3891, long: 39.8579 },
+{ name: 'Medina', lat: 24.5247, long: 39.5692 },
+
+// United Arab Emirates
+{ name: 'Dubai', lat: 25.2048, long: 55.2708 },
+{ name: 'Abu Dhabi', lat: 24.4539, long: 54.3773 },
+{ name: 'Sharjah', lat: 25.3463, long: 55.4209 },
+
+// Oman
+{ name: 'Muscat', lat: 23.5880, long: 58.3829 },
+{ name: 'Salalah', lat: 17.0194, long: 54.0897 },
+
+// Jordan
+{ name: 'Amman', lat: 31.9454, long: 35.9284 },
+
+// Israel
+{ name: 'Tel Aviv', lat: 32.0853, long: 34.7818 },
+{ name: 'Jerusalem', lat: 31.7683, long: 35.2137 },
+{ name: 'Haifa', lat: 32.7940, long: 34.9896 },
+
 
 ];
