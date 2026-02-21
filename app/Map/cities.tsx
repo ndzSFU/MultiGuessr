@@ -147,7 +147,6 @@ export const cities: City[] = [
   { name: 'Regina', lat: 50.4452, long: -104.6189 },
   { name: 'Kitchener', lat: 43.4516, long: -80.4925 },
   { name: 'Waterloo', lat: 43.4643, long: -80.5204 },
-  { name: 'Cambridge ON', lat: 43.3616, long: -80.3144 },
   { name: 'Guelph', lat: 43.5448, long: -80.2482 },
   { name: 'Hamilton', lat: 43.2557, long: -79.8711 },
   { name: 'Oakville', lat: 43.4675, long: -79.6877 },
@@ -259,7 +258,7 @@ export const cities: City[] = [
 { name: 'Isfahan', lat: 32.6546, long: 51.6680 },
 { name: 'Shiraz', lat: 29.5918, long: 52.5837 },
 
-// Iraq
+// c
 { name: 'Baghdad', lat: 33.3152, long: 44.3661 },
 { name: 'Basra', lat: 30.5085, long: 47.7804 },
 { name: 'Erbil', lat: 36.1911, long: 44.0090 },

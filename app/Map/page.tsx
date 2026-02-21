@@ -9,7 +9,7 @@ import GuessingMap from './GuessingMap';
 
 export async function getImageIds(Lat: number, Lon: number): Promise<any> {
 
-    const bbox_offset: number = 0.005
+    const bbox_offset: number = 0.004
 
     //vancouver: Lon: -123.1207 Lat: 49.2827
 

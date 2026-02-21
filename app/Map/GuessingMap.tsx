@@ -1,8 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import L from "leaflet";
-import "./GuessingMap.css"
 import 'leaflet/dist/leaflet.css';
+import type L from "leaflet";
 
 const iconUrl = 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png';
 const iconRetinaUrl = 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png';
@@ -23,6 +22,8 @@ export default function GuessingMap({lat, long, rerollCity}: GuessingMapProps): 
     const mapRef = useRef<L.Map | null>(null);
     const curMarker = useRef<L.Marker<any> | null>(null);
     const [hasGuessed, setHasGuessed] = useState<boolean>(false);
+    const leafletRef = useRef<typeof L | null>(null);
+    const actualMarker = useRef<L.Marker<any> | null>(null);
 
     // Create the map only once on mount
     useEffect(() => {
@@ -33,10 +34,23 @@ export default function GuessingMap({lat, long, rerollCity}: GuessingMapProps): 
                 shadowUrl
             });
             if (divRef.current && !mapRef.current) {
-                mapRef.current = L.map(divRef.current).setView([0, 0], 1);
+                const maxBounds = L.latLngBounds(
+                    L.latLng(-90, -180),
+                    L.latLng(90, 180)
+                );
+                
+                mapRef.current = L.map(divRef.current, {
+                    maxBounds: maxBounds,
+                    maxBoundsViscosity: 1.0,
+                    worldCopyJump: false,
+                    minZoom: 1,
+                }).setView([0, 0], 1);
+
+                leafletRef.current = L;
                 
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                    noWrap: true
                 }).addTo(mapRef.current);
 
                 function OnMapClick(e: L.LeafletMouseEvent): void {
@@ -52,6 +66,16 @@ export default function GuessingMap({lat, long, rerollCity}: GuessingMapProps): 
         console.log("Chosen Coords: " + curMarker.current?.getLatLng());
         console.log("Actual coords: " + lat, long)
         setHasGuessed(true);
+        
+        if (leafletRef.current && mapRef.current) {
+            const redIcon = leafletRef.current.icon({
+                iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+                shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+                iconSize: [25, 41],
+                iconAnchor: [12, 41],
+            });
+            actualMarker.current = leafletRef.current.marker([lat, long], {icon: redIcon}).addTo(mapRef.current);
+        }
     }
 
     function handleNext(): void{
@@ -59,6 +83,7 @@ export default function GuessingMap({lat, long, rerollCity}: GuessingMapProps): 
             curMarker.current.remove();
             curMarker.current = null;
         }
+
         if (mapRef.current) mapRef.current.setView([0, 0], 1);
         rerollCity();
     }
