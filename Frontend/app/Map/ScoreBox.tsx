@@ -2,7 +2,7 @@
 import { useEffect, useRef } from "react";
 
 const Earth_Radius = 6371; 
-const Max_Guess_Dist = 4000;
+const Max_Guess_Dist = 4500;
 const Dampner = 1.48;
 
 

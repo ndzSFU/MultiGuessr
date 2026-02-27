@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import RenderMapillary from '../Map/renderMapillary';
+import RenderMapillary from './renderMapillary';
 import './page.css';
 import { NextResponse } from 'next/server';
 import {cities, City} from './cities';
