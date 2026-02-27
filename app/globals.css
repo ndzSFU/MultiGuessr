@@ -17,8 +17,28 @@
   }
 }
 
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+.guessing-map-overlay {
+  position: fixed !important;
+  z-index: 9999 !important;
+  isolation: isolate;
+  width: 250px;
+  height: 250px;
+  transition: width 0.3s ease, height 0.3s ease;
+}
+
+.guessing-map-overlay:hover {
+  width: 500px !important;
+  height: 450px !important;
 }

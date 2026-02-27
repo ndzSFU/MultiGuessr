@@ -86,13 +86,17 @@ const Map: React.FC = () => {
 
 
     return (
-        <div>
+        <div className="relative w-full h-full">
 
             {
                 imageIds.length > 0 && chosenCity && (
-                    <div className='mapWrapper'>
-                        <GuessingMap lat={chosenCity.lat} long={chosenCity.long} rerollCity={rerollCity}></GuessingMap> 
-                        <RenderMapillary accessToken={process.env.NEXT_PUBLIC_MAPILLARY_ACCESS_TOKEN ?? ''} widthPercent={55} heightPercent={90} imageID={imageIds[getRandomIdx(imageIds.length)]} key={chosenCity.name}/>                
+                    <div className="relative w-full h-full">
+                        <div className="absolute inset-0 z-0">
+                            <RenderMapillary accessToken={process.env.NEXT_PUBLIC_MAPILLARY_ACCESS_TOKEN ?? ''} widthPercent={100} heightPercent={100} imageID={imageIds[getRandomIdx(imageIds.length)]} key={chosenCity.name}/>                
+                        </div>
+                        <div className="guessing-map-overlay" style={{bottom: '2rem', right: '2rem', backgroundColor: 'white', borderRadius: '0.5rem', boxShadow: '0 4px 20px rgba(0,0,0,0.3)', overflow: 'hidden'}}>
+                            <GuessingMap lat={chosenCity.lat} long={chosenCity.long} rerollCity={rerollCity}></GuessingMap>
+                        </div>
                     </div>
                 )                 
             }

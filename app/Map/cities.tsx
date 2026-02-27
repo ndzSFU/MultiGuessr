@@ -210,7 +210,6 @@ export const cities: City[] = [
 
 { name: 'Yaounde', lat: 3.8480, long: 11.5021 },
 { name: 'Douala', lat: 4.0511, long: 9.7679 },
-{ name: 'Kinshasa', lat: -4.4419, long: 15.2663 },
 { name: 'Lubumbashi', lat: -11.6876, long: 27.5026 },
 
 { name: 'Nairobi', lat: -1.2921, long: 36.8219 },

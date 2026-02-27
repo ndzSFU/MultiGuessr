@@ -3,7 +3,7 @@ import { useEffect, useRef } from "react";
 
 const Earth_Radius = 6371; 
 const Max_Guess_Dist = 4000;
-const Dampner = 1.25;
+const Dampner = 1.48;
 
 
 function getDistanceKm(lat1: number, lon1: number, lat2: number, lon2: number): number {
@@ -49,8 +49,7 @@ export default function ScoreBox({chosenLatLng, actualLatLng}: ScoreBoxProps){
 
 
     return(
-        <div className="score-box">
-            Your Score: {score}
-        </div>
+        <p style={{color: 'black', padding: '0px', margin: '0px'}}>Your Score: {score}</p>
+
     );
 }

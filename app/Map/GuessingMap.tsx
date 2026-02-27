@@ -58,6 +58,14 @@ export default function GuessingMap({lat, long, rerollCity}: GuessingMapProps): 
                     curMarker.current = L.marker(e.latlng).addTo(mapRef.current!);
                 }
                 mapRef.current.on('click', OnMapClick);
+
+                // Handle resize when container expands/shrinks on hover
+                const resizeObserver = new ResizeObserver(() => {
+                    if (mapRef.current) {
+                        mapRef.current.invalidateSize();
+                    }
+                });
+                resizeObserver.observe(divRef.current);
             }
         });
     }, []);
@@ -89,18 +97,19 @@ export default function GuessingMap({lat, long, rerollCity}: GuessingMapProps): 
     }
 
     return(
-        <div style={{height: '300px', width: '100%'}}>
-            <div id="map" ref={divRef} style={{height: '300px', width: '100%'}}></div>
-            <button className="GuessBtn" onClick={handleGuess}>Guess</button>
-            { 
-                hasGuessed && (
-                    <div>
-                         <button className="NextBtn" onClick={handleNext}>Next</button> 
-                        <ScoreBox chosenLatLng={{lat: curMarker.current?.getLatLng().lat || 0, long: curMarker.current?.getLatLng().lng || 0}} actualLatLng={{lat: lat, long: long}}></ScoreBox>
-                    </div>
-                )
-            } 
-            
+        <div style={{height: '100%', width: '100%', display: 'flex', flexDirection: 'column'}}>
+            <div id="map" ref={divRef} style={{flex: 1, width: '100%', minHeight: 0}}></div>
+            <div style={{padding: '4px', backgroundColor: 'white'}}>
+                <button className="GuessBtn" onClick={handleGuess} style={{padding: '2px 4px', marginRight: '2px', cursor: 'pointer'}}>Guess</button>
+                { 
+                    hasGuessed && (
+                        <>
+                            <button className="NextBtn" onClick={handleNext} style={{padding: '2px 4px', cursor: 'pointer'}}>Next</button> 
+                            <ScoreBox chosenLatLng={{lat: curMarker.current?.getLatLng().lat || 0, long: curMarker.current?.getLatLng().lng || 0}} actualLatLng={{lat: lat, long: long}}></ScoreBox>
+                        </>
+                    )
+                } 
+            </div>
         </div>
         
     );
