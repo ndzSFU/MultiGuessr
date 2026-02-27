@@ -7,6 +7,9 @@ export default function Home() {
       <Link href="/Map">
         <button>Single Player</button>
       </Link>
+      <Link href="/Multiplayer">
+        <button>Multiplayer</button>
+      </Link>
     </div>
   );
 }
