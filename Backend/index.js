@@ -15,8 +15,11 @@ const wsServer = new websocketServer({
 
 wsServer.on("request", (request) => {
     const connection = request.accept(null, request.origin);
+    const clientId = crypto.randomUUID();
 
     connection.on("close", () => {
+        clients.delete(clientId);
+        console.log(clients.size);
         console.log("Connection closed");
     });
 
@@ -24,9 +27,10 @@ wsServer.on("request", (request) => {
         const res = JSON.parse(message.utf8Data);
 
         console.log(res);
+        console.log(clients.size);
     });
 
-    const clientId = crypto.randomUUID();
+    
 
 
     const clientData = {

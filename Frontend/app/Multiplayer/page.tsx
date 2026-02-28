@@ -14,11 +14,14 @@ export default function Multiplayer(){
 
         if (data.method === 'connect') {
             setClientId(data.clientId);
+            ws.send(JSON.stringify({ method: 'connect', clientId: data.clientId, testMsg: "test" }));
         }
 
         };
 
-        return () => ws.close();
+        return () => {
+             ws.close();
+        };
   }, []);
     return(
         <div>
