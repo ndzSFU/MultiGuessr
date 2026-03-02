@@ -26,10 +26,12 @@ function CreateLobbyId(len){
     return newLobbyId;
 }
 
-api.post('/api/lobbyInfo', (req, res) => {
+api.post('/api/createLobby', (req, res) => {
     console.log("SETTINGS: ")
-    console.log(req.body);
-    // lobbies.set(req.body.)
+    console.log(req.body.maxPlayers);
+
+    lobbies.set(req.body.lobbyId, {maxPlayers: req.body.maxPlayers})
+    console.log(lobbies);
     res.send("1");
 })
 
@@ -50,6 +52,11 @@ wsServer.on("request", (request) => {
     const connection = request.accept(null, request.origin);
     const clientId = crypto.randomUUID();
 
+    const clientData = {
+        connection: connection,
+        username: null,
+    };
+
     connection.on("close", () => {
         clients.delete(clientId);
         console.log(clients.size);
@@ -59,14 +66,21 @@ wsServer.on("request", (request) => {
     connection.on("message", (message) => {
         const res = JSON.parse(message.utf8Data);
 
+        if(res.method === "connect"){
+
+        }
+
+        if(res.method === "setUsername"){
+            clientData.username = res.username;
+            console.log(`Client ${clientId} set username: ${res.username}`);
+        }
+
         console.log(res);
         console.log(clients.size);
     });
 
     
-    const clientData = {
-        connection: connection,
-    };
+    
 
     connection.on("error", (err) => {
     console.error(`Client ${clientId} error:`, err);
