@@ -30,7 +30,7 @@ api.post('/api/createLobby', (req, res) => {
     console.log("SETTINGS: ")
     console.log(req.body.maxPlayers);
 
-    lobbies.set(req.body.lobbyId, {maxPlayers: req.body.maxPlayers})
+    lobbies.set(req.body.lobbyId, {maxPlayers: req.body.maxPlayers, players: []});
     console.log(lobbies);
     res.send("1");
 })
@@ -67,7 +67,8 @@ wsServer.on("request", (request) => {
         const res = JSON.parse(message.utf8Data);
 
         if(res.method === "connect"){
-
+            if(res.clientId === clientId) lobbies.get(res.lobbyId).players.push(res.clientId);
+            console.log(lobbies);
         }
 
         if(res.method === "setUsername"){

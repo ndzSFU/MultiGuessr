@@ -24,7 +24,7 @@ export default function Lobby(){
             if (data.method === 'connect') {
                 setClientId(data.clientId);
                 console.log(clientId);
-                ws.send(JSON.stringify({ method: 'connect', clientId: data.clientId, testMsg: "test" }));
+                ws.send(JSON.stringify({ method: 'connect', lobbyId: lobbyId, clientId: data.clientId, testMsg: "test" }));
             }
 
         };
