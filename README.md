@@ -38,9 +38,14 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
 Architecture:
-1. Clients Goes to Create a Lobby, request a unique Lobby ID from the server via a GET request.
-2. Server returns the lobby ID to client, once received on client end, the client wil dispaly the lobby UI.
+1. Clients Goes to Create a Lobby, request a unique Lobby ID from the server via a GET request. 
+2. Server returns the lobby ID to client, once received on client end, the client will dispaly the lobby UI.
 3. A web socket connection is then established with the server and the client passed it's lobby id to the server
 4. the server will create a client id for the user and link it to the lobby id given by the user.
 5. Server sends the client id back to the client for future use.
 6. Repeat steps 4 and 5 for every subsequent user, the client id is dispaly on the lobby UI and the creator of the lobby is expected to pass that lobby id to his friends so they can pass it to the server after connecting.
+
+7. The states of both clients and lobbys are maintained by 2 hashmaps one for clients and one for lobbies, values of the hashmaps are regualrly updated at each step
+
+Clients map: Maps CID to the webscoekt connect and the username
+Lobbies Map: Maps LID to the lobby settings and a list of players CID who are currently connected
