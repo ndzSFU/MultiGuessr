@@ -132,9 +132,10 @@ wsServer.on("request", (request) => {
             const payload = {
                 method: "setCity",
                 city: res.city,
-                imageIds: res.imageIds
+                imageIds: res.imageIds,
+                startingImageIdx: res.startingImageIdx
             }
-            broadcastToLobbyFromHost(curLobbyId, JSON.stringify(payload));
+            broadcastToLobby(curLobbyId, JSON.stringify(payload));
         }
 
         console.log(res);

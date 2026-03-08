@@ -139,7 +139,7 @@ export default function Lobby() {
             {
                 state === "inGame" && ws && (
                     <div>
-                        {/* <Game ws={ws} isHost={isHost}></Game> */}
+                        <Game ws={ws} isHost={isHost}></Game>
                     </div>
                 )
             }
