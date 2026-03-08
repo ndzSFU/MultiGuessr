@@ -4,7 +4,7 @@ import React, { JSX, useEffect } from 'react';
 import RenderMapillary from '../../Map/renderMapillary';
 import { NextResponse } from 'next/server';
 import {cities, City} from '../../Map/cities';
-import GuessingMap from '../../Map/GuessingMap';
+import MultiplayerGuessMap from './MultiplayerGuessMap';
 
 async function getImageIds(Lat: number, Lon: number): Promise<any> {
 
@@ -124,13 +124,13 @@ function Game({ ws, isHost }: GameProps): JSX.Element {
         <div className="relative w-full h-full">
 
             {
-                imageIds.length > 0 && chosenCity && (
+                imageIds.length > 0 && chosenCity && ws && (
                     <div className="relative w-full h-full">
                         <div className="absolute inset-0 z-0">
                             <RenderMapillary accessToken={process.env.NEXT_PUBLIC_MAPILLARY_ACCESS_TOKEN ?? ''} widthPercent={100} heightPercent={100} imageID={imageIds[0]} key={chosenCity.name}/>                
                         </div>
                         <div className="guessing-map-overlay" style={{bottom: '2rem', right: '2rem', backgroundColor: 'white', borderRadius: '0.5rem', boxShadow: '0 4px 20px rgba(0,0,0,0.3)', overflow: 'hidden'}}>
-                            <GuessingMap lat={chosenCity.lat} long={chosenCity.long} rerollCity={rerollCity}></GuessingMap>
+                            <MultiplayerGuessMap lat={chosenCity.lat} long={chosenCity.long} rerollCity={rerollCity} ws={ws} isHost={isHost}></MultiplayerGuessMap>
                         </div>
                     </div>
                 )                 
