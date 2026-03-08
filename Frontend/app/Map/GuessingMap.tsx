@@ -99,7 +99,7 @@ export default function GuessingMap({lat, long, rerollCity}: GuessingMapProps): 
     return(
         <div style={{height: '100%', width: '100%', display: 'flex', flexDirection: 'column'}}>
             <div id="map" ref={divRef} style={{flex: 1, width: '100%', minHeight: 0}}></div>
-            <div style={{padding: '4px', backgroundColor: 'white'}}>
+            <div style={{padding: '4px', backgroundColor: 'white', display: 'flex', justifyContent: 'flex-end', gap: '4px'}}>
                 <button className="GuessBtn" onClick={handleGuess} style={{padding: '2px 4px', marginRight: '2px', cursor: 'pointer'}}>Guess</button>
                 { 
                     hasGuessed && (

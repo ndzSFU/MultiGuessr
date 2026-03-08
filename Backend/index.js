@@ -63,6 +63,15 @@ function broadcastToLobby(lobbyId, stringifiedMessage){
     }
 }
 
+function broadcastToLobbyFromHost(lobbyId, stringifiedMessage){
+    let lobby = lobbies.get(lobbyId);
+    for(const clientID of lobby.players){
+        if(clientID !== lobby.host)
+        clients.get(clientID).connection.send(stringifiedMessage);
+        
+    }
+}
+
 
 wsServer.on("request", (request) => {
     const connection = request.accept(null, request.origin);
@@ -117,6 +126,15 @@ wsServer.on("request", (request) => {
                 broadcastToLobby(curLobbyId, JSON.stringify(payload));
             }
             
+        }
+
+        if(res.method === "setCity"){
+            const payload = {
+                method: "setCity",
+                city: res.city,
+                imageIds: res.imageIds
+            }
+            broadcastToLobbyFromHost(curLobbyId, JSON.stringify(payload));
         }
 
         console.log(res);

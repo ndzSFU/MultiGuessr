@@ -1,13 +1,13 @@
 'use client';
 
 import React, { JSX, useEffect } from 'react';
-import RenderMapillary from './renderMapillary';
+import RenderMapillary from '../../Map/renderMapillary';
 import './page.css';
 import { NextResponse } from 'next/server';
-import {cities, City} from './cities';
-import GuessingMap from './GuessingMap';
+import {cities, City} from '../../Map/cities';
+import GuessingMap from '../../Map/GuessingMap';
 
-export async function getImageIds(Lat: number, Lon: number): Promise<any> {
+async function getImageIds(Lat: number, Lon: number): Promise<any> {
 
     const bbox_offset: number = 0.004
 
@@ -31,8 +31,12 @@ function getRandomIdx(array_size: number): number{
     return Math.floor(Math.random() * array_size);
 }
 
+interface GameProps {
+    ws: WebSocket | null;
+    isHost: true | false;
+}
 
-function Map(): JSX.Element {
+function Game({ ws, isHost }: GameProps): JSX.Element {
 
     const [imageIds, setImageIds] = React.useState<string[]>([]);
     const [chosenCitiesIdxs, setChosenCitiesIdxs] = React.useState<number[]>([]);
@@ -56,6 +60,8 @@ function Map(): JSX.Element {
         const dataObj: imageIdData = data;
 
         setImageIds(dataObj.data.map(dataPoint => dataPoint.id));
+
+        ws?.send(JSON.stringify({ method: 'setCity', city: chosenCity, imageIds: imageIds}));
 
     }
 
@@ -81,7 +87,7 @@ function Map(): JSX.Element {
     }
 
     useEffect(() => {
-        rerollCity();
+        if(isHost) rerollCity();
     }, []);
 
 
@@ -115,5 +121,5 @@ function Map(): JSX.Element {
 
 };
 
-export default Map;
+export default Game;
 

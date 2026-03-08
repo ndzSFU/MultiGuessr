@@ -1,6 +1,32 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, JSX } from 'react';
 import { useParams } from 'next/navigation';
+
+import Game from "./Game";
+
+export async function getImageIds(Lat: number, Lon: number): Promise<any> {
+
+    const bbox_offset: number = 0.004
+
+    //vancouver: Lon: -123.1207 Lat: 49.2827
+
+    const minLon: number = Lon - bbox_offset;
+    const maxLon: number = Lon + bbox_offset;
+
+    const minLat: number = Lat - bbox_offset;
+    const maxLat: number = Lat + bbox_offset;
+
+    const bbox: string = minLon.toString() + "," + minLat.toString() + "," + maxLon.toString() + "," + maxLat.toString();
+    const URL: string = 'https://graph.mapillary.com/images?' + 'access_token=' + process.env.NEXT_PUBLIC_MAPILLARY_ACCESS_TOKEN + '&fields=id&bbox=' + bbox;
+
+    const res = await fetch(URL);
+
+    return res.json()
+}
+
+function getRandomIdx(array_size: number): number {
+    return Math.floor(Math.random() * array_size);
+}
 
 export default function Lobby() {
     const [clientId, setClientId] = useState<string | null>(null);
@@ -9,16 +35,26 @@ export default function Lobby() {
     const [state, setState] = useState<"noName" | "lobby" | "error" | "inGame">("noName");
     const [isHost, setIsHost] = useState<boolean>(false);
 
+    //Map Use States
+
     const params = useParams();
     const lobbyId = params.lobbyId as string;
 
+    interface imageID {
+        id: string;
+    };
+
+    interface imageIdData {
+        data: imageID[]
+    }
 
 
     useEffect(() => {
+        
         const ws = new WebSocket('ws://localhost:9090');
         setWs(ws);
 
-        ws.onmessage = (event) => {
+        ws.addEventListener("message", (event) => {
             const data = JSON.parse(event.data);
             console.log('Received:', data);
 
@@ -29,18 +65,22 @@ export default function Lobby() {
             if (data.method === 'connect') {
                 setClientId(data.clientId);
                 console.log(clientId);
-                ws.send(JSON.stringify({ method: 'connect', lobbyId: lobbyId, clientId: data.clientId}));
+                ws.send(JSON.stringify({ method: 'connect', lobbyId: lobbyId, clientId: data.clientId }));
             }
 
-            if(data.method === "setHost"){
+            if (data.method === "setHost") {
                 setIsHost(true);
+                // rerollCity();
+                //Might need to rethink this
+                // ws.send(JSON.stringify({ method: 'setCity', city: chosenCity, clientId: data.clientId }));
             }
 
-            if(data.method === "loadGame"){
+            if (data.method === "loadGame") {
                 setState("inGame");
             }
 
-        };
+        });
+
 
         return () => {
             ws.close();
@@ -57,9 +97,9 @@ export default function Lobby() {
         setState("lobby");
     }
 
-    function handleStartGame(){
+    function handleStartGame() {
         console.log("Starting Game!");
-        if(ws) ws.send(JSON.stringify({ method: 'startGame'}));
+        if (ws) ws.send(JSON.stringify({ method: 'startGame' }));
     }
 
     return (
@@ -97,9 +137,9 @@ export default function Lobby() {
             }
 
             {
-                state === "inGame" && (
+                state === "inGame" && ws && (
                     <div>
-                        IN THE GAME
+                        {/* <Game ws={ws} isHost={isHost}></Game> */}
                     </div>
                 )
             }
