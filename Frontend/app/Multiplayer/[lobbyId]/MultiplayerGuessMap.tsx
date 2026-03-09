@@ -19,7 +19,7 @@ interface MultiplayerGuessMapProps{
 }
 
 
-export default function MultiplayerGuessMap({lat, long, rerollCity}: MultiplayerGuessMapProps): React.ReactNode{
+export default function MultiplayerGuessMap({lat, long, rerollCity, ws, isHost}: MultiplayerGuessMapProps): React.ReactNode{
     const divRef = useRef<HTMLDivElement>(null);
     const mapRef = useRef<L.Map | null>(null);
     const curMarker = useRef<L.Marker<any> | null>(null);
@@ -95,7 +95,7 @@ export default function MultiplayerGuessMap({lat, long, rerollCity}: Multiplayer
         }
 
         if (mapRef.current) mapRef.current.setView([0, 0], 1);
-        rerollCity();
+        if (isHost) rerollCity();
     }
 
     return(
@@ -107,7 +107,7 @@ export default function MultiplayerGuessMap({lat, long, rerollCity}: Multiplayer
                     hasGuessed && (
                         <>
                             <button className="NextBtn" onClick={handleNext} style={{padding: '2px 4px', cursor: 'pointer'}}>Next</button> 
-                            <ScoreBox chosenLatLng={{lat: curMarker.current?.getLatLng().lat || 0, long: curMarker.current?.getLatLng().lng || 0}} actualLatLng={{lat: lat, long: long}}></ScoreBox>
+                            <ScoreBox chosenLatLng={{lat: curMarker.current?.getLatLng().lat || 0, long: curMarker.current?.getLatLng().lng || 0}} actualLatLng={{lat: lat, long: long}} ws={ws}></ScoreBox>
                         </>
                     )
                 } 

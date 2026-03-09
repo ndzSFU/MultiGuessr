@@ -30,16 +30,13 @@ function getRandomIdx(array_size: number): number{
     return Math.floor(Math.random() * array_size);
 }
 
-async function waitForRandomIdx(array_size: number): Promise<number> {
-    return await getRandomIdx(array_size);
-}
-
 interface GameProps {
     ws: WebSocket | null;
     isHost: true | false;
 }
 
 function Game({ ws, isHost }: GameProps): JSX.Element {
+    const hasInitialized = React.useRef(false);
 
     const [imageIds, setImageIds] = React.useState<string[]>([]);
     const [chosenCitiesIdxs, setChosenCitiesIdxs] = React.useState<number[]>([]);
@@ -67,7 +64,7 @@ function Game({ ws, isHost }: GameProps): JSX.Element {
 
         setImageIds(newImageIds);
 
-        const localStartingImageIdx = waitForRandomIdx(imageIds.length);
+        const localStartingImageIdx = getRandomIdx(newImageIds.length);
 
         ws?.send(JSON.stringify({ method: 'setCity', city: city, imageIds: newImageIds, startingImageIdx: localStartingImageIdx}));
 
@@ -113,9 +110,12 @@ function Game({ ws, isHost }: GameProps): JSX.Element {
         return () => {
             ws.removeEventListener('message', handleMessage);
         };
-    }), [ws];
+    }, [ws]);
 
     useEffect(() => {
+        if (hasInitialized.current) return;
+        hasInitialized.current = true;
+        
         if(isHost) rerollCity();
     }, []);
 

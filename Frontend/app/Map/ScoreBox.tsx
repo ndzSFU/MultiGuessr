@@ -3,7 +3,7 @@ import { useEffect, useRef } from "react";
 
 const Earth_Radius = 6371; 
 const Max_Guess_Dist = 4500;
-const Dampner = 1.18;
+const Dampner = 1.16;
 
 
 function getDistanceKm(lat1: number, lon1: number, lat2: number, lon2: number): number {
@@ -18,10 +18,13 @@ function getDistanceKm(lat1: number, lon1: number, lat2: number, lon2: number): 
 
 interface ScoreBoxProps{
     chosenLatLng: {lat: number, long: number} | null,
-    actualLatLng: {lat: number, long: number} | null
+    actualLatLng: {lat: number, long: number} | null,
+    ws?: WebSocket
 }
 
-export default function ScoreBox({chosenLatLng, actualLatLng}: ScoreBoxProps){
+export default function ScoreBox({chosenLatLng, actualLatLng, ws}: ScoreBoxProps){
+
+    const hasSentScore = useRef(false);
 
     let latDiff: number = Math.abs(chosenLatLng!.lat - actualLatLng!.lat);
 
@@ -45,9 +48,19 @@ export default function ScoreBox({chosenLatLng, actualLatLng}: ScoreBoxProps){
 
     
     console.log("Score: " + score)
+
+    useEffect(() => {
+        if (hasSentScore.current) return;
+        hasSentScore.current = true;
+        
+        ws?.send(JSON.stringify({ method: 'sendScore', score: score }));
+        console.log(JSON.stringify({ method: 'sendScore', score: score }));
+    }, []);
+
+    if(ws){
+        console.log(JSON.stringify({ method: 'sendScore', score: score}));
+    }
    
-
-
     return(
         <p style={{color: 'black', padding: '0px', margin: '0px'}}>Your Score: {score}</p>
 

@@ -25,6 +25,8 @@ const lobbies = new Map();
 // Vals of Lobby map
 // lobbies.set(req.body.lobbyId, {maxPlayers: req.body.maxPlayers, host: "", players: [], state: "lobby", scoreMap: new Map()});
 
+//Note player and client are used synonymously, a list of players may contain clientId's clients == players
+
 function CreateLobbyId(len){
     let newLobbyId = "";
 
@@ -39,7 +41,7 @@ api.post('/api/createLobby', (req, res) => {
     console.log("SETTINGS: ")
     console.log(req.body.maxPlayers);
 
-    lobbies.set(req.body.lobbyId, {maxPlayers: req.body.maxPlayers, host: "", players: [], state: "lobby", scoreMap: new Map()});
+    lobbies.set(req.body.lobbyId, {maxPlayers: req.body.maxPlayers, host: "", players: [], state: "lobby", scoreMap: new Map(), guessesMade: 0});
     console.log(lobbies);
     res.send("1");
 })
@@ -107,20 +109,27 @@ wsServer.on("request", (request) => {
                     connection.send(JSON.stringify(payload))
                 }
             } 
-            console.log(lobbies);
             
         }
 
         if(res.method === "setUsername"){
             clientData.username = res.username;
             console.log(`Client ${clientId} set username: ${res.username}`);
-            console.log(clients);
+            // console.log(clients);
         }
 
         if(res.method === "startGame"){
             if(curLobbyId != ""){
                 const payload = {
                     method: "loadGame",
+                }
+
+                if(curLobbyId !== ""){
+                    let lobby = lobbies.get(curLobbyId);
+                    lobby.state = "inRound"
+                    for(player of lobby.players){
+                        lobby.scoreMap.set(player, 0);
+                    }
                 }
 
                 broadcastToLobby(curLobbyId, JSON.stringify(payload));
@@ -135,7 +144,45 @@ wsServer.on("request", (request) => {
                 imageIds: res.imageIds,
                 startingImageIdx: res.startingImageIdx
             }
+            broadcastToLobbyFromHost(curLobbyId, JSON.stringify(payload));
+        }
+
+        if(res.method === "sendScore"){
+            let lobby = lobbies.get(curLobbyId);
+            if(curLobbyId !== ""){
+                const oldScore = lobby.scoreMap.get(clientId);
+                const newScore = res.score + oldScore;
+                lobby.scoreMap.set(clientId, newScore);
+                lobby.guessesMade += 1;
+
+            }
+
+            console.log(lobbies)
+
+
+            let payload;
+
+            if(lobby.guessesMade === lobby.players.length){
+                console.log("ROUND DONE");
+                lobby.guessesMade = 0;
+                payload = {
+                    method: "finalGuessMade",
+                    clientId: clientId,
+                    score: res.score,
+                    scoreMap: lobby.scoreMap
+                }
+
+            } else{
+                console.log("ROUND CONTINUE");
+                payload = {
+                    method: "guessMade",
+                    clientId: clientId,
+                    score: res.score,
+                }
+            }
+
             broadcastToLobby(curLobbyId, JSON.stringify(payload));
+            
         }
 
         console.log(res);
