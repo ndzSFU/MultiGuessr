@@ -32,7 +32,7 @@ export default function Lobby() {
     const [clientId, setClientId] = useState<string | null>(null);
     const [username, setUsername] = useState<string>();
     const [ws, setWs] = useState<WebSocket | null>();
-    const [state, setState] = useState<"noName" | "lobby" | "error" | "inGame">("noName");
+    const [state, setState] = useState<"noName" | "lobby" | "error" | "inGame" | "scoreBoard">("noName");
     const [isHost, setIsHost] = useState<boolean>(false);
 
     //Map Use States
@@ -77,6 +77,11 @@ export default function Lobby() {
 
             if (data.method === "loadGame") {
                 setState("inGame");
+            }
+
+            if(data.method === "finalGuessMade"){
+                setState("scoreBoard");
+                
             }
 
         });

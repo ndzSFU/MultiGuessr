@@ -104,13 +104,17 @@ export default function MultiplayerGuessMap({lat, long, rerollCity, ws, isHost}:
             <div style={{padding: '4px', backgroundColor: 'white', display: 'flex', justifyContent: 'flex-end', gap: '4px'}}>
                 <button className="GuessBtn" onClick={handleGuess} style={{padding: '2px 4px', marginRight: '2px', cursor: 'pointer'}}>Guess</button>
                 { 
-                    hasGuessed && (
+                    hasGuessed && isHost && (
                         <>
-                            <button className="NextBtn" onClick={handleNext} style={{padding: '2px 4px', cursor: 'pointer'}}>Next</button> 
-                            <ScoreBox chosenLatLng={{lat: curMarker.current?.getLatLng().lat || 0, long: curMarker.current?.getLatLng().lng || 0}} actualLatLng={{lat: lat, long: long}} ws={ws}></ScoreBox>
+                            <button className="NextBtn" onClick={handleNext} style={{padding: '2px 4px', cursor: 'pointer'}}>Next Round</button> 
                         </>
                     )
                 } 
+                {
+                    hasGuessed && (
+                        <ScoreBox chosenLatLng={{lat: curMarker.current?.getLatLng().lat || 0, long: curMarker.current?.getLatLng().lng || 0}} actualLatLng={{lat: lat, long: long}} ws={ws}></ScoreBox>
+                    )
+                }
             </div>
         </div>
         
