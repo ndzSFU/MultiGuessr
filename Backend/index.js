@@ -5,9 +5,6 @@ const cors = require('cors');
 const http = require("http");
 const websocketServer = require("websocket").server;
 
-
-
-const clients = new Map();
 const api = express();
 api.use(cors());
 api.use(express.json());
@@ -15,6 +12,7 @@ const httpServer = http.createServer(api);
 httpServer.listen(9090, () => console.log("Server is listening on port 9090"));
 
 const lobbies = new Map();
+const clients = new Map();
 
 // Vals of Clients Map
 //const clientData = {
@@ -164,12 +162,22 @@ wsServer.on("request", (request) => {
 
             if(lobby.guessesMade === lobby.players.length){
                 console.log("ROUND DONE");
+
+                let scores = [];
+
+                for(player of lobby.players){
+                    const username = clients.get(player).username;
+                    const score = lobby.scoreMap.get(player);
+                    scores.push([username, score]);
+                }
+
+
                 lobby.guessesMade = 0;
                 payload = {
                     method: "finalGuessMade",
                     clientId: clientId,
                     score: res.score,
-                    scoreMap: lobby.scoreMap
+                    scores: scores
                 }
 
             } else{

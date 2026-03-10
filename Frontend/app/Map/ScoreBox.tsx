@@ -3,7 +3,7 @@ import { useEffect, useRef } from "react";
 
 const Earth_Radius = 6371; 
 const Max_Guess_Dist = 4500;
-const Dampner = 1.16;
+const Dampner = 1.05;
 
 
 function getDistanceKm(lat1: number, lon1: number, lat2: number, lon2: number): number {
@@ -56,10 +56,6 @@ export default function ScoreBox({chosenLatLng, actualLatLng, ws}: ScoreBoxProps
         ws?.send(JSON.stringify({ method: 'sendScore', score: score }));
         console.log(JSON.stringify({ method: 'sendScore', score: score }));
     }, []);
-
-    if(ws){
-        console.log(JSON.stringify({ method: 'sendScore', score: score}));
-    }
    
     return(
         <p style={{color: 'black', padding: '0px', margin: '0px'}}>Your Score: {score}</p>

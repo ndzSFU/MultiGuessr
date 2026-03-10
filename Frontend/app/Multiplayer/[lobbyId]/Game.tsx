@@ -101,7 +101,7 @@ function Game({ ws, isHost }: GameProps): JSX.Element {
             if (data.method === 'setCity'){
                 setChosenCity(data.city);
                 setImageIds(data.imageIds);
-                setStartingImageIdx(data.setStartingImageIdx);
+                setStartingImageIdx(data.startingImageIdx);
             }
         }
 
@@ -130,7 +130,7 @@ function Game({ ws, isHost }: GameProps): JSX.Element {
                             <RenderMapillary accessToken={process.env.NEXT_PUBLIC_MAPILLARY_ACCESS_TOKEN ?? ''} widthPercent={100} heightPercent={100} imageID={imageIds[0]} key={chosenCity.name}/>                
                         </div>
                         <div className="guessing-map-overlay" style={{bottom: '2rem', right: '2rem', backgroundColor: 'white', borderRadius: '0.5rem', boxShadow: '0 4px 20px rgba(0,0,0,0.3)', overflow: 'hidden'}}>
-                            <MultiplayerGuessMap lat={chosenCity.lat} long={chosenCity.long} rerollCity={rerollCity} ws={ws} isHost={isHost}></MultiplayerGuessMap>
+                            <MultiplayerGuessMap lat={chosenCity.lat} long={chosenCity.long} rerollCity={rerollCity} ws={ws} isHost={isHost} key={chosenCity.name}></MultiplayerGuessMap>
                         </div>
                     </div>
                 )                 

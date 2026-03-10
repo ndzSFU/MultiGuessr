@@ -42,3 +42,71 @@ body {
   width: 500px !important;
   height: 450px !important;
 }
+
+/* Scoreboard Styles */
+.scoreboard {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: rgba(0, 0, 0, 0.85);
+  border-radius: 12px;
+  padding: 16px 20px;
+  min-width: 200px;
+  max-width: 280px;
+  z-index: 1000;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.scoreboard-title {
+  color: #fff;
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 12px 0;
+  padding-bottom: 8px;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+  text-align: center;
+}
+
+.scoreboard-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.scoreboard-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.scoreboard-item:last-child {
+  border-bottom: none;
+}
+
+.scoreboard-username {
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 150px;
+}
+
+.scoreboard-score {
+  color: #4ade80;
+  font-size: 16px;
+  font-weight: 700;
+  margin-left: 12px;
+}
+
+.scoreboard-item:first-child .scoreboard-username {
+  color: #ffd700;
+}
+
+.scoreboard-item:first-child .scoreboard-score {
+  color: #ffd700;
+}

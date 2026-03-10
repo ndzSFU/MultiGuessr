@@ -49,3 +49,13 @@ Architecture:
 
 Clients map: Maps CID to the webscoekt connect and the username
 Lobbies Map: Maps LID to the lobby settings and a list of players CID who are currently connected
+
+Web Socket message ordering:
+1. Upon establish of the TCP connection, the server sends a "connect" message to the client with its clientID
+2. The client the sends a "connect" message back to server telling the server its lobby id.
+3. If the client is the first client joining then the server will send a "setHost" message to the client denoting it as the host.
+4. When the host clicks start game, that client will send a "startGame" message to server
+5. Upon receival of the "startGame" message the server will broadcast this message to all clients in the lobby (The lost of which is stored in the lobby Map).
+6. When all clients received the "startGame" message from the server the game renders.
+7. After each client makes a guess, a "sendScore" message is sent to the server, server respond with a regular "guessMade" response until the final guess is made
+8. The server stores a counter tracking how many guess are made and when all clients have guessed (or when timer runs out) it broadcasts a "finalGuessMade" message and send the updated scores to each client to display
