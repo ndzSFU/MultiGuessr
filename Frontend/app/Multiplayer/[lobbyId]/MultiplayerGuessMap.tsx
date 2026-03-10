@@ -26,6 +26,7 @@ export default function MultiplayerGuessMap({lat, long, rerollCity, ws, isHost}:
     const [hasGuessed, setHasGuessed] = useState<boolean>(false);
     const leafletRef = useRef<typeof L | null>(null);
     const actualMarker = useRef<L.Marker<any> | null>(null);
+    const [hasClicked, setHasClicked] = useState<boolean>(false);
 
     // Create the map only once on mount
     useEffect(() => {
@@ -58,6 +59,7 @@ export default function MultiplayerGuessMap({lat, long, rerollCity, ws, isHost}:
                 function OnMapClick(e: L.LeafletMouseEvent): void {
                     if(curMarker.current) curMarker.current.remove();
                     curMarker.current = L.marker(e.latlng).addTo(mapRef.current!);
+                    setHasClicked(true);
                 }
                 mapRef.current.on('click', OnMapClick);
 
@@ -104,7 +106,7 @@ export default function MultiplayerGuessMap({lat, long, rerollCity, ws, isHost}:
             <div style={{padding: '4px', backgroundColor: 'white', display: 'flex', justifyContent: 'flex-end', gap: '4px'}}>
                 
                 {
-                    !hasGuessed && (
+                    !hasGuessed && hasClicked && (
                         <button className="GuessBtn" onClick={handleGuess} style={{padding: '2px 4px', marginRight: '2px', cursor: 'pointer'}}>Guess</button>
                     )
                 }

@@ -84,6 +84,33 @@ wsServer.on("request", (request) => {
     };
 
     connection.on("close", () => {
+        // Remove from lobby if they were in one
+        if (curLobbyId) {
+            const lobby = lobbies.get(curLobbyId);
+
+            clients.delete(clientId);
+            if (lobby) {
+                // Remove player from players array
+                lobby.players = lobby.players.filter(id => id !== clientId);
+                
+                // Remove from scoreMap
+                lobby.scoreMap.delete(clientId);
+                
+                // If they were host, assign new host (or delete lobby if empty)
+                if (lobby.host === clientId) {
+                    if (lobby.players.length > 0) {
+                        lobby.host = lobby.players[0];
+                        clients.get(lobby.host)?.connection.send(JSON.stringify({ method: "setHost" }));
+                    } else {
+                        // No players left, delete the lobby
+                        lobbies.delete(curLobbyId);
+                    }
+                }
+                
+                console.log(`Player ${clientId} left lobby ${curLobbyId}`);
+            }
+        }
+        
         clients.delete(clientId);
         console.log(clients.size);
         console.log("Connection closed");
