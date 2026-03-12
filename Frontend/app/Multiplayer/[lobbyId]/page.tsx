@@ -85,6 +85,7 @@ export default function Lobby() {
 
             if(data.method === "finalGuessMade"){
                 setScores(data.scores);
+                console.log(data.roundScores);
             }
 
         });

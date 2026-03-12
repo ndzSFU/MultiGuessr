@@ -21,7 +21,7 @@ const clients = new Map();
 // };
 
 // Vals of Lobby map
-// lobbies.set(req.body.lobbyId, {maxPlayers: req.body.maxPlayers, host: "", players: [], state: "lobby", scoreMap: new Map()});
+// lobbies.set(req.body.lobbyId, {maxPlayers: req.body.maxPlayers, host: "", players: [], state: "lobby", scoreMap: new Map(), guessesMade: 0});
 
 //Note player and client are used synonymously, a list of players may contain clientId's clients == players
 
@@ -39,7 +39,7 @@ api.post('/api/createLobby', (req, res) => {
     console.log("SETTINGS: ")
     console.log(req.body.maxPlayers);
 
-    lobbies.set(req.body.lobbyId, {maxPlayers: req.body.maxPlayers, host: "", players: [], state: "lobby", scoreMap: new Map(), guessesMade: 0});
+    lobbies.set(req.body.lobbyId, {maxPlayers: req.body.maxPlayers, host: "", players: [], state: "lobby", scoreMap: new Map(), guessesMade: 0, roundScores: [[]]});
     console.log(lobbies);
     res.send("1");
 })
@@ -178,12 +178,14 @@ wsServer.on("request", (request) => {
 
         if(res.method === "sendScore"){
             let lobby = lobbies.get(curLobbyId);
+            let curRoundIdx = lobby.roundScores.length - 1;
             if(curLobbyId !== ""){
                 const oldScore = lobby.scoreMap.get(clientId);
                 const newScore = res.score + oldScore;
                 lobby.scoreMap.set(clientId, newScore);
                 lobby.guessesMade += 1;
-
+                const username = clients.get(clientId).username;
+                lobby.roundScores[curRoundIdx].push([username, res.score])
             }
 
             console.log(lobbies)
@@ -202,6 +204,9 @@ wsServer.on("request", (request) => {
                     scores.push([username, score]);
                 }
 
+                lobby.roundScores[curRoundIdx].sort((a, b) => (b[1] - a[1]));
+                lobby.roundScores.push([]);
+
                 scores.sort((a, b) => (b[1] - a[1]));
 
 
@@ -210,8 +215,10 @@ wsServer.on("request", (request) => {
                     method: "finalGuessMade",
                     clientId: clientId,
                     score: res.score,
-                    scores: scores
+                    scores: scores,
+                    roundScores: lobby.roundScores[curRoundIdx],
                 }
+                console.log(lobby.roundScores);
 
             } else{
                 console.log("ROUND CONTINUE");
