@@ -30,11 +30,9 @@ function getRandomIdx(array_size: number): number {
 
 export default function Lobby() {
     const [clientId, setClientId] = useState<string | null>(null);
-    const [username, setUsername] = useState<string>();
     const [ws, setWs] = useState<WebSocket | null>();
     const [state, setState] = useState<"noName" | "lobby" | "error" | "inGame">("noName");
     const [isHost, setIsHost] = useState<boolean>(false);
-    const [showScoreboard, setShowScoreboard] = useState<boolean>(false);
     const [scores, setScores] = useState<[[string, number]]>();
    
 
@@ -79,12 +77,14 @@ export default function Lobby() {
             }
 
             if (data.method === "loadGame") {
+                setScores(data.playerScoreMap);
+                console.log(data.playerScoreMap);
+                console.log(scores);
                 setState("inGame");
             }
 
             if(data.method === "finalGuessMade"){
                 setScores(data.scores);
-                setShowScoreboard(true);
             }
 
         });
@@ -148,14 +148,18 @@ export default function Lobby() {
                 state === "inGame" && ws && (
                     <div>
                         <Game ws={ws} isHost={isHost}></Game>
-                        {showScoreboard && scores && (
+                        {scores && (scores.length > 0) && (
                             <div className="scoreboard">
                                 <h3 className="scoreboard-title">Scoreboard</h3>
+                                <div className="scoreboard-header">
+                                    <span className="scoreboard-col-left">Username</span>
+                                    <span className="scoreboard-col-right">Score</span>
+                                </div>
                                 <ul className="scoreboard-list">
-                                {Object.entries(scores).map(([username, score]) => (
-                                    <li key={username} className="scoreboard-item">
-                                    <span className="scoreboard-username">{username}</span>
-                                    <span className="scoreboard-score">{score}</span>
+                                {scores.map(([username, score], idx) => (
+                                    <li key={idx} className="scoreboard-item">
+                                        <span className="scoreboard-username">{username}</span>
+                                        <span className="scoreboard-score">{score}</span>
                                     </li>
                                 ))}
                                 </ul>

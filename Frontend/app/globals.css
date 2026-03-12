@@ -51,11 +51,13 @@ body {
   background: rgba(0, 0, 0, 0.85);
   border-radius: 12px;
   padding: 16px 20px;
-  min-width: 200px;
-  max-width: 280px;
+  min-width: 220px;
+  max-width: 300px;
   z-index: 1000;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
   border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
 }
 
 .scoreboard-title {
@@ -72,6 +74,28 @@ body {
   list-style: none;
   margin: 0;
   padding: 0;
+}
+
+.scoreboard-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 0 6px 0;
+  margin-bottom: 4px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.scoreboard-col-left {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.scoreboard-col-right {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
 }
 
 .scoreboard-item {
@@ -94,19 +118,36 @@ body {
   text-overflow: ellipsis;
   white-space: nowrap;
   max-width: 150px;
+  margin-right: 50px;
 }
 
 .scoreboard-score {
   color: #4ade80;
   font-size: 16px;
   font-weight: 700;
-  margin-left: 12px;
+  margin-left: auto;
 }
 
-.scoreboard-item:first-child .scoreboard-username {
-  color: #ffd700;
-}
+.scoreboard-item:nth-child(1) .scoreboard-username,
+.scoreboard-item:nth-child(1) .scoreboard-score { color: #ffd700; } /* Gold */
 
-.scoreboard-item:first-child .scoreboard-score {
-  color: #ffd700;
-}
+.scoreboard-item:nth-child(2) .scoreboard-username,
+.scoreboard-item:nth-child(2) .scoreboard-score { color: #0ba83f; } /* Silver */
+
+.scoreboard-item:nth-child(3) .scoreboard-username,
+.scoreboard-item:nth-child(3) .scoreboard-score { color: #cd7f32; } /* Bronze */
+
+.scoreboard-item:nth-child(4) .scoreboard-username,
+.scoreboard-item:nth-child(4) .scoreboard-score { color: #60a5fa; } /* Blue */
+
+.scoreboard-item:nth-child(5) .scoreboard-username,
+.scoreboard-item:nth-child(5) .scoreboard-score { color: #a78bfa; } /* Purple */
+
+.scoreboard-item:nth-child(6) .scoreboard-username,
+.scoreboard-item:nth-child(6) .scoreboard-score { color: #f472b6; } /* Pink */
+
+.scoreboard-item:nth-child(7) .scoreboard-username,
+.scoreboard-item:nth-child(7) .scoreboard-score { color: #fb923c; } /* Orange */
+
+.scoreboard-item:nth-child(8) .scoreboard-username,
+.scoreboard-item:nth-child(8) .scoreboard-score { color: #ce0c0c; } /* Teal */
