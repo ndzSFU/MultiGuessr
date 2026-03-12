@@ -202,6 +202,8 @@ wsServer.on("request", (request) => {
                     scores.push([username, score]);
                 }
 
+                scores.sort((a, b) => (b[1] - a[1]));
+
 
                 lobby.guessesMade = 0;
                 payload = {
