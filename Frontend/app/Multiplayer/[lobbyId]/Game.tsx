@@ -8,7 +8,7 @@ import MultiplayerGuessMap from './MultiplayerGuessMap';
 
 async function getImageIds(Lat: number, Lon: number): Promise<any> {
 
-    const bbox_offset: number = 0.004
+    const bbox_offset: number = 0.003
 
     //vancouver: Lon: -123.1207 Lat: 49.2827
 
@@ -41,7 +41,7 @@ function Game({ ws, isHost }: GameProps): JSX.Element {
     const [imageIds, setImageIds] = React.useState<string[]>([]);
     const [chosenCitiesIdxs, setChosenCitiesIdxs] = React.useState<number[]>([]);
     const [chosenCity, setChosenCity] = React.useState<City>();
-    const [startingImageIdx, setStartingImageIdx] = React.useState<number>(0);
+    const [startingImageIdx, setStartingImageIdx] = React.useState<number>();
 
     const [nextChosenCity, setNextChosenCity] = React.useState<City>();
     const [nextImageIds, setNextImageIds] = React.useState<string[]>([]);
@@ -102,6 +102,7 @@ function Game({ ws, isHost }: GameProps): JSX.Element {
                 setChosenCity(data.city);
                 setImageIds(data.imageIds);
                 setStartingImageIdx(data.startingImageIdx);
+                console.log("Setting city stats: " + data.startingImageIdx);
             }
         }
 
@@ -122,12 +123,11 @@ function Game({ ws, isHost }: GameProps): JSX.Element {
 
     return (
         <div className="relative w-full h-full">
-
             {
-                imageIds.length > 0 && chosenCity && ws && (
+                startingImageIdx !== undefined && imageIds.length > 0 && chosenCity && ws && (
                     <div className="relative w-full h-full">
                         <div className="absolute inset-0 z-0">
-                            <RenderMapillary accessToken={process.env.NEXT_PUBLIC_MAPILLARY_ACCESS_TOKEN ?? ''} widthPercent={100} heightPercent={100} imageID={imageIds[0]} key={chosenCity.name}/>                
+                            <RenderMapillary accessToken={process.env.NEXT_PUBLIC_MAPILLARY_ACCESS_TOKEN ?? ''} widthPercent={100} heightPercent={100} imageID={imageIds[startingImageIdx]} key={chosenCity.name}/>                
                         </div>
                         <div className="guessing-map-overlay" style={{bottom: '2rem', right: '2rem', backgroundColor: 'white', borderRadius: '0.5rem', boxShadow: '0 4px 20px rgba(0,0,0,0.3)', overflow: 'hidden'}}>
                             <MultiplayerGuessMap lat={chosenCity.lat} long={chosenCity.long} rerollCity={rerollCity} ws={ws} isHost={isHost} key={chosenCity.name}></MultiplayerGuessMap>

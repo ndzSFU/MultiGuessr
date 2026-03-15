@@ -173,7 +173,7 @@ wsServer.on("request", (request) => {
                 imageIds: res.imageIds,
                 startingImageIdx: res.startingImageIdx
             }
-            broadcastToLobbyFromHost(curLobbyId, JSON.stringify(payload));
+            broadcastToLobby(curLobbyId, JSON.stringify(payload));
         }
 
         if(res.method === "sendScore"){

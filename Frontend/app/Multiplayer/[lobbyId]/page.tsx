@@ -6,7 +6,7 @@ import Game from "./Game";
 
 export async function getImageIds(Lat: number, Lon: number): Promise<any> {
 
-    const bbox_offset: number = 0.004
+    const bbox_offset: number = 0.001
 
     //vancouver: Lon: -123.1207 Lat: 49.2827
 
