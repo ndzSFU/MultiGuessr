@@ -47,6 +47,9 @@ api.post('/api/createLobby', (req, res) => {
 api.get('/api/createLobbyId', (req, res) => {
     console.log("Sent Lobby ID");
     const id = CreateLobbyId(6)
+    while(lobbies.has(id)){
+        id = CreateLobbyId(6);
+    }
     console.log(id);
     res.send(id);
 })
