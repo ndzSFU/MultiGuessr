@@ -21,7 +21,7 @@ const clients = new Map();
 // };
 
 // Vals of Lobby map
-// lobbies.set(req.body.lobbyId, {maxPlayers: req.body.maxPlayers, host: "", players: [], state: "lobby", scoreMap: new Map(), guessesMade: 0});
+// lobbies.set(req.body.lobbyId, {maxPlayers: , maxRounds: , host: "", players: [], state: "lobby", scoreMap: , guessesMade: 0});
 
 //Note player and client are used synonymously, a list of players may contain clientId's clients == players
 
@@ -39,7 +39,7 @@ api.post('/api/createLobby', (req, res) => {
     console.log("SETTINGS: ")
     console.log(req.body.maxPlayers);
 
-    lobbies.set(req.body.lobbyId, {maxPlayers: req.body.maxPlayers, host: "", players: [], state: "lobby", scoreMap: new Map(), guessesMade: 0, roundScores: [[]]});
+    lobbies.set(req.body.lobbyId, {maxPlayers: req.body.maxPlayers, maxRounds: req.body.maxRounds, host: "", players: [], state: "lobby", scoreMap: new Map(), guessesMade: 0, roundScores: [[]]});
     console.log(lobbies);
     res.send("1");
 })
