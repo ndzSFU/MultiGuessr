@@ -1,6 +1,6 @@
 'use client';
 
-import React, { JSX, useEffect } from 'react';
+import { JSX, useEffect, useRef, useState } from 'react';
 import RenderMapillary from '../../Map/renderMapillary';
 import { NextResponse } from 'next/server';
 import {cities, City} from '../../Map/cities';
@@ -33,18 +33,21 @@ function getRandomIdx(array_size: number): number{
 interface GameProps {
     ws: WebSocket | null;
     isHost: true | false;
+    setShowRoundScores: (bool: boolean) => void;
 }
 
-function Game({ ws, isHost }: GameProps): JSX.Element {
-    const hasInitialized = React.useRef(false);
+function Game({ ws, isHost, setShowRoundScores}: GameProps): JSX.Element {
+    const hasInitialized = useRef(false);
 
-    const [imageIds, setImageIds] = React.useState<string[]>([]);
-    const [chosenCitiesIdxs, setChosenCitiesIdxs] = React.useState<number[]>([]);
-    const [chosenCity, setChosenCity] = React.useState<City>();
-    const [startingImageIdx, setStartingImageIdx] = React.useState<number>();
+    const [imageIds, setImageIds] = useState<string[]>([]);
+    const [chosenCitiesIdxs, setChosenCitiesIdxs] = useState<number[]>([]);
+    const [chosenCity, setChosenCity] = useState<City>();
+    const [startingImageIdx, setStartingImageIdx] = useState<number>();
+    const [loadGame, setLoadGame] = useState<boolean>(false);
 
-    const [nextChosenCity, setNextChosenCity] = React.useState<City>();
-    const [nextImageIds, setNextImageIds] = React.useState<string[]>([]);
+
+    const [nextChosenCity, setNextChosenCity] = useState<City>();
+    const [nextImageIds, setNextImageIds] = useState<string[]>([]);
 
     interface imageID{
         id: string;
@@ -99,10 +102,12 @@ function Game({ ws, isHost }: GameProps): JSX.Element {
             console.log('Received:', data);
 
             if (data.method === 'setCity'){
+                setShowRoundScores(false);
                 setChosenCity(data.city);
                 setImageIds(data.imageIds);
                 setStartingImageIdx(data.startingImageIdx);
                 console.log("Setting city stats: " + data.startingImageIdx);
+                setLoadGame(true);
             }
         }
 
@@ -124,13 +129,13 @@ function Game({ ws, isHost }: GameProps): JSX.Element {
     return (
         <div className="relative w-full h-full">
             {
-                startingImageIdx !== undefined && imageIds.length > 0 && chosenCity && ws && (
+                startingImageIdx !== undefined && imageIds.length > 0 && chosenCity && ws && loadGame && (
                     <div className="relative w-full h-full">
                         <div className="absolute inset-0 z-0">
                             <RenderMapillary accessToken={process.env.NEXT_PUBLIC_MAPILLARY_ACCESS_TOKEN ?? ''} widthPercent={100} heightPercent={100} imageID={imageIds[startingImageIdx]} key={chosenCity.name}/>                
                         </div>
                         <div className="guessing-map-overlay" style={{bottom: '2rem', right: '2rem', backgroundColor: 'white', borderRadius: '0.5rem', boxShadow: '0 4px 20px rgba(0,0,0,0.3)', overflow: 'hidden'}}>
-                            <MultiplayerGuessMap lat={chosenCity.lat} long={chosenCity.long} rerollCity={rerollCity} ws={ws} isHost={isHost} key={chosenCity.name}></MultiplayerGuessMap>
+                            <MultiplayerGuessMap lat={chosenCity.lat} long={chosenCity.long} rerollCity={rerollCity} ws={ws} isHost={isHost} setLoadGame={setLoadGame} key={chosenCity.name}></MultiplayerGuessMap>
                         </div>
                     </div>
                 )                 

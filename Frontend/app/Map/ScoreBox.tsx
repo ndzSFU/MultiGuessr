@@ -38,7 +38,7 @@ export default function ScoreBox({chosenLatLng, actualLatLng, ws}: ScoreBoxProps
 
     const kmDiff = getDistanceKm(chosenLatLng!.lat, chosenLatLng!.long, actualLatLng!.lat, actualLatLng!.long);
 
-    if(kmDiff > 5){
+    if(kmDiff > 8){
         let accuracy = kmDiff/Max_Guess_Dist;
         console.log("Km diff: " + kmDiff);
         console.log("Acc: " + accuracy)

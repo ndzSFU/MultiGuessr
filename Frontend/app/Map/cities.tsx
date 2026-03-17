@@ -173,7 +173,63 @@ export const cities: City[] = [
   { name: 'Zagreb', lat: 45.8150, long: 15.9819 },
   { name: 'Belgrade', lat: 44.7866, long: 20.4489 },
   { name: 'Sofia', lat: 42.6977, long: 23.3219 },
-  { name: 'Bucharest', lat: 44.4268, long: 26.1025 },
+  { name: 'Bucharest', lat: 44.4268, long: 26.1025 }, // keep only first occurrence
+    // Central America, South America, Eastern Europe/Balkans, more Africa, Central Asia, South/Southeast Asia (large cities only)
+    // Central America
+    { name: 'Mexico City', lat: 19.4326, long: -99.1332 },
+    { name: 'Guatemala City', lat: 14.6349, long: -90.5069 },
+    { name: 'San Salvador', lat: 13.6929, long: -89.2182 },
+    { name: 'Tegucigalpa', lat: 14.0723, long: -87.1921 },
+    { name: 'Managua', lat: 12.114993, long: -86.236174 },
+    { name: 'San Jose (CR)', lat: 9.9281, long: -84.0907 },
+    { name: 'Panama City', lat: 8.9824, long: -79.5199 },
+    { name: 'Havana', lat: 23.1136, long: -82.3666 },
+    { name: 'Santo Domingo', lat: 18.4861, long: -69.9312 },
+    { name: 'Kingston', lat: 17.9712, long: -76.7936 },
+
+    // South America
+    { name: 'Sao Paulo', lat: -23.5505, long: -46.6333 },
+    { name: 'Rio de Janeiro', lat: -22.9068, long: -43.1729 },
+    { name: 'Buenos Aires', lat: -34.6037, long: -58.3816 },
+    { name: 'Lima', lat: -12.0464, long: -77.0428 },
+    { name: 'Bogota', lat: 4.7110, long: -74.0721 },
+    { name: 'Santiago', lat: -33.4489, long: -70.6693 },
+    { name: 'Caracas', lat: 10.4806, long: -66.9036 },
+    { name: 'Quito', lat: -0.1807, long: -78.4678 },
+    { name: 'La Paz', lat: -16.5000, long: -68.1500 },
+    { name: 'Montevideo', lat: -34.9011, long: -56.1645 },
+    { name: 'Asuncion', lat: -25.2637, long: -57.5759 },
+
+    // Eastern Europe / Balkans
+    { name: 'Kyiv', lat: 50.4501, long: 30.5234 },
+    { name: 'Odessa', lat: 46.4825, long: 30.7233 },
+    { name: 'Sarajevo', lat: 43.8563, long: 18.4131 },
+    { name: 'Skopje', lat: 41.9973, long: 21.4280 },
+    { name: 'Tirana', lat: 41.3275, long: 19.8187 },
+    { name: 'Athens', lat: 37.9838, long: 23.7275 },
+
+    // More Africa (large cities)
+    { name: 'Luanda', lat: -8.8390, long: 13.2894 },
+    { name: 'Maputo', lat: -25.9692, long: 32.5732 },
+
+    // Central Asia (largest cities)
+    { name: 'Almaty', lat: 43.2220, long: 76.8512 },
+    { name: 'Tashkent', lat: 41.2995, long: 69.2401 },
+    { name: 'Bishkek', lat: 42.8746, long: 74.5698 },
+    { name: 'Astana', lat: 51.1694, long: 71.4491 },
+
+    // South Asia (largest cities)
+    { name: 'Karachi', lat: 24.8607, long: 67.0011 },
+    { name: 'Lahore', lat: 31.5497, long: 74.3436 },
+    { name: 'Dhaka', lat: 23.8103, long: 90.4125 },
+    { name: 'Colombo', lat: 6.9271, long: 79.8612 },
+    { name: 'Kathmandu', lat: 27.7172, long: 85.3240 },
+
+    // Southeast Asia (largest cities)
+    { name: 'Ho Chi Minh City', lat: 10.8231, long: 106.6297 },
+    { name: 'Phnom Penh', lat: 11.5564, long: 104.9282 },
+    { name: 'Yangon', lat: 16.8409, long: 96.1735 },
+    { name: 'Vientiane', lat: 17.9757, long: 102.6331 },
 
   // Asia expansion
   { name: 'Nagoya', lat: 35.1815, long: 136.9066 },
@@ -183,7 +239,6 @@ export const cities: City[] = [
   { name: 'Kuala Lumpur', lat: 3.1390, long: 101.6869 },
   { name: 'Jakarta', lat: -6.2088, long: 106.8456 },
   { name: 'Manila', lat: 14.5995, long: 120.9842 },
-  { name: 'Ho Chi Minh City', lat: 10.8231, long: 106.6297 },
   { name: 'Hanoi', lat: 21.0278, long: 105.8342 },
   { name: 'Shanghai', lat: 31.2304, long: 121.4737 },
   { name: 'Beijing', lat: 39.9042, long: 116.4074 },
@@ -213,7 +268,6 @@ export const cities: City[] = [
 { name: 'Lubumbashi', lat: -11.6876, long: 27.5026 },
 
 { name: 'Nairobi', lat: -1.2921, long: 36.8219 },
-{ name: 'Mombasa', lat: -4.0435, long: 39.6682 },
 { name: 'Kampala', lat: 0.3476, long: 32.5825 },
 { name: 'Kigali', lat: -1.9706, long: 30.1044 },
 { name: 'Addis Ababa', lat: 8.9806, long: 38.7578 },

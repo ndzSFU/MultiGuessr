@@ -16,10 +16,11 @@ interface MultiplayerGuessMapProps{
     rerollCity: () => void,
     ws: WebSocket,
     isHost: boolean,
+    setLoadGame: (bool: boolean) => void,
 }
 
 
-export default function MultiplayerGuessMap({lat, long, rerollCity, ws, isHost}: MultiplayerGuessMapProps): React.ReactNode{
+export default function MultiplayerGuessMap({lat, long, rerollCity, ws, isHost, setLoadGame}: MultiplayerGuessMapProps): React.ReactNode{
     const divRef = useRef<HTMLDivElement>(null);
     const mapRef = useRef<L.Map | null>(null);
     const curMarker = useRef<L.Marker<any> | null>(null);
@@ -97,6 +98,7 @@ export default function MultiplayerGuessMap({lat, long, rerollCity, ws, isHost}:
         }
 
         if (mapRef.current) mapRef.current.setView([0, 0], 1);
+        setLoadGame(false);
         if (isHost) rerollCity();
     }
 

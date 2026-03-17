@@ -34,6 +34,8 @@ export default function Lobby() {
     const [state, setState] = useState<"noName" | "lobby" | "error" | "inGame">("noName");
     const [isHost, setIsHost] = useState<boolean>(false);
     const [scores, setScores] = useState<[[string, number]]>();
+    const [showRoundScores, setShowRoundScores] = useState<boolean>(false);
+    const [roundScores, setRoundScores] = useState<[[string, number]] | null>(null);
    
 
     //Map Use States
@@ -86,6 +88,8 @@ export default function Lobby() {
             if(data.method === "finalGuessMade"){
                 setScores(data.scores);
                 console.log(data.roundScores);
+                setShowRoundScores(true);
+                setRoundScores(data.roundScores);
             }
 
         });
@@ -146,9 +150,71 @@ export default function Lobby() {
             }
 
             {
+                showRoundScores && roundScores !== null && (
+                    <div style={{
+                        position: 'fixed',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        background: 'white',
+                        borderRadius: '1rem',
+                        boxShadow: '0 8px 32px rgba(0,0,0,0.25)',
+                        padding: '2rem 2.5rem 1.5rem 2.5rem',
+                        zIndex: 10000,
+                        minWidth: '320px',
+                        minHeight: '120px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                    }}>
+                        <button
+                            onClick={() => setShowRoundScores(false)}
+                            style={{
+                                position: 'absolute',
+                                top: '0.5rem',
+                                right: '0.5rem',
+                                background: 'transparent',
+                                border: 'none',
+                                fontSize: '1.25rem',
+                                color: '#ef4444', // Tailwind red-500
+                                cursor: 'pointer',
+                                fontWeight: 'bold',
+                            }}
+                            aria-label="Close"
+                        >
+                            ×
+                        </button>
+                        <h3 style={{ color: '#040405', marginBottom: '1rem', fontWeight: 600, fontSize: '1.2rem' }}>Round Score Changes</h3>
+                        <div style={{ width: '100%' }}>
+                            {Array.isArray(roundScores) && roundScores.length > 0 ? (
+                                <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                                    {roundScores.map(([username, score], idx) => (
+                                        <li key={username + idx} style={{
+                                            display: 'flex',
+                                            justifyContent: 'space-between',
+                                            marginBottom: '0.5rem',
+                                            fontSize: '1rem',
+                                        }}>
+                                            <span style={{ color: '#040405', fontWeight: 500 }}>{username}</span>
+                                            <span style={{ color: score > 0 ? '#22c55e' : '#ef4444', fontWeight: 600 }}>
+                                                {score > 0 ? '+' : ''}{score}
+                                            </span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <div style={{ color: '#040405', textAlign: 'center' }}>No score changes this round.</div>
+                            )}
+                        </div>
+                    </div>
+                )
+            }
+
+            {
                 state === "inGame" && ws && (
                     <div>
-                        <Game ws={ws} isHost={isHost}></Game>
+                        <Game ws={ws} isHost={isHost} setShowRoundScores={setShowRoundScores}></Game>
                         {scores && (scores.length > 0) && (
                             <div className="scoreboard">
                                 <h3 className="scoreboard-title">Scoreboard</h3>
@@ -167,9 +233,7 @@ export default function Lobby() {
                             </div>
                             )}
                     </div>
-                )
-
-                
+                )                
             }
 
 
