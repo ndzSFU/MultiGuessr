@@ -4,26 +4,6 @@ import { useParams } from 'next/navigation';
 
 import Game from "./Game";
 
-export async function getImageIds(Lat: number, Lon: number): Promise<any> {
-
-    const bbox_offset: number = 0.001
-
-    //vancouver: Lon: -123.1207 Lat: 49.2827
-
-    const minLon: number = Lon - bbox_offset;
-    const maxLon: number = Lon + bbox_offset;
-
-    const minLat: number = Lat - bbox_offset;
-    const maxLat: number = Lat + bbox_offset;
-
-    const bbox: string = minLon.toString() + "," + minLat.toString() + "," + maxLon.toString() + "," + maxLat.toString();
-    const URL: string = 'https://graph.mapillary.com/images?' + 'access_token=' + process.env.NEXT_PUBLIC_MAPILLARY_ACCESS_TOKEN + '&fields=id&bbox=' + bbox;
-
-    const res = await fetch(URL);
-
-    return res.json()
-}
-
 function getRandomIdx(array_size: number): number {
     return Math.floor(Math.random() * array_size);
 }
@@ -73,15 +53,13 @@ export default function Lobby() {
 
             if (data.method === "setHost") {
                 setIsHost(true);
-                // rerollCity();
-                //Might need to rethink this
-                // ws.send(JSON.stringify({ method: 'setCity', city: chosenCity, clientId: data.clientId }));
             }
 
             if (data.method === "loadGame") {
                 setScores(data.playerScoreMap);
                 console.log(data.playerScoreMap);
                 console.log(scores);
+                setShowRoundScores(false);
                 setState("inGame");
             }
 

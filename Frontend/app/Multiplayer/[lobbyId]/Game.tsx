@@ -8,20 +8,31 @@ import MultiplayerGuessMap from './MultiplayerGuessMap';
 
 async function getImageIds(Lat: number, Lon: number): Promise<any> {
 
-    const bbox_offset: number = 0.003
+    const bbox_offset: number = 0.005
 
     //vancouver: Lon: -123.1207 Lat: 49.2827
 
     const minLon: number = Lon - bbox_offset;
     const maxLon: number = Lon + bbox_offset;
 
-    const minLat: number  =  Lat - bbox_offset; 
-    const maxLat: number =  Lat + bbox_offset; 
+    const minLat: number = Lat - bbox_offset;
+    const maxLat: number = Lat + bbox_offset;
 
-    const bbox: string = minLon.toString() + "," + minLat.toString() + "," + maxLon.toString() + "," + maxLat.toString();   
-    const URL: string = 'https://graph.mapillary.com/images?' + 'access_token=' + process.env.NEXT_PUBLIC_MAPILLARY_ACCESS_TOKEN + '&fields=id&bbox=' + bbox; 
+    const bbox: string = minLon.toString() + "," + minLat.toString() + "," + maxLon.toString() + "," + maxLat.toString();
+    const URL: string = 'https://graph.mapillary.com/images?' + 'access_token=' + process.env.NEXT_PUBLIC_MAPILLARY_ACCESS_TOKEN + '&fields=id&bbox=' + bbox;
 
-    const res = await fetch(URL);
+    let res = await fetch(URL);
+
+    const RETRY_MAX = 3;
+    let retry_cnt = 0; 
+
+    while(!res.ok && retry_cnt < RETRY_MAX){
+        console.log("Trying API again...");
+        res = await fetch(URL);
+        retry_cnt++;
+    }
+
+    console.log("retries: " + retry_cnt);
 
     return res.json()
 }
