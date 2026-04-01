@@ -59,3 +59,8 @@ Web Socket message ordering:
 6. When all clients received the "startGame" message from the server the game renders.
 7. After each client makes a guess, a "sendScore" message is sent to the server, server respond with a regular "guessMade" response until the final guess is made.
 8. The server stores a counter tracking how many guess are made and when all clients have guessed (or when timer runs out) it broadcasts a "finalGuessMade" message and send the updated scores to each client to display
+9. Server also sends the per update score updates, so on the clietn side both the round changes to score can be displayed in a pop up and the total scores can be dispalyed on a permannent scoreboard.
+
+TODO (Soon): Display other players guesses on the map, added max rounds, add a timer (Both regular timer and timer triggered by first guess)
+
+TODO (Later): Add Teams system and differnet variants/gamemodes for it (Main one knockout mode).

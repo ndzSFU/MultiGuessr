@@ -59,7 +59,6 @@ export default function Lobby() {
                 setScores(data.playerScoreMap);
                 console.log(data.playerScoreMap);
                 console.log(scores);
-                setShowRoundScores(false);
                 setState("inGame");
             }
 
