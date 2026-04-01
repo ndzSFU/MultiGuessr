@@ -9,7 +9,6 @@ const api = express();
 api.use(cors());
 api.use(express.json());
 const httpServer = http.createServer(api);
-httpServer.listen(9090, () => console.log("Server is listening on port 9090"));
 
 const lobbies = new Map();
 const clients = new Map();
@@ -59,21 +58,22 @@ const wsServer = new websocketServer({
 }); 
 
 // Expects message passed in to be JSON.stringfy()'d already
-function broadcastToLobby(lobbyId, stringifiedMessage){
-    let lobby = lobbies.get(lobbyId);
+function broadcastToLobby(lobbyId, stringifiedMessage, lobbiesMap = lobbies, clientsMap = clients){
+    let lobby = lobbiesMap.get(lobbyId);
     for(const clientID of lobby.players){
-        clients.get(clientID).connection.send(stringifiedMessage);
+        clientsMap.get(clientID).connection.send(stringifiedMessage);
     }
 }
 
-function broadcastToLobbyFromHost(lobbyId, stringifiedMessage){
-    let lobby = lobbies.get(lobbyId);
-    for(const clientID of lobby.players){
-        if(clientID !== lobby.host)
-        clients.get(clientID).connection.send(stringifiedMessage);
+// Probably don't need anymore? 
+// function broadcastToLobbyFromHost(lobbyId, stringifiedMessage){
+//     let lobby = lobbies.get(lobbyId);
+//     for(const clientID of lobby.players){
+//         if(clientID !== lobby.host)
+//         clients.get(clientID).connection.send(stringifiedMessage);
         
-    }
-}
+//     }
+// }
 
 
 wsServer.on("request", (request) => {
@@ -260,3 +260,9 @@ wsServer.on("request", (request) => {
 
     connection.send(JSON.stringify(payLoad));
 });
+
+module.exports = {
+    CreateLobbyId,
+    broadcastToLobby,
+    httpServer,
+}
