@@ -52,6 +52,7 @@ export default function Lobby() {
             }
 
             if (data.method === "setHost") {
+                console.log("Your the host!");
                 setIsHost(true);
             }
 

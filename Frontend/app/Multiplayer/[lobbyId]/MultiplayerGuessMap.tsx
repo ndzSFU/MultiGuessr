@@ -9,6 +9,7 @@ const shadowUrl = 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png
 
 import {City} from '../../Map/cities';
 import ScoreBox from "../../Map/ScoreBox";
+import { Draggable } from "leaflet";
 
 interface MultiplayerGuessMapProps{
     lat: number,
@@ -25,9 +26,14 @@ export default function MultiplayerGuessMap({lat, long, rerollCity, ws, isHost, 
     const mapRef = useRef<L.Map | null>(null);
     const curMarker = useRef<L.Marker<any> | null>(null);
     const [hasGuessed, setHasGuessed] = useState<boolean>(false);
+    const hasGuessedRef = useRef<boolean>(false);
     const leafletRef = useRef<typeof L | null>(null);
     const actualMarker = useRef<L.Marker<any> | null>(null);
     const [hasClicked, setHasClicked] = useState<boolean>(false);
+
+    useEffect(() => {
+        hasGuessedRef.current = hasGuessed;
+    }, [hasGuessed]);
 
     // Create the map only once on mount
     useEffect(() => {
@@ -58,9 +64,12 @@ export default function MultiplayerGuessMap({lat, long, rerollCity, ws, isHost, 
                 }).addTo(mapRef.current);
 
                 function OnMapClick(e: L.LeafletMouseEvent): void {
-                    if(curMarker.current) curMarker.current.remove();
-                    curMarker.current = L.marker(e.latlng).addTo(mapRef.current!);
-                    setHasClicked(true);
+                    if(!hasGuessedRef.current){
+                        if(curMarker.current) curMarker.current.remove();
+                        curMarker.current = L.marker(e.latlng).addTo(mapRef.current!);
+                        setHasClicked(true);
+                    }
+                    
                 }
                 mapRef.current.on('click', OnMapClick);
 
@@ -78,6 +87,7 @@ export default function MultiplayerGuessMap({lat, long, rerollCity, ws, isHost, 
     function handleGuess(): void{
         console.log("Chosen Coords: " + curMarker.current?.getLatLng());
         console.log("Actual coords: " + lat, long)
+        curMarker.current?.dragging?.disable();
         setHasGuessed(true);
         
         if (leafletRef.current && mapRef.current) {
@@ -87,7 +97,8 @@ export default function MultiplayerGuessMap({lat, long, rerollCity, ws, isHost, 
                 iconSize: [25, 41],
                 iconAnchor: [12, 41],
             });
-            actualMarker.current = leafletRef.current.marker([lat, long], {icon: redIcon}).addTo(mapRef.current);
+            actualMarker.current = leafletRef.current.marker([lat, long], {icon: redIcon, draggable: false}).addTo(mapRef.current);
+            curMarker.current?.bindTooltip("Your Guess").openTooltip();
         }
     }
 
@@ -99,8 +110,37 @@ export default function MultiplayerGuessMap({lat, long, rerollCity, ws, isHost, 
 
         if (mapRef.current) mapRef.current.setView([0, 0], 1);
         setLoadGame(false);
+        setHasGuessed(false);
         if (isHost) rerollCity();
     }
+
+    useEffect(() => {
+        if(!ws) return;
+
+        function handleMessage(event: MessageEvent){
+            const data = JSON.parse(event.data);
+            console.log('Received:', data);
+
+            if (data.method === 'finalGuessMade'){
+                console.log("Final guess coords");
+                for(let i = 0; i < data.roundLatLngs.length; i++){
+                    if (leafletRef.current && mapRef.current){
+                        //Lat is first, Lng is second
+                        //roundLatLngs = [[username, [res.lat, res.lng]], [username, [res.lat, res.lng]], ...]
+                        //the first index i is per player, the next index choses username or lat lng, the third index chooses lat or lng (0 = lat)
+                        console.log([data.roundLatLngs[i][1][0], data.roundLatLngs[i][1][0]]);
+                        leafletRef.current.marker([data.roundLatLngs[i][1][0], data.roundLatLngs[i][1][1]], {draggable: false}).addTo(mapRef.current).bindTooltip(data.roundLatLngs[i][0]).openTooltip();
+                    }
+                }
+            }
+        }
+
+        ws?.addEventListener("message", handleMessage);
+
+        return () => {
+            ws.removeEventListener('message', handleMessage);
+        };
+    }, [ws]);
 
     return(
         <div style={{height: '100%', width: '100%', display: 'flex', flexDirection: 'column'}}>

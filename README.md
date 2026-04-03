@@ -64,3 +64,5 @@ Web Socket message ordering:
 TODO (Soon): Display other players guesses on the map, added max rounds, add a timer (Both regular timer and timer triggered by first guess)
 
 TODO (Later): Add Teams system and differnet variants/gamemodes for it (Main one knockout mode).
+
+Important Notes: When LatLng are stored as numbers in an array pair, the Lat is always index 0 and lg index 1.

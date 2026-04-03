@@ -20,7 +20,7 @@ const clients = new Map();
 // };
 
 // Vals of Lobby map
-// lobbies.set(req.body.lobbyId, {maxPlayers: , maxRounds: , host: "", players: [], state: "lobby", scoreMap: , guessesMade: 0});
+// lobbies.set(req.body.lobbyId, {maxPlayers: , maxRounds: , host: "", players: [], state: "lobby", scoreMap: , guessesMade: 0, roundScores: [[]]}});
 
 //Note player and client are used synonymously, a list of players may contain clientId's clients == players
 
@@ -38,7 +38,7 @@ api.post('/api/createLobby', (req, res) => {
     console.log("SETTINGS: ")
     console.log(req.body.maxPlayers);
 
-    lobbies.set(req.body.lobbyId, {maxPlayers: req.body.maxPlayers, maxRounds: req.body.maxRounds, host: "", players: [], state: "lobby", scoreMap: new Map(), guessesMade: 0, roundScores: [[]]});
+    lobbies.set(req.body.lobbyId, {maxPlayers: req.body.maxPlayers, maxRounds: req.body.maxRounds, host: "", players: [], state: "lobby", scoreMap: new Map(), guessesMade: 0, roundScores: [[]], roundLatLngs: [[]]});
     console.log(lobbies);
     res.send("1");
 })
@@ -57,12 +57,41 @@ const wsServer = new websocketServer({
   httpServer: httpServer,
 }); 
 
+function safeSendConnection(connection, stringifiedMessage){
+    if(!connection || connection.connected !== true){
+        return false;
+    }
+
+    try{
+        connection.send(stringifiedMessage);
+        return true;
+    } catch(err){
+        console.error("WebSocket send failed:", err);
+        return false;
+    }
+}
+
+function safeSendToClient(clientID, stringifiedMessage, clientsMap = clients){
+    const client = clientsMap.get(clientID);
+    if(!client?.connection){
+        return false;
+    }
+
+    const sent = safeSendConnection(client.connection, stringifiedMessage);
+    if(!sent){
+        clientsMap.delete(clientID);
+    }
+    return sent;
+}
+
 // Expects message passed in to be JSON.stringfy()'d already
 function broadcastToLobby(lobbyId, stringifiedMessage, lobbiesMap = lobbies, clientsMap = clients){
     let lobby = lobbiesMap.get(lobbyId);
-    for(const clientID of lobby.players){
-        clientsMap.get(clientID).connection.send(stringifiedMessage);
+    if(!lobby){
+        return;
     }
+
+    lobby.players = lobby.players.filter((playerId) => safeSendToClient(playerId, stringifiedMessage, clientsMap));
 }
 
 // Probably don't need anymore? 
@@ -103,7 +132,7 @@ wsServer.on("request", (request) => {
                 if (lobby.host === clientId) {
                     if (lobby.players.length > 0) {
                         lobby.host = lobby.players[0];
-                        clients.get(lobby.host)?.connection.send(JSON.stringify({ method: "setHost" }));
+                        safeSendToClient(lobby.host, JSON.stringify({ method: "setHost" }));
                     } else {
                         // No players left, delete the lobby
                         lobbies.delete(curLobbyId);
@@ -124,18 +153,42 @@ wsServer.on("request", (request) => {
 
         if(res.method === "connect"){
             if(res.clientId === clientId){
-                let lobby = lobbies.get(res.lobbyId);
-                curLobbyId = res.lobbyId
+                const tryJoinLobby = (attempt) => {
+                    const lobby = lobbies.get(res.lobbyId);
 
-                lobby.players.push(res.clientId);
-                if(lobby.players.length === 1){
-                    console.log("First Connection");
-                    lobby.host = clientId;
-                    const payload = {
-                        method: "setHost",
+                    if(lobby === undefined){
+                        if(attempt === 0){
+                            setTimeout(() => tryJoinLobby(1), 2000);
+                            return;
+                        }
+                        if(attempt === 1){
+                            setTimeout(() => tryJoinLobby(2), 4000);
+                            return;
+                        }
+
+                        safeSendConnection(connection, JSON.stringify({
+                            method: "error",
+                            message: "Lobby does not exist",
+                        }));
+
+                        console.log("Attemp: " + attempt);
+                        return;
                     }
-                    connection.send(JSON.stringify(payload))
-                }
+
+                    curLobbyId = res.lobbyId;
+
+                    lobby.players.push(res.clientId);
+                    if(lobby.players.length === 1 || lobby.host === ''){
+                        console.log("First Connection");
+                        lobby.host = clientId;
+                        const payload = {
+                            method: "setHost",
+                        }
+                        safeSendConnection(connection, JSON.stringify(payload))
+                    }
+                };
+
+                tryJoinLobby(0);
             } 
             
         }
@@ -189,6 +242,7 @@ wsServer.on("request", (request) => {
                 lobby.guessesMade += 1;
                 const username = clients.get(clientId).username;
                 lobby.roundScores[curRoundIdx].push([username, res.score])
+                lobby.roundLatLngs[curRoundIdx].push([username, [res.lat, res.lng]])
             }
 
             console.log(lobbies)
@@ -220,6 +274,7 @@ wsServer.on("request", (request) => {
                     score: res.score,
                     scores: scores,
                     roundScores: lobby.roundScores[curRoundIdx],
+                    roundLatLngs: lobby.roundLatLngs[curRoundIdx],
                 }
                 console.log(lobby.roundScores);
 
@@ -258,7 +313,7 @@ wsServer.on("request", (request) => {
         clientId: clientId,
     }
 
-    connection.send(JSON.stringify(payLoad));
+    safeSendConnection(connection, JSON.stringify(payLoad));
 });
 
 module.exports = {

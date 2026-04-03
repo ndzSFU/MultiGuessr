@@ -53,8 +53,8 @@ export default function ScoreBox({chosenLatLng, actualLatLng, ws}: ScoreBoxProps
         if (hasSentScore.current) return;
         hasSentScore.current = true;
         
-        ws?.send(JSON.stringify({ method: 'sendScore', score: score }));
-        console.log(JSON.stringify({ method: 'sendScore', score: score }));
+        ws?.send(JSON.stringify({ method: 'sendScore', score: score, lat: chosenLatLng!.lat, lng: chosenLatLng!.long}));
+        console.log(JSON.stringify({ method: 'sendScore', score: score, LatLng: chosenLatLng }));
     }, []);
    
     return(

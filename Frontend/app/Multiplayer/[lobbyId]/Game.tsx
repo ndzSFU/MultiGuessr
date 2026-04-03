@@ -87,6 +87,8 @@ function Game({ ws, isHost, setShowRoundScores}: GameProps): JSX.Element {
     function rerollCity(): void{
         let idx: number = getRandomIdx(cities.length);
 
+        setShowRoundScores(false);
+
         while(chosenCitiesIdxs.includes(idx, 0)){
             idx = getRandomIdx(cities.length);
         }
