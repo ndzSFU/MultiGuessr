@@ -7,14 +7,7 @@ import { stat } from 'fs';
 import Select from 'react-select'
 import { StylesConfig } from 'react-select';
 
-export default function Multiplayer() {
-
-    const [mode, setMode] = useState<'menu' | 'create' | 'settings' | 'join'>('menu');
-    const [lobbyId, setLobbyId] = useState<string | null>(null);
-    const [maxPlayers, setMaxPlayers] = useState<{ value: string, label: string } | null>(null);
-    const [maxRounds, setMaxRounds] = useState<{ value: string, label: string } | null>(null);
-
-    const maxPlayersOptions = [
+const maxPlayersOptions = [
         { value: "2", label: "2" },
         { value: "3", label: "3" },
         { value: "4", label: "4" },
@@ -41,10 +34,37 @@ export default function Multiplayer() {
         { value: "10", label: "25" },
     ];
 
+    const timeOptions = [
+        { value: "15", label: "15 Seconds" },
+        { value: "30", label: "30 Seconds" },
+        { value: "45", label: "45 Seconds" },
+        { value: "60", label: "1 Minute" },
+        { value: "75", label: "1 Minute 15 Seconds" },
+        { value: "90", label: "1 Minute 30 Seconds" },
+        { value: "105", label: "1 Minute 45 Seconds" },
+        { value: "120", label: "2 Minutes" },
+        { value: "135", label: "2 Minutes 15 Seconds" },
+        { value: "150", label: "2 Minutes 30 Seconds" },
+    ];
+
+    const gameModes = [
+        {value: "setRounds", label:"Set Rounds"},
+        {value: "knockout", label:"Knockout"},
+    ];
+
+export default function Multiplayer() {
+
+    const [mode, setMode] = useState<'menu' | 'create' | 'settings' | 'join'>('menu');
+    const [lobbyId, setLobbyId] = useState<string | null>(null);
+    const [maxPlayers, setMaxPlayers] = useState<{ value: string, label: string } | null>(null);
+    const [maxRounds, setMaxRounds] = useState<{ value: string, label: string } | null>(null);
+    const [gameMode, setGameMode] = useState<{ value: string, label: string } | null>(gameModes[0]);
+    const [timeLimit, setTimeLimit] = useState<{ value: string, label: string } | null>(null);
+
+    
+
     const router = useRouter();
 
-   
-    
     type OptionType = { value: string; label: string };
     
     const customSelectStyles: StylesConfig<OptionType, false> = {
@@ -120,32 +140,60 @@ export default function Multiplayer() {
                 <>
                     {(lobbyId !== null) && (
                         <>
+                            <label>Game Mode:</label>
+                            <Select
+                                options={gameModes}
+                                value={gameMode}
+                                onChange={setGameMode}
+                                styles={customSelectStyles}
+                                placeholder="Select Game Mode"
+                            />
+
                             <label>
                                 Max Players:
                             </label>
-
                             <Select
                                 options={maxPlayersOptions}
                                 value={maxPlayers}
                                 onChange={setMaxPlayers}
                                 styles={customSelectStyles}
-                                
                             />
 
-                            <label>Max rounds:</label>
+                            
+                        </>
+                    )}
+
+                    {
+                        (gameMode?.value === "setRounds") ? (
+                            <>
+                                <label>Max rounds:</label>
+                                <Select
+                                    options={maxRoundsOptions}
+                                    value={maxRounds}
+                                    onChange={setMaxRounds}
+                                    styles={customSelectStyles}
+                                />
+
+                                <label>
+                                Round Time Limit:
+                                </label>
+                                
+                            </>
+                        ) : (
+                            <>
+                                <label>
+                                    Countdown After First Guess:
+                                </label>
+                            </>
+                        )
+                    }
                             <Select
-                                options={maxRoundsOptions}
-                                value={maxRounds}
-                                onChange={setMaxRounds}
+                                options={timeOptions}
+                                value={timeLimit}
+                                onChange={setTimeLimit}
                                 styles={customSelectStyles}
                             />
-
-
-
-                            <button type="button" onClick={sendSettings}>Create Lobby</button>
-                        </>
-                    )
-                    }
+                    <button type="button" onClick={sendSettings}>Create Lobby</button>
                 </>
             )}
             {mode === 'join' && (
