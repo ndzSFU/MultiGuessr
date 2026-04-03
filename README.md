@@ -61,8 +61,11 @@ Web Socket message ordering:
 8. The server stores a counter tracking how many guess are made and when all clients have guessed (or when timer runs out) it broadcasts a "finalGuessMade" message and send the updated scores to each client to display
 9. Server also sends the per update score updates, so on the clietn side both the round changes to score can be displayed in a pop up and the total scores can be dispalyed on a permannent scoreboard.
 
-TODO (Soon): Display other players guesses on the map, added max rounds, add a timer (Both regular timer and timer triggered by first guess)
+TODO: 
+Display other players guesses on the map (DONE)
+added max rounds, 
+add a timer (Both regular timer and timer triggered by first guess)
 
-TODO (Later): Add Teams system and differnet variants/gamemodes for it (Main one knockout mode).
+Add Teams system and differnet variants/gamemodes for it (Main one knockout mode).
 
 Important Notes: When LatLng are stored as numbers in an array pair, the Lat is always index 0 and lg index 1.
