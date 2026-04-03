@@ -38,7 +38,7 @@ api.post('/api/createLobby', (req, res) => {
     console.log("SETTINGS: ")
     console.log(req.body.maxPlayers);
 
-    lobbies.set(req.body.lobbyId, {maxPlayers: req.body.maxPlayers, maxRounds: req.body.maxRounds, host: "", players: [], state: "lobby", scoreMap: new Map(), guessesMade: 0, roundScores: [[]], roundLatLngs: [[]]});
+    lobbies.set(req.body.lobbyId, {maxPlayers: req.body.maxPlayers, maxRounds: req.body.maxRounds, curRound: 1, host: "", players: [], state: "lobby", scoreMap: new Map(), guessesMade: 0, roundScores: [[]], roundLatLngs: [[]]});
     console.log(lobbies);
     res.send("1");
 })
@@ -236,6 +236,13 @@ wsServer.on("request", (request) => {
             let lobby = lobbies.get(curLobbyId);
             let curRoundIdx = lobby.roundScores.length - 1;
             if(curLobbyId !== ""){
+                if(!Array.isArray(lobby.roundScores[curRoundIdx])){
+                    lobby.roundScores[curRoundIdx] = [];
+                }
+                if(!Array.isArray(lobby.roundLatLngs[curRoundIdx])){
+                    lobby.roundLatLngs[curRoundIdx] = [];
+                }
+
                 const oldScore = lobby.scoreMap.get(clientId);
                 const newScore = res.score + oldScore;
                 lobby.scoreMap.set(clientId, newScore);
@@ -252,6 +259,7 @@ wsServer.on("request", (request) => {
 
             if(lobby.guessesMade === lobby.players.length){
                 console.log("ROUND DONE");
+                
 
                 let scores = [];
 
@@ -263,8 +271,24 @@ wsServer.on("request", (request) => {
 
                 lobby.roundScores[curRoundIdx].sort((a, b) => (b[1] - a[1]));
                 lobby.roundScores.push([]);
+                lobby.roundLatLngs.push([]);
 
                 scores.sort((a, b) => (b[1] - a[1]));
+
+                console.log("CURRENT ROUND: " + lobby.curRound);
+                if(lobby.curRound >= lobby.maxRounds){
+                    console.log('Server reads game over');
+                    const gameOverPayload = {
+                        method: "gameOver",
+                        clientId: clientId,
+                        score: res.score,
+                        scores: scores,
+                        roundScores: lobby.roundScores[curRoundIdx],
+                        roundLatLngs: lobby.roundLatLngs[curRoundIdx],
+                    }
+                    broadcastToLobby(curLobbyId, JSON.stringify(gameOverPayload));
+                }
+                lobby.curRound++;
 
 
                 lobby.guessesMade = 0;

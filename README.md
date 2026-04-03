@@ -63,7 +63,7 @@ Web Socket message ordering:
 
 TODO: 
 Display other players guesses on the map (DONE)
-added max rounds, 
+added max rounds
 add a timer (Both regular timer and timer triggered by first guess)
 
 Add Teams system and differnet variants/gamemodes for it (Main one knockout mode).

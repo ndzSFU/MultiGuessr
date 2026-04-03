@@ -69,7 +69,6 @@ export default function Lobby() {
                 setShowRoundScores(true);
                 setRoundScores(data.roundScores);
             }
-
         });
 
 

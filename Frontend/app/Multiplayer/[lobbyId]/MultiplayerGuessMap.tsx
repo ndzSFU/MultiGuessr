@@ -30,6 +30,7 @@ export default function MultiplayerGuessMap({lat, long, rerollCity, ws, isHost, 
     const leafletRef = useRef<typeof L | null>(null);
     const actualMarker = useRef<L.Marker<any> | null>(null);
     const [hasClicked, setHasClicked] = useState<boolean>(false);
+    const [gameOver, setGameOver] = useState<boolean>(false);
 
     useEffect(() => {
         hasGuessedRef.current = hasGuessed;
@@ -98,7 +99,6 @@ export default function MultiplayerGuessMap({lat, long, rerollCity, ws, isHost, 
                 iconAnchor: [12, 41],
             });
             actualMarker.current = leafletRef.current.marker([lat, long], {icon: redIcon, draggable: false}).addTo(mapRef.current);
-            curMarker.current?.bindTooltip("Your Guess").openTooltip();
         }
     }
 
@@ -112,6 +112,10 @@ export default function MultiplayerGuessMap({lat, long, rerollCity, ws, isHost, 
         setLoadGame(false);
         setHasGuessed(false);
         if (isHost) rerollCity();
+    }
+
+    function handleGameOver(): void{
+
     }
 
     useEffect(() => {
@@ -132,6 +136,11 @@ export default function MultiplayerGuessMap({lat, long, rerollCity, ws, isHost, 
                         leafletRef.current.marker([data.roundLatLngs[i][1][0], data.roundLatLngs[i][1][1]], {draggable: false}).addTo(mapRef.current).bindTooltip(data.roundLatLngs[i][0]).openTooltip();
                     }
                 }
+            }
+
+            if(data.method === "gameOver"){
+                console.log("Game Over");
+                setGameOver(true);
             }
         }
 
@@ -154,12 +163,20 @@ export default function MultiplayerGuessMap({lat, long, rerollCity, ws, isHost, 
                 }
 
                 { 
-                    (hasGuessed && isHost) && (
+                    (hasGuessed && isHost && !gameOver) && (
                         <>
                             <button className="NextBtn" onClick={handleNext} style={{padding: '2px 4px', cursor: 'pointer'}}>Next Round</button> 
                         </>
                     ) 
                 } 
+                {
+                    gameOver && (
+                        <>
+                            <p>Game Over</p>
+                            <button className="gameOverBtn" onClick={handleGameOver} style={{padding: '2px 4px', cursor: 'pointer'}}>See Results</button> 
+                        </>
+                    )
+                }
                 {
                     hasGuessed && (
                         <ScoreBox chosenLatLng={{lat: curMarker.current?.getLatLng().lat || 0, long: curMarker.current?.getLatLng().lng || 0}} actualLatLng={{lat: lat, long: long}} ws={ws}></ScoreBox>
