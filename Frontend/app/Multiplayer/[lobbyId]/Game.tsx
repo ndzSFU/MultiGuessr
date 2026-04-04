@@ -47,7 +47,7 @@ interface GameProps {
 
 function Game({ ws, isHost, setShowRoundScores}: GameProps): JSX.Element {
     const hasInitialized = useRef(false);
-    const timeHasExpired = useRef(false);
+    const [timeHasExpired, setTimeHasExpired] = useState(false);
     const failedImageIdsRef = useRef<Set<string>>(new Set());
 
     const [imageIds, setImageIds] = useState<string[]>([]);

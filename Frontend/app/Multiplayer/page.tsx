@@ -193,7 +193,13 @@ export default function Multiplayer() {
                                 onChange={setTimeLimit}
                                 styles={customSelectStyles}
                             />
-                    <button type="button" onClick={sendSettings}>Create Lobby</button>
+
+                    {
+                        (timeLimit && (maxRounds || gameMode?.value === "knockout")) && (
+                            <button type="button" onClick={sendSettings}>Create Lobby</button>
+                        )
+                    }
+                    
                 </>
             )}
             {mode === 'join' && (

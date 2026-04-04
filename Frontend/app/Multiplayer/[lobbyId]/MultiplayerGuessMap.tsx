@@ -1,5 +1,5 @@
 "use client";
-import { RefObject, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import 'leaflet/dist/leaflet.css';
 import type L from "leaflet";
 
@@ -18,7 +18,7 @@ interface MultiplayerGuessMapProps{
     ws: WebSocket,
     isHost: boolean,
     setLoadGame: (bool: boolean) => void,
-    timeHasExpired: RefObject<boolean>,
+    timeHasExpired: boolean,
 }
 
 
@@ -40,8 +40,8 @@ export default function MultiplayerGuessMap({lat, long, rerollCity, ws, isHost, 
 
     useEffect(() => {
         if(timeHasExpired){
-            // setHasGuessed(true);
-            // hasGuessedRef.current = hasGuessed;
+            setHasGuessed(true);
+            hasGuessedRef.current = true;
             console.log("Times's up!");
         }
         
