@@ -47,6 +47,7 @@ interface GameProps {
 
 function Game({ ws, isHost, setShowRoundScores}: GameProps): JSX.Element {
     const hasInitialized = useRef(false);
+    const timeHasExpired = useRef(false);
     const failedImageIdsRef = useRef<Set<string>>(new Set());
 
     const [imageIds, setImageIds] = useState<string[]>([]);
@@ -59,6 +60,8 @@ function Game({ ws, isHost, setShowRoundScores}: GameProps): JSX.Element {
     const [nextChosenCity, setNextChosenCity] = useState<City>();
     const [nextImageIds, setNextImageIds] = useState<string[]>([]);
 
+    const EMPTY_CITY_RETRY_LIMIT = 8;
+
     interface imageID{
         id: string;
     };
@@ -68,10 +71,21 @@ function Game({ ws, isHost, setShowRoundScores}: GameProps): JSX.Element {
     }
 
 
-    function SetAndLogImages(data: any, city: City){
+    function SetAndLogImages(data: any, city: City, attempt = 0){
         console.log(data);
 
         const dataObj: imageIdData = data;
+
+        if(!Array.isArray(dataObj?.data) || dataObj.data.length === 0){
+            console.warn(`No Mapillary images for ${city.name} (attempt ${attempt + 1})`);
+
+            if(attempt < EMPTY_CITY_RETRY_LIMIT){
+                rerollCity(attempt + 1);
+            } else {
+                console.error('Unable to find a city with images after ' + EMPTY_CITY_RETRY_LIMIT + ' attempts');
+            }
+            return;
+        }
 
         const newImageIds = dataObj.data.map(dataPoint => dataPoint.id);
 
@@ -84,7 +98,7 @@ function Game({ ws, isHost, setShowRoundScores}: GameProps): JSX.Element {
 
     }
 
-    function rerollCity(): void{
+    function rerollCity(attempt = 0): void{
         let idx: number = getRandomIdx(cities.length);
 
         setShowRoundScores(false);
@@ -104,7 +118,7 @@ function Game({ ws, isHost, setShowRoundScores}: GameProps): JSX.Element {
         setImageIds([]);
         failedImageIdsRef.current.clear();
 
-        getImageIds(cities[idx].lat, cities[idx].long).then(data => SetAndLogImages(data, cities[idx])).catch(error => console.error('Error fetching image IDs:', error));
+        getImageIds(cities[idx].lat, cities[idx].long).then(data => SetAndLogImages(data, cities[idx], attempt)).catch(error => console.error('Error fetching image IDs:', error));
 
     }
 
@@ -171,7 +185,7 @@ function Game({ ws, isHost, setShowRoundScores}: GameProps): JSX.Element {
                             <RenderMapillary accessToken={process.env.NEXT_PUBLIC_MAPILLARY_ACCESS_TOKEN ?? ''} widthPercent={100} heightPercent={100} imageID={imageIds[startingImageIdx]} onImageError={handleMapillaryImageError} key={chosenCity.name}/>                
                         </div>
                         <div className="guessing-map-overlay" style={{bottom: '2rem', right: '2rem', backgroundColor: 'white', borderRadius: '0.5rem', boxShadow: '0 4px 20px rgba(0,0,0,0.3)', overflow: 'hidden'}}>
-                            <MultiplayerGuessMap lat={chosenCity.lat} long={chosenCity.long} rerollCity={rerollCity} ws={ws} isHost={isHost} setLoadGame={setLoadGame} key={chosenCity.name}></MultiplayerGuessMap>
+                            <MultiplayerGuessMap lat={chosenCity.lat} long={chosenCity.long} rerollCity={rerollCity} ws={ws} isHost={isHost} setLoadGame={setLoadGame} timeHasExpired={timeHasExpired} key={chosenCity.name}></MultiplayerGuessMap>
                         </div>
                     </div>
                 )                 

@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { RefObject, useEffect, useRef, useState } from "react";
 import 'leaflet/dist/leaflet.css';
 import type L from "leaflet";
 
@@ -18,10 +18,11 @@ interface MultiplayerGuessMapProps{
     ws: WebSocket,
     isHost: boolean,
     setLoadGame: (bool: boolean) => void,
+    timeHasExpired: RefObject<boolean>,
 }
 
 
-export default function MultiplayerGuessMap({lat, long, rerollCity, ws, isHost, setLoadGame}: MultiplayerGuessMapProps): React.ReactNode{
+export default function MultiplayerGuessMap({lat, long, rerollCity, ws, isHost, setLoadGame, timeHasExpired}: MultiplayerGuessMapProps): React.ReactNode{
     const divRef = useRef<HTMLDivElement>(null);
     const mapRef = useRef<L.Map | null>(null);
     const curMarker = useRef<L.Marker<any> | null>(null);
@@ -31,10 +32,20 @@ export default function MultiplayerGuessMap({lat, long, rerollCity, ws, isHost, 
     const actualMarker = useRef<L.Marker<any> | null>(null);
     const [hasClicked, setHasClicked] = useState<boolean>(false);
     const [gameOver, setGameOver] = useState<boolean>(false);
+    const [roundOver, setRoundOver] = useState<boolean>(false);
 
     useEffect(() => {
         hasGuessedRef.current = hasGuessed;
     }, [hasGuessed]);
+
+    useEffect(() => {
+        if(timeHasExpired){
+            // setHasGuessed(true);
+            // hasGuessedRef.current = hasGuessed;
+            console.log("Times's up!");
+        }
+        
+    }, [timeHasExpired])
 
     // Create the map only once on mount
     useEffect(() => {
@@ -136,6 +147,7 @@ export default function MultiplayerGuessMap({lat, long, rerollCity, ws, isHost, 
                         leafletRef.current.marker([data.roundLatLngs[i][1][0], data.roundLatLngs[i][1][1]], {draggable: false}).addTo(mapRef.current).bindTooltip(data.roundLatLngs[i][0]).openTooltip();
                     }
                 }
+                setRoundOver(true);
             }
 
             if(data.method === "gameOver"){
@@ -163,7 +175,7 @@ export default function MultiplayerGuessMap({lat, long, rerollCity, ws, isHost, 
                 }
 
                 { 
-                    (hasGuessed && isHost && !gameOver) && (
+                    (hasGuessed && isHost && roundOver && !gameOver) && (
                         <>
                             <button className="NextBtn" onClick={handleNext} style={{padding: '2px 4px', cursor: 'pointer'}}>Next Round</button> 
                         </>

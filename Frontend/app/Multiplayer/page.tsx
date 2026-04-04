@@ -105,7 +105,7 @@ export default function Multiplayer() {
         const response = await fetch('http://localhost:9090/api/createLobby', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ lobbyId: lobbyId, maxPlayers: maxPlayers?.value, maxRounds: maxRounds?.value })
+            body: JSON.stringify({ lobbyId: lobbyId, gamemode:gameMode?.value, maxPlayers: maxPlayers?.value, maxRounds: maxRounds?.value, timeLimit: timeLimit?.value })
         });
         const status = await response.text();
         console.log(status);

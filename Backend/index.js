@@ -38,7 +38,7 @@ api.post('/api/createLobby', (req, res) => {
     console.log("SETTINGS: ")
     console.log(req.body.maxPlayers);
 
-    lobbies.set(req.body.lobbyId, {maxPlayers: req.body.maxPlayers, maxRounds: req.body.maxRounds, curRound: 1, host: "", players: [], state: "lobby", scoreMap: new Map(), guessesMade: 0, roundScores: [[]], roundLatLngs: [[]]});
+    lobbies.set(req.body.lobbyId, {gameMode: req.body.gameMode, timeLimit: req.body.timeLimit, maxPlayers: req.body.maxPlayers, maxRounds: req.body.maxRounds, curRound: 1, host: "", players: [], state: "lobby", scoreMap: new Map(), guessesMade: 0, roundScores: [[]], roundLatLngs: [[]]});
     console.log(lobbies);
     res.send("1");
 })
@@ -223,11 +223,14 @@ wsServer.on("request", (request) => {
         }
 
         if(res.method === "setCity"){
+            let lobby = lobbies.get(curLobbyId);
             const payload = {
                 method: "setCity",
                 city: res.city,
                 imageIds: res.imageIds,
-                startingImageIdx: res.startingImageIdx
+                startingImageIdx: res.startingImageIdx,
+                gameMode: lobby.gameMode,
+                timeLimit: lobby.timeLimit,
             }
             broadcastToLobby(curLobbyId, JSON.stringify(payload));
         }

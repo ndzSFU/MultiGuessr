@@ -254,7 +254,6 @@ export const cities: City[] = [
 
   //Africa
   { name: 'Dakar', lat: 14.7167, long: -17.4677 },
-{ name: 'Conakry', lat: 9.6412, long: -13.5784 },
 { name: 'Abidjan', lat: 5.3600, long: -4.0083 },
 { name: 'Accra', lat: 5.6037, long: -0.1870 },
 { name: 'Lagos', lat: 6.5244, long: 3.3792 },

@@ -13,8 +13,8 @@ describe('broadcastToLobbyTest', () => {
 
     // Mock clients map
     const clientsMap = new Map([
-      ['client1', { connection: { send: sendMock1 } }],
-      ['client2', { connection: { send: sendMock2 } }],
+      ['client1', { connection: { connected: true, send: sendMock1 } }],
+      ['client2', { connection: { connected: true, send: sendMock2 } }],
     ]);
 
     // Mock lobbies map
