@@ -43,6 +43,7 @@ export default function MultiplayerGuessMap({lat, long, rerollCity, ws, isHost, 
             setHasGuessed(true);
             hasGuessedRef.current = true;
             console.log("Times's up!");
+            handleGuess();
         }
         
     }, [timeHasExpired])

@@ -10,7 +10,7 @@ function getRandomIdx(array_size: number): number {
 
 export default function Lobby() {
     const [clientId, setClientId] = useState<string | null>(null);
-    const [ws, setWs] = useState<WebSocket | null>();
+    const [ws, setWs] = useState<WebSocket | null>(null);
     const [state, setState] = useState<"noName" | "lobby" | "error" | "inGame">("noName");
     const [isHost, setIsHost] = useState<boolean>(false);
     const [scores, setScores] = useState<[[string, number]]>();
@@ -33,22 +33,24 @@ export default function Lobby() {
 
 
     useEffect(() => {
-        
-        const ws = new WebSocket('ws://localhost:9090');
-        setWs(ws);
+        const socket = new WebSocket('ws://localhost:9090');
+        setWs(socket);
 
-        ws.addEventListener("message", (event) => {
+        socket.onopen = () => {
+            console.log("WebSocket connected");
+        };
+
+        const handleMessage = (event: MessageEvent) => {
             const data = JSON.parse(event.data);
             console.log('Received:', data);
 
-            ws.onopen = () => {
-                console.log("WebSocket connected");
-            };
-
             if (data.method === 'connect') {
                 setClientId(data.clientId);
-                console.log(clientId);
-                ws.send(JSON.stringify({ method: 'connect', lobbyId: lobbyId, clientId: data.clientId }));
+                socket.send(JSON.stringify({ method: 'connect', lobbyId: lobbyId, clientId: data.clientId }));
+            }
+
+            if (data.method === 'lobbyJoined') {
+                setIsHost(Boolean(data.isHost));
             }
 
             if (data.method === "setHost") {
@@ -59,7 +61,6 @@ export default function Lobby() {
             if (data.method === "loadGame") {
                 setScores(data.playerScoreMap);
                 console.log(data.playerScoreMap);
-                console.log(scores);
                 setState("inGame");
             }
 
@@ -69,13 +70,15 @@ export default function Lobby() {
                 setShowRoundScores(true);
                 setRoundScores(data.roundScores);
             }
-        });
+        };
 
+        socket.addEventListener("message", handleMessage);
 
         return () => {
-            ws.close();
+            socket.removeEventListener("message", handleMessage);
+            socket.close();
         };
-    }, []);
+    }, [lobbyId]);
 
     function handleUsername(event: React.SubmitEvent<HTMLFormElement>) {
         event.preventDefault();

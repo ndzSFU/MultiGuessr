@@ -45,7 +45,7 @@ api.post('/api/createLobby', (req, res) => {
 
 api.get('/api/createLobbyId', (req, res) => {
     console.log("Sent Lobby ID");
-    const id = CreateLobbyId(6)
+    let id = CreateLobbyId(6)
     while(lobbies.has(id)){
         id = CreateLobbyId(6);
     }
@@ -177,14 +177,23 @@ wsServer.on("request", (request) => {
 
                     curLobbyId = res.lobbyId;
 
-                    lobby.players.push(res.clientId);
-                    if(lobby.players.length === 1 || lobby.host === ''){
+                    if(!lobby.players.includes(res.clientId)){
+                        lobby.players.push(res.clientId);
+                    }
+
+                    if(lobby.players.length === 1 || lobby.host === '' || lobby.host === clientId){
                         console.log("First Connection");
                         lobby.host = clientId;
-                        const payload = {
-                            method: "setHost",
-                        }
-                        safeSendConnection(connection, JSON.stringify(payload))
+                    }
+
+                    safeSendConnection(connection, JSON.stringify({
+                        method: "lobbyJoined",
+                        lobbyId: res.lobbyId,
+                        isHost: lobby.host === clientId,
+                    }));
+
+                    if(lobby.host === clientId){
+                        safeSendConnection(connection, JSON.stringify({ method: "setHost" }));
                     }
                 };
 

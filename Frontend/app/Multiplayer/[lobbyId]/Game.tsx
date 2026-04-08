@@ -5,6 +5,7 @@ import RenderMapillary from '../../Map/renderMapillary';
 import { NextResponse } from 'next/server';
 import {cities, City} from '../../Map/cities';
 import MultiplayerGuessMap from './MultiplayerGuessMap';
+import TimerBox from './TimerBox';
 
 async function getImageIds(Lat: number, Lon: number): Promise<any> {
 
@@ -47,8 +48,9 @@ interface GameProps {
 
 function Game({ ws, isHost, setShowRoundScores}: GameProps): JSX.Element {
     const hasInitialized = useRef(false);
-    const [timeHasExpired, setTimeHasExpired] = useState(false);
+    const [timeHasExpired, setTimeHasExpired] = useState<boolean>(false);
     const failedImageIdsRef = useRef<Set<string>>(new Set());
+    const [roundTimerSeconds, setRoundTimerSeconds] = useState<number>(90);
 
     const [imageIds, setImageIds] = useState<string[]>([]);
     const [chosenCitiesIdxs, setChosenCitiesIdxs] = useState<number[]>([]);
@@ -155,6 +157,7 @@ function Game({ ws, isHost, setShowRoundScores}: GameProps): JSX.Element {
                 setChosenCity(data.city);
                 setImageIds(data.imageIds);
                 setStartingImageIdx(data.startingImageIdx);
+                setRoundTimerSeconds(data.timeLimit);
                 failedImageIdsRef.current.clear();
                 console.log("Setting city stats: " + data.startingImageIdx);
                 setLoadGame(true);
@@ -178,6 +181,13 @@ function Game({ ws, isHost, setShowRoundScores}: GameProps): JSX.Element {
 
     return (
         <div className="relative w-full h-full">
+            {loadGame && (
+                <TimerBox
+                    seconds={roundTimerSeconds}
+                    isActive={loadGame}
+                    onExpire={() => setTimeHasExpired(true)}
+                />
+            )}
             {
                 startingImageIdx !== undefined && imageIds.length > 0 && chosenCity && ws && loadGame && (
                     <div className="relative w-full h-full">
