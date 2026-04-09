@@ -39,7 +39,7 @@ export default function MultiplayerGuessMap({lat, long, rerollCity, ws, isHost, 
     }, [hasGuessed]);
 
     useEffect(() => {
-        if(timeHasExpired){
+        if(timeHasExpired && !hasGuessedRef.current){
             setHasGuessed(true);
             hasGuessedRef.current = true;
             console.log("Times's up!");
@@ -123,7 +123,14 @@ export default function MultiplayerGuessMap({lat, long, rerollCity, ws, isHost, 
         if (mapRef.current) mapRef.current.setView([0, 0], 1);
         setLoadGame(false);
         setHasGuessed(false);
+
+        ws?.send(JSON.stringify({ method: 'reset'}));
+        
         if (isHost) rerollCity();
+
+        
+        
+
     }
 
     function handleGameOver(): void{
@@ -136,6 +143,11 @@ export default function MultiplayerGuessMap({lat, long, rerollCity, ws, isHost, 
         function handleMessage(event: MessageEvent){
             const data = JSON.parse(event.data);
             console.log('Received:', data);
+
+            if(data.method === "reset"){
+                setLoadGame(false);
+                setHasGuessed(false);
+            }
 
             if (data.method === 'finalGuessMade'){
                 console.log("Final guess coords");

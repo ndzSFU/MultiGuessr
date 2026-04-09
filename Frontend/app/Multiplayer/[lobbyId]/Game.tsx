@@ -18,7 +18,7 @@ async function getImageIds(Lat: number, Lon: number): Promise<any> {
     const maxLat: number = Lat + bbox_offset;
 
     const bbox: string = minLon.toString() + "," + minLat.toString() + "," + maxLon.toString() + "," + maxLat.toString();
-    const URL: string = 'https://graph.mapillary.com/images?' + 'access_token=' + process.env.NEXT_PUBLIC_MAPILLARY_ACCESS_TOKEN + '&fields=id&bbox=' + bbox;
+    const URL: string = 'https://graph.mapillary.com/images?' + 'access_token=' + process.env.NEXT_PUBLIC_MAPILLARY_ACCESS_TOKEN + '&fields=id&bbox=' + bbox + "&limit=900";
 
     let res = await fetch(URL);
 
@@ -78,6 +78,8 @@ function Game({ ws, isHost, setShowRoundScores}: GameProps): JSX.Element {
 
         const dataObj: imageIdData = data;
 
+        console.log("Chosen City: " + city.name);
+
         if(!Array.isArray(dataObj?.data) || dataObj.data.length === 0){
             console.warn(`No Mapillary images for ${city.name} (attempt ${attempt + 1})`);
 
@@ -104,6 +106,7 @@ function Game({ ws, isHost, setShowRoundScores}: GameProps): JSX.Element {
         let idx: number = getRandomIdx(cities.length);
 
         setShowRoundScores(false);
+        setTimeHasExpired(false);
 
         while(chosenCitiesIdxs.includes(idx, 0)){
             idx = getRandomIdx(cities.length);
@@ -154,6 +157,7 @@ function Game({ ws, isHost, setShowRoundScores}: GameProps): JSX.Element {
 
             if (data.method === 'setCity'){
                 setShowRoundScores(false);
+                setTimeHasExpired(false);
                 setChosenCity(data.city);
                 setImageIds(data.imageIds);
                 setStartingImageIdx(data.startingImageIdx);

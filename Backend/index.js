@@ -184,6 +184,7 @@ wsServer.on("request", (request) => {
                     if(lobby.players.length === 1 || lobby.host === '' || lobby.host === clientId){
                         console.log("First Connection");
                         lobby.host = clientId;
+                        safeSendConnection(connection, JSON.stringify({ method: "setHost" }));
                     }
 
                     safeSendConnection(connection, JSON.stringify({
@@ -191,15 +192,15 @@ wsServer.on("request", (request) => {
                         lobbyId: res.lobbyId,
                         isHost: lobby.host === clientId,
                     }));
-
-                    if(lobby.host === clientId){
-                        safeSendConnection(connection, JSON.stringify({ method: "setHost" }));
-                    }
                 };
 
                 tryJoinLobby(0);
             } 
             
+        }
+
+        if(res.method === "reset"){
+            broadcastToLobby(curLobbyId,JSON.stringify({ method: 'reset'}));
         }
 
         if(res.method === "setUsername"){
@@ -225,7 +226,7 @@ wsServer.on("request", (request) => {
                     lobby.scoreMap.set(player, 0);
                 }
                 
-
+                console.log("Sending loadGame signal");
                 broadcastToLobby(curLobbyId, JSON.stringify(payload));
             }
             

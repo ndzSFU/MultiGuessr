@@ -62,6 +62,7 @@ export default function Lobby() {
                 setScores(data.playerScoreMap);
                 console.log(data.playerScoreMap);
                 setState("inGame");
+                console.log("Loading Game!");
             }
 
             if(data.method === "finalGuessMade"){
