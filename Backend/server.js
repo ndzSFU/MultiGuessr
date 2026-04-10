@@ -77,7 +77,7 @@ async function warmMapillaryCache() {
 
   if (!accessToken) {
     console.log('Skipping Mapillary cache warmup: missing access token');
-    return;
+    process.exit(1);
   }
 
   for (const city of cities) {
