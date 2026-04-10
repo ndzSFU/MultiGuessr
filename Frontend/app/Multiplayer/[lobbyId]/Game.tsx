@@ -8,25 +8,16 @@ import MultiplayerGuessMap from './MultiplayerGuessMap';
 import TimerBox from './TimerBox';
 
 async function getImageIds(Lat: number, Lon: number): Promise<any> {
+    const URL: string = `http://localhost:9090/api/mapillary-images?lat=${Lat}&lon=${Lon}&token=${encodeURIComponent(process.env.NEXT_PUBLIC_MAPILLARY_ACCESS_TOKEN ?? '')}`;
 
-    const bbox_offset: number = 0.002
-
-    const minLon: number = Lon - bbox_offset;
-    const maxLon: number = Lon + bbox_offset;
-
-    const minLat: number = Lat - bbox_offset;
-    const maxLat: number = Lat + bbox_offset;
-
-    const bbox: string = minLon.toString() + "," + minLat.toString() + "," + maxLon.toString() + "," + maxLat.toString();
-    const URL: string = 'https://graph.mapillary.com/images?' + 'access_token=' + process.env.NEXT_PUBLIC_MAPILLARY_ACCESS_TOKEN + '&fields=id&bbox=' + bbox + "&limit=900";
-
+    console.log("Calling backend...");
     let res = await fetch(URL);
 
     const RETRY_MAX = 5;
     let retry_cnt = 0; 
 
     while(!res.ok && retry_cnt < RETRY_MAX){
-        console.log("Trying API again...");
+        console.log("Trying backend image cache again...");
         res = await fetch(URL);
         retry_cnt++;
     }
@@ -91,7 +82,7 @@ function Game({ ws, isHost, setShowRoundScores}: GameProps): JSX.Element {
             return;
         }
 
-        const newImageIds = dataObj.data.map(dataPoint => dataPoint.id);
+        const newImageIds = dataObj.data.map((entry) => { return entry.toString()});
 
         setImageIds(newImageIds);
 

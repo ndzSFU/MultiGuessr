@@ -12,6 +12,8 @@ const httpServer = http.createServer(api);
 
 const lobbies = new Map();
 const clients = new Map();
+const mapillaryImageCache = new Map();
+const mapillaryImageInFlight = new Map();
 
 // Vals of Clients Map
 //const clientData = {
@@ -33,6 +35,94 @@ function CreateLobbyId(len){
     }
     return newLobbyId;
 }
+
+function getMapillaryCacheKey(lat, lon){
+    return `${lat.toFixed(4)},${lon.toFixed(4)}`;
+}
+
+//Returns a promise
+async function fetchMapillaryImageIds(lat, lon, accessToken){
+    const bboxOffset = 0.001;
+
+    const minLon = lon - bboxOffset;
+    const maxLon = lon + bboxOffset;
+    const minLat = lat - bboxOffset;
+    const maxLat = lat + bboxOffset;
+
+    const bbox = `${minLon},${minLat},${maxLon},${maxLat}`;
+    const url = 'https://graph.mapillary.com/images?' +
+        'access_token=' + accessToken +
+        '&fields=id&bbox=' + bbox +
+        '&limit=400';
+
+    const retryMax = 5;
+    let response = await fetch(url);
+    let retryCount = 0;
+
+    while(!response.ok && retryCount < retryMax){
+        console.log(`Mapillary fetch retry ${retryCount + 1} for ${lat}, ${lon}`);
+        response = await fetch(url);
+        retryCount++;
+    }
+
+    console.log(response);
+
+    if(!response.ok){
+        throw new Error(`Mapillary request failed after ${retryCount + 1} attempts`);
+    }
+
+    const payload = await response.json();
+
+    console.log(payload);
+    if(!Array.isArray(payload?.data)){
+        throw new Error('Mapillary response did not contain image data');
+    }
+
+    return payload.data.map((entry) => entry.id).filter(Boolean);
+}
+
+api.get('/api/mapillary-images', async (req, res) => {
+    const lat = Number(req.query.lat);
+    const lon = Number(req.query.lon);
+    const accessToken = typeof req.query.token === 'string' ? req.query.token : process.env.NEXT_PUBLIC_MAPILLARY_ACCESS_TOKEN;
+
+    console.log("Going to grab an imageID")
+
+    if(Number.isNaN(lat) || Number.isNaN(lon) || !accessToken){
+        res.status(400).json({ message: 'Invalid lat/lon' });
+        return;
+    }
+
+    const cacheKey = getMapillaryCacheKey(lat, lon);
+
+    if(mapillaryImageCache.has(cacheKey)){
+        res.json({ data: mapillaryImageCache.get(cacheKey) });
+        return;
+    }
+
+    let inFlight = mapillaryImageInFlight.get(cacheKey);
+    if(!inFlight){
+        //inFlight is a promise until which is unfulfilled until the .then
+        inFlight = fetchMapillaryImageIds(lat, lon, accessToken)
+            .then((imageIds) => {
+                mapillaryImageCache.set(cacheKey, imageIds);
+                return imageIds;
+            })
+            .finally(() => {
+                mapillaryImageInFlight.delete(cacheKey);
+            });
+
+        mapillaryImageInFlight.set(cacheKey, inFlight);
+    }
+
+    try{
+        const imageIds = await inFlight;
+        res.json({ data: imageIds });
+    } catch(error){
+        console.error('Mapillary proxy failed:', error);
+        res.status(502).json({ message: 'Failed to fetch Mapillary images' });
+    }
+});
 
 api.post('/api/createLobby', (req, res) => {
     console.log("SETTINGS: ")
@@ -357,4 +447,7 @@ module.exports = {
     CreateLobbyId,
     broadcastToLobby,
     httpServer,
+    fetchMapillaryImageIds,
+    getMapillaryCacheKey,
+    mapillaryImageCache,
 }
