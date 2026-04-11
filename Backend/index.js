@@ -26,6 +26,10 @@ const mapillaryImageInFlight = new Map();
 
 //Note player and client are used synonymously, a list of players may contain clientId's clients == players
 
+function getRandomIdx(array_size){
+    return Math.floor(Math.random() * array_size);
+}
+
 function CreateLobbyId(len){
     let newLobbyId = "";
 
@@ -55,7 +59,7 @@ async function fetchMapillaryImageIds(lat, lon, accessToken){
         '&fields=id&bbox=' + bbox +
         '&limit=400';
 
-    const retryMax = 5;
+    const retryMax = 8;
     let response = await fetch(url);
     let retryCount = 0;
 

@@ -1,12 +1,30 @@
 const { httpServer, fetchMapillaryImageIds, getMapillaryCacheKey, mapillaryImageCache } = require('./index');
 require("dotenv").config();
 
+const readline = require('readline');
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
+
+rl.on('line', (input) => {
+  const command = input.trim().toLowerCase();
+
+  if (command === 'warmup') {
+    console.log('Cache warmup triggered!');
+    void warmMapillaryCache().catch((error) => {
+      console.error('Manual cache warmup failed:', error);
+    });
+  }
+  // Add more commands as needed
+});
+
 const cities = [
-   { name: 'Vancouver', lat: 49.2827, long: -123.1207 },
+  { name: 'Vancouver', lat: 49.2827, long: -123.1207 },
   { name: 'Burnaby', lat: 49.2488, long: -122.9805 },
-  { name: 'Surrey', lat: 49.1913, long: -122.8490 },
-  { name: 'Richmond', lat: 49.1666, long: -123.1336 },
-  { name: 'Toronto', lat: 43.6532, long: -79.3832 },
+  // { name: 'Surrey', lat: 49.1913, long: -122.8490 },
+  // { name: 'Richmond', lat: 49.1666, long: -123.1336 },
+  // { name: 'Toronto', lat: 43.6532, long: -79.3832 },
   // { name: 'Mississauga', lat: 43.5890, long: -79.6441 },
   // { name: 'Brampton', lat: 43.7315, long: -79.7624 },
   // { name: 'Ottawa', lat: 45.4215, long: -75.6972 },
@@ -73,6 +91,7 @@ const cities = [
 ];
 
 async function warmMapillaryCache() {
+  console.log('warmMapillaryCache entered');
   const accessToken = process.env.NEXT_PUBLIC_MAPILLARY_ACCESS_TOKEN;
 
   if (!accessToken) {
@@ -80,10 +99,12 @@ async function warmMapillaryCache() {
     process.exit(1);
   }
 
+  let cur_idx = 0;
   for (const city of cities) {
     const cacheKey = getMapillaryCacheKey(city.lat, city.long);
 
     if (mapillaryImageCache.has(cacheKey)) {
+      console.log(city.name + " already in cache");
       continue;
     }
 
@@ -93,11 +114,14 @@ async function warmMapillaryCache() {
       mapillaryImageCache.set(cacheKey, fetchResults);
     } catch (error) {
       console.error(`Failed to warm cache for ${city.name}:`, error);
+      cities.splice(cur_idx, 1);
+      cur_idx--;
     }
+    cur_idx++;
   }
   console.log("Cache warmed");
 
-  console.log(mapillaryImageCache);
+  // console.log(mapillaryImageCache);
 }
 
 const PORT = 9090;
