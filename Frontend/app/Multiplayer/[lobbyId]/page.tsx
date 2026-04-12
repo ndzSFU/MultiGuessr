@@ -20,7 +20,7 @@ export default function Lobby() {
     const [scores, setScores] = useState<[[string, number]]>();
     const [showRoundScores, setShowRoundScores] = useState<boolean>(false);
     const [roundScores, setRoundScores] = useState<[[string, number]] | null>(null);
-    const [gameMode, setGameMode] = useState<"setRounds" | "knockout">("setRounds");
+    const [gameMode, setGameMode] = useState<"setRounds" | "knockout" | "timerTrigger">("setRounds");
    
 
     //Map Use States
@@ -201,7 +201,7 @@ export default function Lobby() {
             {
                 state === "inGame" && ws && (
                     <div>
-                        <Game ws={ws} isHost={isHost} setShowRoundScores={setShowRoundScores} gameMode={gameMode}></Game>
+                        <Game ws={ws} isHost={isHost} setShowRoundScores={setShowRoundScores} gameMode={gameMode} showRoundScores={showRoundScores}></Game>
                         {scores && (scores.length > 0) && (
                             <div className="scoreboard">
                                 <h3 className="scoreboard-title">Scoreboard</h3>

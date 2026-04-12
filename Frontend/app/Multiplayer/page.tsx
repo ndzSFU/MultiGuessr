@@ -48,8 +48,9 @@ const maxPlayersOptions = [
     ];
 
     const gameModes = [
-        {value: "setRounds", label:"Set Rounds"},
-        {value: "knockout", label:"Knockout"},
+        {value: "setRounds", label:"Set Time"},
+        {value: "knockout", label:"Knockout Teams"},
+        {value: "timerTrigger", label:"Triggered Timer"},
     ];
 
 export default function Multiplayer() {
@@ -195,7 +196,7 @@ export default function Multiplayer() {
                             />
 
                     {
-                        (timeLimit && (maxRounds || gameMode?.value === "knockout")) && (
+                        (timeLimit && (maxRounds || gameMode?.value === "knockout" || gameMode?.value === "timerTrigger")) && (
                             <button type="button" onClick={sendSettings}>Create Lobby</button>
                         )
                     }

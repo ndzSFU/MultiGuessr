@@ -36,9 +36,10 @@ interface GameProps {
     isHost: true | false;
     setShowRoundScores: (bool: boolean) => void;
     gameMode: string;
+    showRoundScores: boolean;
 }
 
-function Game({ ws, isHost, setShowRoundScores, gameMode}: GameProps): JSX.Element {
+function Game({ ws, isHost, setShowRoundScores, gameMode, showRoundScores}: GameProps): JSX.Element {
     const hasInitialized = useRef(false);
     const [timeHasExpired, setTimeHasExpired] = useState<boolean>(false);
     const failedImageIdsRef = useRef<Set<string>>(new Set());
@@ -50,10 +51,6 @@ function Game({ ws, isHost, setShowRoundScores, gameMode}: GameProps): JSX.Eleme
     const [startingImageIdx, setStartingImageIdx] = useState<number>();
     const [loadGame, setLoadGame] = useState<boolean>(false);
     const [firstGuessMade, setFirstGuessMade] = useState<boolean>(false);
-
-
-    const [nextChosenCity, setNextChosenCity] = useState<City>();
-    const [nextImageIds, setNextImageIds] = useState<string[]>([]);
 
     const EMPTY_CITY_RETRY_LIMIT = 8;
 
@@ -184,7 +181,7 @@ function Game({ ws, isHost, setShowRoundScores, gameMode}: GameProps): JSX.Eleme
 
     return (
         <div className="relative w-full h-full">
-            {loadGame && ( gameMode === "setRounds" || (firstGuessMade && gameMode === "knockout")) && (
+            {loadGame && ( gameMode === "setRounds" || (firstGuessMade && (gameMode === "knockout" || gameMode === "timerTrigger"))) && !showRoundScores && (
                 <TimerBox
                     seconds={roundTimerSeconds}
                     isActive={loadGame}
