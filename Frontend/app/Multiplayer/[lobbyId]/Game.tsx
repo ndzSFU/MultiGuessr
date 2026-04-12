@@ -35,9 +35,10 @@ interface GameProps {
     ws: WebSocket | null;
     isHost: true | false;
     setShowRoundScores: (bool: boolean) => void;
+    gameMode: string;
 }
 
-function Game({ ws, isHost, setShowRoundScores}: GameProps): JSX.Element {
+function Game({ ws, isHost, setShowRoundScores, gameMode}: GameProps): JSX.Element {
     const hasInitialized = useRef(false);
     const [timeHasExpired, setTimeHasExpired] = useState<boolean>(false);
     const failedImageIdsRef = useRef<Set<string>>(new Set());
@@ -48,6 +49,7 @@ function Game({ ws, isHost, setShowRoundScores}: GameProps): JSX.Element {
     const [chosenCity, setChosenCity] = useState<City>();
     const [startingImageIdx, setStartingImageIdx] = useState<number>();
     const [loadGame, setLoadGame] = useState<boolean>(false);
+    const [firstGuessMade, setFirstGuessMade] = useState<boolean>(false);
 
 
     const [nextChosenCity, setNextChosenCity] = useState<City>();
@@ -147,6 +149,8 @@ function Game({ ws, isHost, setShowRoundScores}: GameProps): JSX.Element {
             console.log('Received:', data);
 
             if (data.method === 'setCity'){
+                //Reset prev round states
+                setFirstGuessMade(false);
                 setShowRoundScores(false);
                 setTimeHasExpired(false);
                 setChosenCity(data.city);
@@ -156,6 +160,10 @@ function Game({ ws, isHost, setShowRoundScores}: GameProps): JSX.Element {
                 failedImageIdsRef.current.clear();
                 console.log("Setting city stats: " + data.startingImageIdx);
                 setLoadGame(true);
+            }
+
+            if(data.method === 'guessMade'){
+                setFirstGuessMade(true);
             }
         }
 
@@ -176,7 +184,7 @@ function Game({ ws, isHost, setShowRoundScores}: GameProps): JSX.Element {
 
     return (
         <div className="relative w-full h-full">
-            {loadGame && (
+            {loadGame && ( gameMode === "setRounds" || (firstGuessMade && gameMode === "knockout")) && (
                 <TimerBox
                     seconds={roundTimerSeconds}
                     isActive={loadGame}

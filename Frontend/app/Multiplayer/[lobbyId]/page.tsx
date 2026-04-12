@@ -201,7 +201,7 @@ export default function Lobby() {
             {
                 state === "inGame" && ws && (
                     <div>
-                        <Game ws={ws} isHost={isHost} setShowRoundScores={setShowRoundScores}></Game>
+                        <Game ws={ws} isHost={isHost} setShowRoundScores={setShowRoundScores} gameMode={gameMode}></Game>
                         {scores && (scores.length > 0) && (
                             <div className="scoreboard">
                                 <h3 className="scoreboard-title">Scoreboard</h3>

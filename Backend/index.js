@@ -69,7 +69,7 @@ async function fetchMapillaryImageIds(lat, lon, accessToken){
         retryCount++;
     }
 
-    console.log(response);
+    // console.log(response);
 
     if(!response.ok){
         throw new Error(`Mapillary request failed after ${retryCount + 1} attempts`);
@@ -398,7 +398,7 @@ wsServer.on("request", (request) => {
                 }
                 lobby.curRound++;
 
-
+                // Maybe should have if else for this and the above payload
                 lobby.guessesMade = 0;
                 payload = {
                     method: "finalGuessMade",
