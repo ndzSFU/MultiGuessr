@@ -22,17 +22,17 @@ rl.on('line', (input) => {
 const cities = [
   { name: 'Vancouver', lat: 49.2827, long: -123.1207 },
   { name: 'Burnaby', lat: 49.2488, long: -122.9805 },
-  // { name: 'Surrey', lat: 49.1913, long: -122.8490 },
-  // { name: 'Richmond', lat: 49.1666, long: -123.1336 },
-  // { name: 'Toronto', lat: 43.6532, long: -79.3832 },
-  // { name: 'Mississauga', lat: 43.5890, long: -79.6441 },
-  // { name: 'Brampton', lat: 43.7315, long: -79.7624 },
-  // { name: 'Ottawa', lat: 45.4215, long: -75.6972 },
-  // { name: 'Montreal', lat: 45.5017, long: -73.5673 },
-  // { name: 'Calgary', lat: 51.0447, long: -114.0719 },
-  // { name: 'Edmonton', lat: 53.5461, long: -113.4938 },
-  // { name: 'Winnipeg', lat: 49.8951, long: -97.1384 },
-  // { name: 'Victoria', lat: 48.4284, long: -123.3656 },
+  { name: 'Surrey', lat: 49.1913, long: -122.8490 },
+  { name: 'Richmond', lat: 49.1666, long: -123.1336 },
+  { name: 'Toronto', lat: 43.6532, long: -79.3832 },
+  { name: 'Mississauga', lat: 43.5890, long: -79.6441 },
+  { name: 'Brampton', lat: 43.7315, long: -79.7624 },
+  { name: 'Ottawa', lat: 45.4215, long: -75.6972 },
+  { name: 'Montreal', lat: 45.5017, long: -73.5673 },
+  { name: 'Calgary', lat: 51.0447, long: -114.0719 },
+  { name: 'Edmonton', lat: 53.5461, long: -113.4938 },
+  { name: 'Winnipeg', lat: 49.8951, long: -97.1384 },
+  { name: 'Victoria', lat: 48.4284, long: -123.3656 },
 
   // // USA
   // { name: 'Seattle', lat: 47.6062, long: -122.3321 },
@@ -99,6 +99,8 @@ async function warmMapillaryCache() {
     process.exit(1);
   }
 
+  let miss_count = 0;
+
   let cur_idx = 0;
   for (const city of cities) {
     const cacheKey = getMapillaryCacheKey(city.lat, city.long);
@@ -116,10 +118,36 @@ async function warmMapillaryCache() {
       console.error(`Failed to warm cache for ${city.name}:`, error);
       cities.splice(cur_idx, 1);
       cur_idx--;
+      miss_count++;
     }
     cur_idx++;
   }
   console.log("Cache warmed");
+
+  console.log("Second cache warm!");
+
+  for (const city of cities) {
+    const cacheKey = getMapillaryCacheKey(city.lat, city.long);
+
+    if (mapillaryImageCache.has(cacheKey)) {
+      console.log(city.name + " already in cache");
+      continue;
+    }
+
+    try {
+      console.log(`Adding ${city.name} to the cache`);
+      const fetchResults = await fetchMapillaryImageIds(city.lat, city.long, accessToken);
+      mapillaryImageCache.set(cacheKey, fetchResults);
+    } catch (error) {
+      console.error(`Failed to warm cache for ${city.name}:`, error);
+      cities.splice(cur_idx, 1);
+      cur_idx--;
+      miss_count++;
+    }
+    cur_idx++;
+  }
+
+  console.log("Second cache warm done!");
 
   // console.log(mapillaryImageCache);
 }

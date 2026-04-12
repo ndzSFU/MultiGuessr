@@ -304,17 +304,18 @@ wsServer.on("request", (request) => {
         }
 
         if(res.method === "startGame"){
-
+            const lobby = lobbies.get(curLobbyId);
             
             if(curLobbyId != ""){
-                let playerScoreMap = lobbies.get(curLobbyId).players.map((player) => ([clients.get(player).username, 0]));
+                let playerScoreMap = lobby.players.map((player) => ([clients.get(player).username, 0]));
                 const payload = {
                     method: "loadGame",
-                    playerScoreMap: playerScoreMap
+                    playerScoreMap: playerScoreMap,
+                    gameMode: lobby.gameMode,
                 }
 
                 
-                let lobby = lobbies.get(curLobbyId);
+                
                 lobby.state = "inRound"
                 for(player of lobby.players){
                     lobby.scoreMap.set(player, 0);

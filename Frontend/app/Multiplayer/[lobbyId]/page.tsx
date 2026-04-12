@@ -8,6 +8,10 @@ function getRandomIdx(array_size: number): number {
     return Math.floor(Math.random() * array_size);
 }
 
+class GameMode {
+
+}
+
 export default function Lobby() {
     const [clientId, setClientId] = useState<string | null>(null);
     const [ws, setWs] = useState<WebSocket | null>(null);
@@ -16,6 +20,7 @@ export default function Lobby() {
     const [scores, setScores] = useState<[[string, number]]>();
     const [showRoundScores, setShowRoundScores] = useState<boolean>(false);
     const [roundScores, setRoundScores] = useState<[[string, number]] | null>(null);
+    const [gameMode, setGameMode] = useState<"setRounds" | "knockout">("setRounds");
    
 
     //Map Use States
@@ -60,6 +65,7 @@ export default function Lobby() {
 
             if (data.method === "loadGame") {
                 setScores(data.playerScoreMap);
+                setGameMode(data.gameMode);
                 console.log(data.playerScoreMap);
                 setState("inGame");
                 console.log("Loading Game!");
