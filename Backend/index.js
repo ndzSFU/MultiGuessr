@@ -285,6 +285,7 @@ wsServer.on("request", (request) => {
                         method: "lobbyJoined",
                         lobbyId: res.lobbyId,
                         isHost: lobby.host === clientId,
+                        gameMode: lobby.gameMode,
                     }));
                 };
 
@@ -311,7 +312,6 @@ wsServer.on("request", (request) => {
                 const payload = {
                     method: "loadGame",
                     playerScoreMap: playerScoreMap,
-                    gameMode: lobby.gameMode,
                 }
 
                 
@@ -423,8 +423,28 @@ wsServer.on("request", (request) => {
             
         }
 
-        console.log(res);
-        console.log(clients.size);
+        function handleJoinTeam(team){
+            const lobby = lobbies.get(curLobbyId);
+            let team1 = lobby.team1;
+            let team2 = lobby.team2;
+
+            if(team === "team1"){
+                
+            } else if(team === "team2"){
+
+            }
+        }
+
+        if(data.method === "joinTeam1"){
+            handleJoinTeam("team1");
+        }
+
+        if(data.method === "joinTeam2"){
+            handleJoinTeam("team2");
+        }
+
+        // console.log(res);
+        // console.log(clients.size);
     });
 
     

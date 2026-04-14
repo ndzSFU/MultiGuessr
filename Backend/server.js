@@ -16,7 +16,7 @@ rl.on('line', (input) => {
       console.error('Manual cache warmup failed:', error);
     });
   }
-  // Add more commands as needed
+  
 });
 
 const cities = [
@@ -28,11 +28,11 @@ const cities = [
   { name: 'Mississauga', lat: 43.5890, long: -79.6441 },
   { name: 'Brampton', lat: 43.7315, long: -79.7624 },
   { name: 'Ottawa', lat: 45.4215, long: -75.6972 },
-  { name: 'Montreal', lat: 45.5017, long: -73.5673 },
-  { name: 'Calgary', lat: 51.0447, long: -114.0719 },
-  { name: 'Edmonton', lat: 53.5461, long: -113.4938 },
-  { name: 'Winnipeg', lat: 49.8951, long: -97.1384 },
-  { name: 'Victoria', lat: 48.4284, long: -123.3656 },
+  // { name: 'Montreal', lat: 45.5017, long: -73.5673 },
+  // { name: 'Calgary', lat: 51.0447, long: -114.0719 },
+  // { name: 'Edmonton', lat: 53.5461, long: -113.4938 },
+  // { name: 'Winnipeg', lat: 49.8951, long: -97.1384 },
+  // { name: 'Victoria', lat: 48.4284, long: -123.3656 },
 
   // // USA
   // { name: 'Seattle', lat: 47.6062, long: -122.3321 },

@@ -8,10 +8,6 @@ function getRandomIdx(array_size: number): number {
     return Math.floor(Math.random() * array_size);
 }
 
-class GameMode {
-
-}
-
 export default function Lobby() {
     const [clientId, setClientId] = useState<string | null>(null);
     const [ws, setWs] = useState<WebSocket | null>(null);
@@ -56,6 +52,7 @@ export default function Lobby() {
 
             if (data.method === 'lobbyJoined') {
                 setIsHost(Boolean(data.isHost));
+                setGameMode(data.gameMode);
             }
 
             if (data.method === "setHost") {
@@ -65,7 +62,6 @@ export default function Lobby() {
 
             if (data.method === "loadGame") {
                 setScores(data.playerScoreMap);
-                setGameMode(data.gameMode);
                 console.log(data.playerScoreMap);
                 setState("inGame");
                 console.log("Loading Game!");
@@ -102,6 +98,14 @@ export default function Lobby() {
         if (ws) ws.send(JSON.stringify({ method: 'startGame' }));
     }
 
+    function handleJoinTeam1(){
+        if (ws) ws.send(JSON.stringify({ method: 'joinTeam1' }));
+    }
+
+    function handleJoinTeam2(){
+        if (ws) ws.send(JSON.stringify({ method: 'joinTeam2' }));
+    }
+
     return (
         <>
             {
@@ -128,11 +132,28 @@ export default function Lobby() {
                 )
             }
 
+
             {
                 isHost && state === "lobby" && (
                     <div>
                         <button onClick={handleStartGame} >Start Game</button>
                     </div>
+                )
+            }
+
+            {
+                gameMode === "knockout" && (
+                    <>
+                        <form onSubmit={handleJoinTeam1}>
+        
+                            <button type="submit">Join Team 1</button>
+                        </form>
+
+                        <form onSubmit={handleJoinTeam2}>
+        
+                            <button type="submit">Join Team 2</button>
+                        </form>
+                     </>
                 )
             }
 
