@@ -198,6 +198,13 @@ function broadcastToLobby(lobbyId, stringifiedMessage, lobbiesMap = lobbies, cli
 //     }
 // }
 
+//Removes the username if it exists
+function removeFromTeam(team, username){
+    if(team.indexOf(username) !== -1){
+        team.splice(team.indexOf(username), 1);
+    }
+}
+
 
 wsServer.on("request", (request) => {
     const connection = request.accept(null, request.origin);
@@ -210,17 +217,22 @@ wsServer.on("request", (request) => {
     };
 
     connection.on("close", () => {
+        const departingUsername = clientData.username;
+
         // Remove from lobby if they were in one
         if (curLobbyId) {
             const lobby = lobbies.get(curLobbyId);
 
-            clients.delete(clientId);
             if (lobby) {
                 // Remove player from players array
                 lobby.players = lobby.players.filter(id => id !== clientId);
                 
                 // Remove from scoreMap
                 lobby.scoreMap.delete(clientId);
+
+                const remainingUsernames = lobby.players
+                    .map((id) => clients.get(id)?.username)
+                    .filter((username) => typeof username === "string" && username.length > 0);
                 
                 // If they were host, assign new host (or delete lobby if empty)
                 if (lobby.host === clientId) {
@@ -231,6 +243,19 @@ wsServer.on("request", (request) => {
                         // No players left, delete the lobby
                         lobbies.delete(curLobbyId);
                     }
+                }
+
+                removeFromTeam(lobby.team1, departingUsername);
+                removeFromTeam(lobby.team2, departingUsername);
+
+                if (lobby.players.length > 0) {
+                    broadcastToLobby(curLobbyId, JSON.stringify({
+                        method: "playerLeft",
+                        clientId,
+                        username: departingUsername,
+                        remainingUsernames,
+                        hostId: lobby.host,
+                    }));
                 }
                 
                 console.log(`Player ${clientId} left lobby ${curLobbyId}`);
@@ -281,11 +306,16 @@ wsServer.on("request", (request) => {
                         safeSendConnection(connection, JSON.stringify({ method: "setHost" }));
                     }
 
+                    const usernames = lobby.players.map((clientID) => {
+                        return clients.get(clientID).username;
+                    })
+
                     safeSendConnection(connection, JSON.stringify({
                         method: "lobbyJoined",
                         lobbyId: res.lobbyId,
                         isHost: lobby.host === clientId,
                         gameMode: lobby.gameMode,
+                        takenUsernames: usernames,
                     }));
                 };
 
@@ -423,23 +453,33 @@ wsServer.on("request", (request) => {
             
         }
 
-        function handleJoinTeam(team){
+        function handleJoinTeam(teamToJoin){
             const lobby = lobbies.get(curLobbyId);
             let team1 = lobby.team1;
             let team2 = lobby.team2;
+            let username = clientData.username
 
-            if(team === "team1"){
+            if(teamToJoin === "team1"){
+                if(team2.includes(username)){
+                    removeFromTeam(team2, username);
+                } 
+
+                team1.append(username);
                 
-            } else if(team === "team2"){
+            } else if(teamToJoin === "team2"){
+                if(team1.includes(username)){
+                    removeFromTeam(team1, username);
+                } 
 
+                team2.append(username);
             }
         }
 
-        if(data.method === "joinTeam1"){
+        if(res.method === "joinTeam1"){
             handleJoinTeam("team1");
         }
 
-        if(data.method === "joinTeam2"){
+        if(res.method === "joinTeam2"){
             handleJoinTeam("team2");
         }
 

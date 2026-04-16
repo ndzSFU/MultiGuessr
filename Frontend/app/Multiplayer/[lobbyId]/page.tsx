@@ -12,11 +12,13 @@ export default function Lobby() {
     const [clientId, setClientId] = useState<string | null>(null);
     const [ws, setWs] = useState<WebSocket | null>(null);
     const [state, setState] = useState<"noName" | "lobby" | "error" | "inGame">("noName");
+    const [usernameError, setUsernameError] = useState<string | null>(null);
     const [isHost, setIsHost] = useState<boolean>(false);
     const [scores, setScores] = useState<[[string, number]]>();
     const [showRoundScores, setShowRoundScores] = useState<boolean>(false);
     const [roundScores, setRoundScores] = useState<[[string, number]] | null>(null);
     const [gameMode, setGameMode] = useState<"setRounds" | "knockout" | "timerTrigger">("setRounds");
+    const [takenUsernames, setTakenUsernames] = useState<[string]>([""]);
    
 
     //Map Use States
@@ -53,6 +55,8 @@ export default function Lobby() {
             if (data.method === 'lobbyJoined') {
                 setIsHost(Boolean(data.isHost));
                 setGameMode(data.gameMode);
+                setTakenUsernames(data.takenUsernames);
+                console.log(takenUsernames);
             }
 
             if (data.method === "setHost") {
@@ -73,6 +77,10 @@ export default function Lobby() {
                 setShowRoundScores(true);
                 setRoundScores(data.roundScores);
             }
+
+            if(data.method === "playerLeft"){
+                setTakenUsernames(data.remainingUsernames);
+            }
         };
 
         socket.addEventListener("message", handleMessage);
@@ -86,11 +94,18 @@ export default function Lobby() {
     function handleUsername(event: React.SubmitEvent<HTMLFormElement>) {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
-        const username = formData.get('username') as string;
+        const username = ((formData.get('username') as string) ?? "").trim();
+        if(username.length < 1){
+            setUsernameError("Username must be at least 1 character long.");
+        }else if(takenUsernames.includes(username)){
+            setUsernameError("Name already in use in this lobby.");
+        } else{
+            setUsernameError(null);
+            if (ws && username) ws.send(JSON.stringify({ method: 'setUsername', username: username }));
+            setState("lobby");
+        }
 
-        if (ws && username) ws.send(JSON.stringify({ method: 'setUsername', username: username }));
-
-        setState("lobby");
+        
     }
 
     function handleStartGame() {
@@ -118,6 +133,9 @@ export default function Lobby() {
                                     Username: <input name="username" />
                                 </label>
                                 <button type="submit">Submit</button>
+                                {usernameError && (
+                                    <p style={{ color: '#dc2626', marginTop: '0.5rem' }}>{usernameError}</p>
+                                )}
                             </form>
                         </>
                     </>
@@ -142,7 +160,7 @@ export default function Lobby() {
             }
 
             {
-                gameMode === "knockout" && (
+                gameMode === "knockout" && state === "lobby" && (
                     <>
                         <form onSubmit={handleJoinTeam1}>
         
