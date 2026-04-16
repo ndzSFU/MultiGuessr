@@ -18,7 +18,7 @@ export default function Lobby() {
     const [showRoundScores, setShowRoundScores] = useState<boolean>(false);
     const [roundScores, setRoundScores] = useState<[[string, number]] | null>(null);
     const [gameMode, setGameMode] = useState<"setRounds" | "knockout" | "timerTrigger">("setRounds");
-    const [takenUsernames, setTakenUsernames] = useState<[string]>([""]);
+    const [usernames, setusernames] = useState<[string]>([""]);
    
 
     //Map Use States
@@ -55,8 +55,7 @@ export default function Lobby() {
             if (data.method === 'lobbyJoined') {
                 setIsHost(Boolean(data.isHost));
                 setGameMode(data.gameMode);
-                setTakenUsernames(data.takenUsernames);
-                console.log(takenUsernames);
+                console.log(usernames);
             }
 
             if (data.method === "setHost") {
@@ -79,7 +78,11 @@ export default function Lobby() {
             }
 
             if(data.method === "playerLeft"){
-                setTakenUsernames(data.remainingUsernames);
+                setusernames(data.remainingUsernames);
+            }
+
+            if(data.method === "updatePlayers"){
+                setusernames(data.takenUsernames);
             }
         };
 
@@ -97,7 +100,7 @@ export default function Lobby() {
         const username = ((formData.get('username') as string) ?? "").trim();
         if(username.length < 1){
             setUsernameError("Username must be at least 1 character long.");
-        }else if(takenUsernames.includes(username)){
+        }else if(usernames.includes(username)){
             setUsernameError("Name already in use in this lobby.");
         } else{
             setUsernameError(null);
@@ -145,7 +148,18 @@ export default function Lobby() {
             {
                 state === "lobby" && (
                     <>
-                        Welcome to: {lobbyId}
+                        Welcome to lobby: {lobbyId}
+
+                        {
+                            usernames.map((username) =>{
+                                return (
+                                <div>
+                                    {username}
+                                </div>
+                                )
+                            })
+                        }
+
                     </>
                 )
             }

@@ -22,9 +22,9 @@ const mapillaryImageInFlight = new Map();
 // };
 
 // Vals of Lobby map
-// lobbies.set(req.body.lobbyId, {maxPlayers: , maxRounds: , host: "", players: [], state: "lobby", scoreMap: , guessesMade: 0, roundScores: [[]]}});
+// lobbies.set(req.body.lobbyId, {maxPlayers: , maxRounds: , host: "", playerIDS: [], state: "lobby", scoreMap: , guessesMade: 0, roundScores: [[]]}});
 
-//Note player and client are used synonymously, a list of players may contain clientId's clients == players
+//Note player and client are used synonymously, a list of playerIDS may contain clientId's clients == playerIDS
 
 function getRandomIdx(array_size){
     return Math.floor(Math.random() * array_size);
@@ -132,7 +132,7 @@ api.post('/api/createLobby', (req, res) => {
     console.log("SETTINGS: ")
     console.log(req.body.maxPlayers);
 
-    lobbies.set(req.body.lobbyId, {gameMode: req.body.gameMode, timeLimit: req.body.timeLimit, maxPlayers: req.body.maxPlayers, maxRounds: req.body.maxRounds, curRound: 1, host: "", players: [], state: "lobby", scoreMap: new Map(), guessesMade: 0, roundScores: [[]], roundLatLngs: [[]], team1: [], team2: []});
+    lobbies.set(req.body.lobbyId, {gameMode: req.body.gameMode, timeLimit: req.body.timeLimit, maxPlayers: req.body.maxPlayers, maxRounds: req.body.maxRounds, curRound: 1, host: "", playerIDS: [], state: "lobby", scoreMap: new Map(), guessesMade: 0, roundScores: [[]], roundLatLngs: [[]], team1: [], team2: []});
     console.log(lobbies);
     res.send("1");
 })
@@ -185,13 +185,13 @@ function broadcastToLobby(lobbyId, stringifiedMessage, lobbiesMap = lobbies, cli
         return;
     }
 
-    lobby.players = lobby.players.filter((playerId) => safeSendToClient(playerId, stringifiedMessage, clientsMap));
+    lobby.playerIDS = lobby.playerIDS.filter((playerId) => safeSendToClient(playerId, stringifiedMessage, clientsMap));
 }
 
 // Probably don't need anymore? 
 // function broadcastToLobbyFromHost(lobbyId, stringifiedMessage){
 //     let lobby = lobbies.get(lobbyId);
-//     for(const clientID of lobby.players){
+//     for(const clientID of lobby.playerIDS){
 //         if(clientID !== lobby.host)
 //         clients.get(clientID).connection.send(stringifiedMessage);
         
@@ -224,23 +224,23 @@ wsServer.on("request", (request) => {
             const lobby = lobbies.get(curLobbyId);
 
             if (lobby) {
-                // Remove player from players array
-                lobby.players = lobby.players.filter(id => id !== clientId);
+                // Remove player from playerIDS array
+                lobby.playerIDS = lobby.playerIDS.filter(id => id !== clientId);
                 
                 // Remove from scoreMap
                 lobby.scoreMap.delete(clientId);
 
-                const remainingUsernames = lobby.players
+                const remainingUsernames = lobby.playerIDS
                     .map((id) => clients.get(id)?.username)
                     .filter((username) => typeof username === "string" && username.length > 0);
                 
                 // If they were host, assign new host (or delete lobby if empty)
                 if (lobby.host === clientId) {
-                    if (lobby.players.length > 0) {
-                        lobby.host = lobby.players[0];
+                    if (lobby.playerIDS.length > 0) {
+                        lobby.host = lobby.playerIDS[0];
                         safeSendToClient(lobby.host, JSON.stringify({ method: "setHost" }));
                     } else {
-                        // No players left, delete the lobby
+                        // No playerIDS left, delete the lobby
                         lobbies.delete(curLobbyId);
                     }
                 }
@@ -248,7 +248,7 @@ wsServer.on("request", (request) => {
                 removeFromTeam(lobby.team1, departingUsername);
                 removeFromTeam(lobby.team2, departingUsername);
 
-                if (lobby.players.length > 0) {
+                if (lobby.playerIDS.length > 0) {
                     broadcastToLobby(curLobbyId, JSON.stringify({
                         method: "playerLeft",
                         clientId,
@@ -267,13 +267,44 @@ wsServer.on("request", (request) => {
         console.log("Connection closed");
     });
 
+
+
     connection.on("message", (message) => {
         const res = JSON.parse(message.utf8Data);
+        const getLobby = (lobbyId = curLobbyId) => {
+            if(!lobbyId){
+                return undefined;
+            }
+            return lobbies.get(lobbyId);
+        };
+
+        let lobby = getLobby();
+
+        function sendUpdatedUsernames(){
+            if(!lobby){
+                return;
+            }
+
+            const usernames = lobby.playerIDS.map((clientID) => {
+                console.log(clients.get(clientID));
+                console.log(clients);
+                console.log("Client id: " + clientID);
+                return clients.get(clientID).username;
+            })
+
+            
+            broadcastToLobby(curLobbyId, JSON.stringify(
+                { 
+                    method: 'updatePlayers',
+                    takenUsernames: usernames,
+                }
+            ));
+        }
 
         if(res.method === "connect"){
             if(res.clientId === clientId){
                 const tryJoinLobby = (attempt) => {
-                    const lobby = lobbies.get(res.lobbyId);
+                    lobby = getLobby(res.lobbyId);
 
                     if(lobby === undefined){
                         if(attempt === 0){
@@ -295,28 +326,28 @@ wsServer.on("request", (request) => {
                     }
 
                     curLobbyId = res.lobbyId;
+                    lobby = getLobby();
 
-                    if(!lobby.players.includes(res.clientId)){
-                        lobby.players.push(res.clientId);
+                    if(!lobby.playerIDS.includes(res.clientId)){
+                        lobby.playerIDS.push(res.clientId);
                     }
 
-                    if(lobby.players.length === 1 || lobby.host === '' || lobby.host === clientId){
+                    if(lobby.playerIDS.length === 1 || lobby.host === '' || lobby.host === clientId){
                         console.log("First Connection");
                         lobby.host = clientId;
                         safeSendConnection(connection, JSON.stringify({ method: "setHost" }));
                     }
 
-                    const usernames = lobby.players.map((clientID) => {
-                        return clients.get(clientID).username;
-                    })
+
 
                     safeSendConnection(connection, JSON.stringify({
                         method: "lobbyJoined",
                         lobbyId: res.lobbyId,
                         isHost: lobby.host === clientId,
                         gameMode: lobby.gameMode,
-                        takenUsernames: usernames,
                     }));
+
+                    sendUpdatedUsernames();
                 };
 
                 tryJoinLobby(0);
@@ -325,20 +356,27 @@ wsServer.on("request", (request) => {
         }
 
         if(res.method === "reset"){
-            broadcastToLobby(curLobbyId,JSON.stringify({ method: 'reset'}));
+            broadcastToLobby(curLobbyId, JSON.stringify({ method: 'reset'}));
         }
 
         if(res.method === "setUsername"){
             clientData.username = res.username;
+            lobby = getLobby();
+            if(!lobby){
+                return;
+            }
+
             console.log(`Client ${clientId} set username: ${res.username}`);
+
+            sendUpdatedUsernames();
             // console.log(clients);
         }
 
         if(res.method === "startGame"){
-            const lobby = lobbies.get(curLobbyId);
+            lobby = getLobby();
             
-            if(curLobbyId != ""){
-                let playerScoreMap = lobby.players.map((player) => ([clients.get(player).username, 0]));
+            if(curLobbyId != "" && lobby){
+                let playerScoreMap = lobby.playerIDS.map((player) => ([clients.get(player).username, 0]));
                 const payload = {
                     method: "loadGame",
                     playerScoreMap: playerScoreMap,
@@ -347,7 +385,7 @@ wsServer.on("request", (request) => {
                 
                 
                 lobby.state = "inRound"
-                for(player of lobby.players){
+                for(player of lobby.playerIDS){
                     lobby.scoreMap.set(player, 0);
                 }
                 
@@ -358,7 +396,10 @@ wsServer.on("request", (request) => {
         }
 
         if(res.method === "setCity"){
-            let lobby = lobbies.get(curLobbyId);
+            lobby = getLobby();
+            if(!lobby){
+                return;
+            }
             const payload = {
                 method: "setCity",
                 city: res.city,
@@ -371,7 +412,10 @@ wsServer.on("request", (request) => {
         }
 
         if(res.method === "sendScore"){
-            let lobby = lobbies.get(curLobbyId);
+            lobby = getLobby();
+            if(!lobby){
+                return;
+            }
             let curRoundIdx = lobby.roundScores.length - 1;
             if(curLobbyId !== ""){
                 if(!Array.isArray(lobby.roundScores[curRoundIdx])){
@@ -395,13 +439,13 @@ wsServer.on("request", (request) => {
 
             let payload;
 
-            if(lobby.guessesMade === lobby.players.length){
+            if(lobby.guessesMade === lobby.playerIDS.length){
                 console.log("ROUND DONE");
                 
 
                 let scores = [];
 
-                for(player of lobby.players){
+                for(player of lobby.playerIDS){
                     const username = clients.get(player).username;
                     const score = lobby.scoreMap.get(player);
                     scores.push([username, score]);
@@ -454,7 +498,10 @@ wsServer.on("request", (request) => {
         }
 
         function handleJoinTeam(teamToJoin){
-            const lobby = lobbies.get(curLobbyId);
+            lobby = getLobby();
+            if(!lobby){
+                return;
+            }
             let team1 = lobby.team1;
             let team2 = lobby.team2;
             let username = clientData.username
