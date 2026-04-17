@@ -47,6 +47,19 @@ const maxPlayersOptions = [
         { value: "150", label: "2 Minutes 30 Seconds" },
     ];
 
+    const hpOptions = [
+        { value: "1000", label: "1,000 HP" },
+        { value: "2000", label: "2,000 HP" },
+        { value: "3000", label: "3,000 HP" },
+        { value: "4000", label: "4,000 HP" },
+        { value: "5000", label: "5,000 HP" },
+        { value: "6000", label: "6,000 HP" },
+        { value: "7000", label: "7,000 HP" },
+        { value: "8000", label: "8,000 HP" },
+        { value: "9000", label: "9,000 HP" },
+        { value: "10000", label: "10,000 HP" },
+    ];
+
     const gameModes = [
         {value: "setRounds", label:"Set Time"},
         {value: "knockout", label:"Knockout Teams"},
@@ -61,6 +74,7 @@ export default function Multiplayer() {
     const [maxRounds, setMaxRounds] = useState<{ value: string, label: string } | null>(null);
     const [gameMode, setGameMode] = useState<{ value: string, label: string } | null>(gameModes[0]);
     const [timeLimit, setTimeLimit] = useState<{ value: string, label: string } | null>(null);
+    const [HP, setHP] = useState<{ value: string, label: string } | null>(null);
 
     
 
@@ -106,7 +120,7 @@ export default function Multiplayer() {
         const response = await fetch('http://localhost:9090/api/createLobby', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ lobbyId: lobbyId, gameMode: gameMode?.value, maxPlayers: maxPlayers?.value, maxRounds: maxRounds?.value, timeLimit: timeLimit?.value })
+            body: JSON.stringify({ lobbyId: lobbyId, gameMode: gameMode?.value, maxPlayers: maxPlayers?.value, maxRounds: maxRounds?.value, timeLimit: timeLimit?.value, HP: HP?.value })
         });
         const status = await response.text();
         console.log(status);
@@ -150,7 +164,7 @@ export default function Multiplayer() {
                                 placeholder="Select Game Mode"
                             />
 
-                            <label>
+                            {/* <label>
                                 Max Players:
                             </label>
                             <Select
@@ -158,11 +172,26 @@ export default function Multiplayer() {
                                 value={maxPlayers}
                                 onChange={setMaxPlayers}
                                 styles={customSelectStyles}
-                            />
+                            /> */}
 
                             
                         </>
                     )}
+
+                    {
+                        (gameMode?.value === "knockout") && (
+                            <div>
+                                <label>HP:</label>
+                                <Select
+                                    options={hpOptions}
+                                    value={HP}
+                                    onChange={setHP}
+                                    styles={customSelectStyles}
+                                    placeholder="Select HP"
+                                />
+                            </div>
+                        )
+                    }
 
                     {
                         (gameMode?.value === "setRounds") ? (
@@ -196,7 +225,7 @@ export default function Multiplayer() {
                             />
 
                     {
-                        (timeLimit && (maxRounds || gameMode?.value === "knockout" || gameMode?.value === "timerTrigger")) && (
+                        (timeLimit && (maxRounds || gameMode?.value === "knockout" || gameMode?.value === "timerTrigger")) && (HP || gameMode?.value !== "knockout") && (
                             <button type="button" onClick={sendSettings}>Create Lobby</button>
                         )
                     }
