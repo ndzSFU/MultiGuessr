@@ -132,7 +132,7 @@ api.post('/api/createLobby', (req, res) => {
     console.log("SETTINGS: ")
     console.log(req.body.maxPlayers);
 
-    lobbies.set(req.body.lobbyId, {gameMode: req.body.gameMode, timeLimit: req.body.timeLimit, maxPlayers: req.body.maxPlayers, maxRounds: req.body.maxRounds, curRound: 1, host: "", playerIDS: [], state: "lobby", scoreMap: new Map(), guessesMade: 0, roundScores: [[]], roundLatLngs: [[]], team1: [], team2: []});
+    lobbies.set(req.body.lobbyId, {gameMode: req.body.gameMode, timeLimit: req.body.timeLimit, maxPlayers: req.body.maxPlayers, maxRounds: req.body.maxRounds, curRound: 1, host: "", playerIDS: [], state: "lobby", scoreMap: new Map(), guessesMade: 0, roundScores: [[]], roundLatLngs: [[]], team1: [], team2: [] });
     console.log(lobbies);
     res.send("1");
 })
@@ -348,6 +348,7 @@ wsServer.on("request", (request) => {
                     }));
 
                     sendUpdatedUsernames();
+                    broadcastToLobby(curLobbyId, JSON.stringify({method: "updateTeams", team1: lobby.team1, team2: lobby.team2}));
                 };
 
                 tryJoinLobby(0);
@@ -474,14 +475,20 @@ wsServer.on("request", (request) => {
 
                 // Maybe should have if else for this and the above payload
                 lobby.guessesMade = 0;
-                payload = {
-                    method: "finalGuessMade",
-                    clientId: clientId,
-                    score: res.score,
-                    scores: scores,
-                    roundScores: lobby.roundScores[curRoundIdx],
-                    roundLatLngs: lobby.roundLatLngs[curRoundIdx],
+
+                if(lobby.gameMode === "knockout"){
+
+                } else{
+                    payload = {
+                        method: "finalGuessMade",
+                        clientId: clientId,
+                        score: res.score,
+                        scores: scores,
+                        roundScores: lobby.roundScores[curRoundIdx],
+                        roundLatLngs: lobby.roundLatLngs[curRoundIdx],
+                    }
                 }
+                
                 console.log(lobby.roundScores);
 
             } else{
@@ -521,7 +528,7 @@ wsServer.on("request", (request) => {
                 team2.push(username);
             }
 
-             broadcastToLobby(curLobbyId, JSON.stringify({method: "updateTeams", team1: lobby.team1, team2: lobby.team2}));
+            broadcastToLobby(curLobbyId, JSON.stringify({method: "updateTeams", team1: lobby.team1, team2: lobby.team2}));
         }
 
         if(res.method === "joinTeam1"){

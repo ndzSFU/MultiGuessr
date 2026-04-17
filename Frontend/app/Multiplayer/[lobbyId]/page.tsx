@@ -19,8 +19,8 @@ export default function Lobby() {
     const [roundScores, setRoundScores] = useState<[[string, number]] | null>(null);
     const [gameMode, setGameMode] = useState<"setRounds" | "knockout" | "timerTrigger">("setRounds");
     const [usernames, setusernames] = useState<[string] | null>(null);
-    const [team1, setTeam1] = useState<[string] | null >([""]);
-    const [team2, setTeam2] = useState<[string] | null >([""]);
+    const [team1, setTeam1] = useState<[string] | [] >([]);
+    const [team2, setTeam2] = useState<[string] | [] >([]);
 
     //Map Use States
 
@@ -90,7 +90,7 @@ export default function Lobby() {
                 console.log(data.team1);
                 console.log(data.team2);
                 setTeam1(data.team1);
-                setTeam2(data.team2);
+                setTeam2(data.team2);                
             }
         };
 
@@ -206,7 +206,7 @@ export default function Lobby() {
             }
 
             {
-                isHost && state === "lobby" && (
+                isHost && state === "lobby" && (gameMode !== "knockout" || (team1.length > 0 && team2.length > 0)) && (
                     <div>
                         <button onClick={handleStartGame} >Start Game</button>
                     </div>
