@@ -511,15 +511,17 @@ wsServer.on("request", (request) => {
                     removeFromTeam(team2, username);
                 } 
 
-                team1.append(username);
+                team1.push(username);
                 
             } else if(teamToJoin === "team2"){
                 if(team1.includes(username)){
                     removeFromTeam(team1, username);
                 } 
 
-                team2.append(username);
+                team2.push(username);
             }
+
+             broadcastToLobby(curLobbyId, JSON.stringify({method: "updateTeams", team1: lobby.team1, team2: lobby.team2}));
         }
 
         if(res.method === "joinTeam1"){

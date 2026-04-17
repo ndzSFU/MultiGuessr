@@ -18,8 +18,9 @@ export default function Lobby() {
     const [showRoundScores, setShowRoundScores] = useState<boolean>(false);
     const [roundScores, setRoundScores] = useState<[[string, number]] | null>(null);
     const [gameMode, setGameMode] = useState<"setRounds" | "knockout" | "timerTrigger">("setRounds");
-    const [usernames, setusernames] = useState<[string]>([""]);
-   
+    const [usernames, setusernames] = useState<[string] | null>(null);
+    const [team1, setTeam1] = useState<[string] | null >([""]);
+    const [team2, setTeam2] = useState<[string] | null >([""]);
 
     //Map Use States
 
@@ -84,6 +85,13 @@ export default function Lobby() {
             if(data.method === "updatePlayers"){
                 setusernames(data.takenUsernames);
             }
+
+            if(data.method === "updateTeams"){
+                console.log(data.team1);
+                console.log(data.team2);
+                setTeam1(data.team1);
+                setTeam2(data.team2);
+            }
         };
 
         socket.addEventListener("message", handleMessage);
@@ -100,7 +108,7 @@ export default function Lobby() {
         const username = ((formData.get('username') as string) ?? "").trim();
         if(username.length < 1){
             setUsernameError("Username must be at least 1 character long.");
-        }else if(usernames.includes(username)){
+        }else if(usernames?.includes(username)){
             setUsernameError("Name already in use in this lobby.");
         } else{
             setUsernameError(null);
@@ -151,7 +159,7 @@ export default function Lobby() {
                         Welcome to lobby: {lobbyId}
 
                         {
-                            usernames.map((username) =>{
+                            usernames?.map((username) =>{
                                 return (
                                 <div>
                                     {username}
@@ -160,10 +168,42 @@ export default function Lobby() {
                             })
                         }
 
+                        {
+                            team1 && team2 && (
+                                <>
+                                    <div>
+                                        Team1
+                                        {
+                                            team1?.map((username) =>{
+                                                return (
+                                                <div>
+                                                    {username}
+                                                </div>
+                                                )
+                                            })
+                                        }
+                                    </div>
+
+                                    <div>
+                                        Team2
+                                        {
+                                            team2?.map((username) =>{
+                                                return (
+                                                <div>
+                                                    {username}
+                                                </div>
+                                                )
+                                            })
+                                        }
+                                    </div>
+
+                                </>
+                            )
+                        }
+
                     </>
                 )
             }
-
 
             {
                 isHost && state === "lobby" && (
@@ -176,15 +216,8 @@ export default function Lobby() {
             {
                 gameMode === "knockout" && state === "lobby" && (
                     <>
-                        <form onSubmit={handleJoinTeam1}>
-        
-                            <button type="submit">Join Team 1</button>
-                        </form>
-
-                        <form onSubmit={handleJoinTeam2}>
-        
-                            <button type="submit">Join Team 2</button>
-                        </form>
+                        <button type="button" onClick={handleJoinTeam1}>Join Team 1</button>
+                        <button type="button" onClick={handleJoinTeam2}>Join Team 2</button>
                      </>
                 )
             }
