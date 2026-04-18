@@ -76,6 +76,10 @@ export default function Lobby() {
                 console.log(data.roundScores);
                 setShowRoundScores(true);
                 setRoundScores(data.roundScores);
+
+                if(gameMode === "knockout"){
+                    
+                }
             }
 
             if(data.method === "playerLeft"){

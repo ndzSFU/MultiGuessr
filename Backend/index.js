@@ -477,7 +477,32 @@ wsServer.on("request", (request) => {
                 lobby.guessesMade = 0;
 
                 if(lobby.gameMode === "knockout"){
+                    let team1Max = -1;
+                    let team2Max = -1;
+                    for(const score of scores){
+                        if(lobby.team1.includes(score[0])){
+                            if(score[1] > team1Max){
+                                team1Max = score[1];
+                            }
+                        }else{
+                            if(score[1] > team2Max){
+                                team2Max = score[1];
+                            }
+                        }
 
+                        if(team1Max > -1 && team2Max > -1) break;
+                    }
+
+                    payload = {
+                        method: "finalGuessMade",
+                        clientId: clientId,
+                        score: res.score,
+                        scores: scores,
+                        roundScores: lobby.roundScores[curRoundIdx],
+                        roundLatLngs: lobby.roundLatLngs[curRoundIdx],
+                        team1Max: team1Max,
+                        team2Max: team2Max,
+                    }
                 } else{
                     payload = {
                         method: "finalGuessMade",
