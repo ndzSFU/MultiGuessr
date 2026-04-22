@@ -381,6 +381,8 @@ wsServer.on("request", (request) => {
                 const payload = {
                     method: "loadGame",
                     playerScoreMap: playerScoreMap,
+                    team1HP: lobby.team1HP,
+                    team2HP: lobby.team2HP,
                 }
 
                 
@@ -491,6 +493,15 @@ wsServer.on("request", (request) => {
                         }
 
                         if(team1Max > -1 && team2Max > -1) break;
+                    }
+
+                    let damage = 0;
+                    if(team1Max > team2Max){
+                        damage = team1Max - team2Max;
+                        lobby.team1HP -= damage;
+                    }else {
+                        damage = team2Max - team1Max;
+                        lobby.team2HP -= damage;
                     }
 
                     payload = {

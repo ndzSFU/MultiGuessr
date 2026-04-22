@@ -155,5 +155,5 @@ async function warmMapillaryCache() {
 const PORT = 9090;
 httpServer.listen(PORT, async () => {
   console.log(`Server is listening on port ${PORT}`);
-  // await warmMapillaryCache();
+  await warmMapillaryCache();
 });

@@ -3,6 +3,7 @@ import { useEffect, useState, JSX } from 'react';
 import { useParams } from 'next/navigation';
 
 import Game from "./Game";
+import HPBar from "./HPBar";
 
 function getRandomIdx(array_size: number): number {
     return Math.floor(Math.random() * array_size);
@@ -21,6 +22,10 @@ export default function Lobby() {
     const [usernames, setusernames] = useState<[string] | null>(null);
     const [team1, setTeam1] = useState<[string] | [] >([]);
     const [team2, setTeam2] = useState<[string] | [] >([]);
+    const [curTeam1HP, setCurTeam1HP] = useState<number | null>(null);
+    const [maxTeam1HP, setMaxTeam1HP] = useState<number | null>(null);
+    const [curTeam2HP, setCurTeam2HP] = useState<number | null>(null);
+    const [maxTeam2HP, setMaxTeam2HP] = useState<number | null>(null);
 
     //Map Use States
 
@@ -69,6 +74,10 @@ export default function Lobby() {
                 console.log(data.playerScoreMap);
                 setState("inGame");
                 console.log("Loading Game!");
+                setCurTeam1HP(data.team1HP);
+                setMaxTeam1HP(data.team1HP);
+                setCurTeam2HP(data.team2HP);
+                setMaxTeam2HP(data.team2HP);
             }
 
             if(data.method === "finalGuessMade"){
@@ -78,7 +87,8 @@ export default function Lobby() {
                 setRoundScores(data.roundScores);
 
                 if(gameMode === "knockout"){
-                    
+                    setCurTeam1HP(data.team1HP);
+                    setCurTeam2HP(data.team2HP);
                 }
             }
 
@@ -227,7 +237,7 @@ export default function Lobby() {
             }
 
             {
-                showRoundScores && roundScores !== null && (
+                showRoundScores && roundScores !== null && gameMode !== "knockout" && (
                     <div style={{
                         position: 'fixed',
                         top: '50%',
@@ -288,11 +298,23 @@ export default function Lobby() {
                 )
             }
 
+            
+
             {
                 state === "inGame" && ws && (
                     <div>
+                        
                         <Game ws={ws} isHost={isHost} setShowRoundScores={setShowRoundScores} gameMode={gameMode} showRoundScores={showRoundScores}></Game>
-                        {scores && (scores.length > 0) && (
+                       
+                    </div>
+                )                
+            }
+
+            {
+                state === "inGame" && ws && (
+                    <div>
+                        {/* All other modes besides knockout */}
+                        {scores && (scores.length > 0) && gameMode !== "knockout" && (
                             <div className="scoreboard">
                                 <h3 className="scoreboard-title">Scoreboard</h3>
                                 <div className="scoreboard-header">
@@ -308,10 +330,24 @@ export default function Lobby() {
                                 ))}
                                 </ul>
                             </div>
-                            )}
+                            ) 
+                        
+                        }
                     </div>
                 )                
             }
+
+            {
+                state === "inGame" && gameMode === "knockout" && curTeam1HP !== null && maxTeam1HP !== null && curTeam2HP !== null && maxTeam2HP !== null && (
+                    <div>
+                        <HPBar label="Team 1" hp={curTeam1HP} maxHp={maxTeam1HP} position="left" />
+                        <HPBar label="Team 2" hp={curTeam2HP} maxHp={maxTeam2HP} position="right" />
+                    </div>  
+                )                
+            }
+
+
+            
 
 
         </>
