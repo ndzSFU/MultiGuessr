@@ -132,6 +132,7 @@ api.post('/api/createLobby', (req, res) => {
     console.log("SETTINGS: ")
     console.log(req.body.maxPlayers);
 
+    //Score stores total scores
     lobbies.set(req.body.lobbyId, {gameMode: req.body.gameMode, timeLimit: req.body.timeLimit, maxPlayers: req.body.maxPlayers, maxRounds: req.body.maxRounds, curRound: 1, host: "", playerIDS: [], state: "lobby", scoreMap: new Map(), guessesMade: 0, roundScores: [[]], roundLatLngs: [[]], team1: [], team2: [], team1HP: req.body.HP, team2HP: req.body.HP });
     console.log(lobbies);
     res.send("1");
@@ -446,19 +447,19 @@ wsServer.on("request", (request) => {
                 console.log("ROUND DONE");
                 
 
-                let scores = [];
+                let totalScores = [];
 
                 for(player of lobby.playerIDS){
                     const username = clients.get(player).username;
                     const score = lobby.scoreMap.get(player);
-                    scores.push([username, score]);
+                    totalScores.push([username, score]);
                 }
 
                 lobby.roundScores[curRoundIdx].sort((a, b) => (b[1] - a[1]));
                 lobby.roundScores.push([]);
                 lobby.roundLatLngs.push([]);
 
-                scores.sort((a, b) => (b[1] - a[1]));
+                totalScores.sort((a, b) => (b[1] - a[1]));
 
                 console.log("CURRENT ROUND: " + lobby.curRound);
                 if(lobby.curRound >= lobby.maxRounds){
@@ -467,7 +468,7 @@ wsServer.on("request", (request) => {
                         method: "gameOver",
                         clientId: clientId,
                         score: res.score,
-                        scores: scores,
+                        scores: totalScores,
                         roundScores: lobby.roundScores[curRoundIdx],
                         roundLatLngs: lobby.roundLatLngs[curRoundIdx],
                     }
@@ -481,8 +482,9 @@ wsServer.on("request", (request) => {
                 if(lobby.gameMode === "knockout"){
                     let team1Max = -1;
                     let team2Max = -1;
-                    for(const score of scores){
+                    for(const score of lobby.roundScores[curRoundIdx]){
                         if(lobby.team1.includes(score[0])){
+                            // Each set of score is stored as [[username, score], ... ]
                             if(score[1] > team1Max){
                                 team1Max = score[1];
                             }
@@ -492,34 +494,38 @@ wsServer.on("request", (request) => {
                             }
                         }
 
+                        console.log("Looking at: " + score)
+
                         if(team1Max > -1 && team2Max > -1) break;
                     }
 
                     let damage = 0;
                     if(team1Max > team2Max){
                         damage = team1Max - team2Max;
-                        lobby.team1HP -= damage;
+                        lobby.team2HP -= damage;
                     }else {
                         damage = team2Max - team1Max;
-                        lobby.team2HP -= damage;
+                        lobby.team1HP -= damage;
                     }
 
                     payload = {
                         method: "finalGuessMade",
                         clientId: clientId,
                         score: res.score,
-                        scores: scores,
+                        scores: totalScores,
                         roundScores: lobby.roundScores[curRoundIdx],
                         roundLatLngs: lobby.roundLatLngs[curRoundIdx],
                         team1Max: team1Max,
                         team2Max: team2Max,
+                        team1HP: lobby.team1HP,
+                        team2HP: lobby.team2HP,
                     }
                 } else{
                     payload = {
                         method: "finalGuessMade",
                         clientId: clientId,
                         score: res.score,
-                        scores: scores,
+                        scores: totalScores,
                         roundScores: lobby.roundScores[curRoundIdx],
                         roundLatLngs: lobby.roundLatLngs[curRoundIdx],
                     }

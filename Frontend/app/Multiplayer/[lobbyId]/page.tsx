@@ -26,6 +26,9 @@ export default function Lobby() {
     const [maxTeam1HP, setMaxTeam1HP] = useState<number | null>(null);
     const [curTeam2HP, setCurTeam2HP] = useState<number | null>(null);
     const [maxTeam2HP, setMaxTeam2HP] = useState<number | null>(null);
+    const [team1MaxDamage, setTeam1MaxDamage] = useState<number | null>(null);
+    const [team2MaxDamage, setTeam2MaxDamage] = useState<number | null>(null);
+    
 
     //Map Use States
 
@@ -74,10 +77,11 @@ export default function Lobby() {
                 console.log(data.playerScoreMap);
                 setState("inGame");
                 console.log("Loading Game!");
-                setCurTeam1HP(data.team1HP);
-                setMaxTeam1HP(data.team1HP);
-                setCurTeam2HP(data.team2HP);
-                setMaxTeam2HP(data.team2HP);
+                setCurTeam1HP(parseInt(data.team1HP, 10));
+                setMaxTeam1HP(parseInt(data.team1HP, 10));
+                setCurTeam2HP(parseInt(data.team2HP, 10));
+                setMaxTeam2HP(parseInt(data.team2HP, 10));
+                
             }
 
             if(data.method === "finalGuessMade"){
@@ -86,9 +90,14 @@ export default function Lobby() {
                 setShowRoundScores(true);
                 setRoundScores(data.roundScores);
 
-                if(gameMode === "knockout"){
-                    setCurTeam1HP(data.team1HP);
-                    setCurTeam2HP(data.team2HP);
+                if(data.team1HP !== undefined && data.team2HP !== undefined && data.team1Max !== undefined && data.team2Max !== undefined){
+                    console.log("Damage dealt!")
+                    setCurTeam1HP(parseInt(data.team1HP, 10));
+                    setCurTeam2HP(parseInt(data.team2HP, 10));
+                    setTeam1MaxDamage(parseInt(data.team1Max, 10));
+                    setTeam2MaxDamage(parseInt(data.team2Max, 10));
+                    console.log("New team1 hp: " + parseInt(data.team1HP, 10))
+                    console.log("New team2 hp: " + parseInt(data.team2HP, 10))
                 }
             }
 
