@@ -508,6 +508,18 @@ wsServer.on("request", (request) => {
                         lobby.team1HP -= damage;
                     }
 
+                    if(lobby.team1HP <= 0 || lobby.team2HP <= 0){
+                        console.log('Server reads game over');
+                        const gameOverPayload = {
+                            method: "gameOver",
+                            clientId: clientId,
+                            roundScores: lobby.roundScores[curRoundIdx],
+                            roundLatLngs: lobby.roundLatLngs[curRoundIdx],
+                            winner: lobby.team1HP > lobby.team2HP ? "team1" : "team2",
+                        }
+                        broadcastToLobby(curLobbyId, JSON.stringify(gameOverPayload));
+                    }
+
                     payload = {
                         method: "finalGuessMade",
                         clientId: clientId,
@@ -530,6 +542,7 @@ wsServer.on("request", (request) => {
                         roundLatLngs: lobby.roundLatLngs[curRoundIdx],
                     }
                 }
+                //res.score is the incomming score from the user just made last round
                 
                 console.log(lobby.roundScores);
 
@@ -543,6 +556,9 @@ wsServer.on("request", (request) => {
             }
 
             broadcastToLobby(curLobbyId, JSON.stringify(payload));
+
+
+            
             
         }
 

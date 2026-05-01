@@ -12,7 +12,7 @@ function getRandomIdx(array_size: number): number {
 export default function Lobby() {
     const [clientId, setClientId] = useState<string | null>(null);
     const [ws, setWs] = useState<WebSocket | null>(null);
-    const [state, setState] = useState<"noName" | "lobby" | "error" | "inGame">("noName");
+    const [state, setState] = useState<"noName" | "lobby" | "error" | "inGame" | "gameOver">("noName");
     const [usernameError, setUsernameError] = useState<string | null>(null);
     const [isHost, setIsHost] = useState<boolean>(false);
     const [scores, setScores] = useState<[[string, number]]>();
@@ -28,6 +28,7 @@ export default function Lobby() {
     const [maxTeam2HP, setMaxTeam2HP] = useState<number | null>(null);
     const [team1MaxDamage, setTeam1MaxDamage] = useState<number | null>(null);
     const [team2MaxDamage, setTeam2MaxDamage] = useState<number | null>(null);
+    const [winner, setWinner] = useState<string| null>(null);
     
 
     //Map Use States
@@ -114,6 +115,11 @@ export default function Lobby() {
                 console.log(data.team2);
                 setTeam1(data.team1);
                 setTeam2(data.team2);                
+            }
+            
+            if(data.method === "gameOver"){
+                setState("gameOver");
+                setWinner(data.winner);
             }
         };
 
@@ -356,6 +362,39 @@ export default function Lobby() {
             }
 
 
+            {
+                state === "gameOver" && (
+                   <div style={{
+                        position: 'fixed',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        background: 'white',
+                        borderRadius: '1rem',
+                        boxShadow: '0 8px 32px rgba(0,0,0,0.25)',
+                        padding: '2rem 2.5rem 1.5rem 2.5rem',
+                        zIndex: 10000,
+                        minWidth: '320px',
+                        minHeight: '120px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                    }}>
+                        {
+                            winner === "team1" ? (
+                                <div>
+                                    Congrats Team1
+                                </div>
+                            ) : (
+                                <div>
+                                    Congrats Team2
+                                </div>
+                            )
+                        }
+                   </div>
+                )
+            }
             
 
 
