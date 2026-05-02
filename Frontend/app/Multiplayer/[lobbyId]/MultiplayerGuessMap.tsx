@@ -19,10 +19,12 @@ interface MultiplayerGuessMapProps{
     isHost: boolean,
     setLoadGame: (bool: boolean) => void,
     timeHasExpired: boolean,
+    setResultsRequested: (bool: boolean) => void,
+    setState: (state: "noName" | "lobby" | "error" | "inGame" | "gameOver") => void,
 }
 
 
-export default function MultiplayerGuessMap({lat, long, rerollCity, ws, isHost, setLoadGame, timeHasExpired}: MultiplayerGuessMapProps): React.ReactNode{
+export default function MultiplayerGuessMap({lat, long, rerollCity, ws, isHost, setLoadGame, timeHasExpired, setResultsRequested, setState}: MultiplayerGuessMapProps): React.ReactNode{
     const divRef = useRef<HTMLDivElement>(null);
     const mapRef = useRef<L.Map | null>(null);
     const curMarker = useRef<L.Marker<any> | null>(null);
@@ -127,14 +129,11 @@ export default function MultiplayerGuessMap({lat, long, rerollCity, ws, isHost, 
         ws?.send(JSON.stringify({ method: 'reset'}));
         
         if (isHost) rerollCity();
-
-        
-        
-
     }
 
     function handleGameOver(): void{
-
+        setResultsRequested(true);
+        setState("gameOver");
     }
 
     useEffect(() => {
@@ -197,7 +196,7 @@ export default function MultiplayerGuessMap({lat, long, rerollCity, ws, isHost, 
                 {
                     gameOver && (
                         <>
-                            <p>Game Over</p>
+                            <p style={{ color: '#ef4444' }}>Game Over</p>
                             <button className="gameOverBtn" onClick={handleGameOver} style={{padding: '2px 4px', cursor: 'pointer'}}>See Results</button> 
                         </>
                     )

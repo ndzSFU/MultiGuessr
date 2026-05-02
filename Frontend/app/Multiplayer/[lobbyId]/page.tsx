@@ -29,6 +29,7 @@ export default function Lobby() {
     const [team1MaxDamage, setTeam1MaxDamage] = useState<number | null>(null);
     const [team2MaxDamage, setTeam2MaxDamage] = useState<number | null>(null);
     const [winner, setWinner] = useState<string| null>(null);
+    const [resultsRequested, setResultsRequested] = useState<boolean>(false);
     
 
     //Map Use States
@@ -118,7 +119,7 @@ export default function Lobby() {
             }
             
             if(data.method === "gameOver"){
-                setState("gameOver");
+                // setState("gameOver");
                 setWinner(data.winner);
             }
         };
@@ -318,9 +319,7 @@ export default function Lobby() {
             {
                 state === "inGame" && ws && (
                     <div>
-                        
-                        <Game ws={ws} isHost={isHost} setShowRoundScores={setShowRoundScores} gameMode={gameMode} showRoundScores={showRoundScores}></Game>
-                       
+                        <Game ws={ws} isHost={isHost} setShowRoundScores={setShowRoundScores} gameMode={gameMode} showRoundScores={showRoundScores} setResultsRequested={setResultsRequested} setState={setState}></Game>
                     </div>
                 )                
             }
@@ -363,7 +362,7 @@ export default function Lobby() {
 
 
             {
-                state === "gameOver" && (
+                resultsRequested && (
                    <div style={{
                         position: 'fixed',
                         top: '50%',
@@ -380,6 +379,7 @@ export default function Lobby() {
                         flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'center',
+                        color: "black",
                     }}>
                         {
                             winner === "team1" ? (
