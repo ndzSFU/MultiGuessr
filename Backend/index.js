@@ -482,13 +482,18 @@ wsServer.on("request", (request) => {
                 if(lobby.gameMode === "knockout"){
                     let team1Max = -1;
                     let team2Max = -1;
+                    let team1Scorer = ""
+                    let team2Scorer = ""
                     for(const score of lobby.roundScores[curRoundIdx]){
                         if(lobby.team1.includes(score[0])){
-                            // Each set of score is stored as [[username, score], ... ]
+                            // Each set of user_and_score is stored as [[username, score], ... ]
+                            // so user_and_score[0] is the username and [1] is the score
+                            team1Scorer = score[0]
                             if(score[1] > team1Max){
                                 team1Max = score[1];
                             }
                         }else{
+                            team2Scorer = score[0]
                             if(score[1] > team2Max){
                                 team2Max = score[1];
                             }
@@ -527,10 +532,12 @@ wsServer.on("request", (request) => {
                         scores: totalScores,
                         roundScores: lobby.roundScores[curRoundIdx],
                         roundLatLngs: lobby.roundLatLngs[curRoundIdx],
-                        team1Max: team1Max,
-                        team2Max: team2Max,
+                        team1Max,
+                        team2Max,
                         team1HP: lobby.team1HP,
                         team2HP: lobby.team2HP,
+                        team1Scorer,
+                        team2Scorer,
                     }
                 } else{
                     payload = {

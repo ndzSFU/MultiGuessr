@@ -7,6 +7,12 @@ import {cities, City} from '../../Map/cities';
 import MultiplayerGuessMap from './MultiplayerGuessMap';
 import TimerBox from './TimerBox';
 
+function playAudio(pathToAudio: string): void{
+    const audio = new Audio(pathToAudio);
+    audio.play();
+
+}
+
 async function getImageIds(Lat: number, Lon: number): Promise<any> {
     const URL: string = `http://localhost:9090/api/mapillary-images?lat=${Lat}&lon=${Lon}&token=${encodeURIComponent(process.env.NEXT_PUBLIC_MAPILLARY_ACCESS_TOKEN ?? '')}`;
 
@@ -163,6 +169,9 @@ function Game({ ws, isHost, setShowRoundScores, gameMode, showRoundScores, setRe
 
             if(data.method === 'guessMade'){
                 setFirstGuessMade(true);
+                if(gameMode === "knockout"){
+                    playAudio("/audio/knockout_timer_begin_alert.mp3")
+                }
             }
         }
 
