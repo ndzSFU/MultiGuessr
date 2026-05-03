@@ -186,9 +186,7 @@ function broadcastToLobby(lobbyId, stringifiedMessage, lobbiesMap = lobbies, cli
         return;
     }
 
-    for(const clientID of lobby.playerIDS){
-        clients.get(clientID).connection.send(stringifiedMessage);
-    }
+    if(lobby.playerIDS !== undefined) lobby.playerIDS = lobby.playerIDS.filter((playerId) => safeSendToClient(playerId, stringifiedMessage, clientsMap));
 }
 
 // Probably don't need anymore? 
