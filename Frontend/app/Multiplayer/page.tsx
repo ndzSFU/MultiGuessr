@@ -66,6 +66,19 @@ const maxPlayersOptions = [
         {value: "timerTrigger", label:"Triggered Timer"},
     ];
 
+    const regions = [
+        { value: "world", label: "Worldwide" },
+        { value: "canada", label: "Canada" },
+        { value: "3000", label: "3,000 HP" },
+        { value: "4000", label: "4,000 HP" },
+        { value: "5000", label: "5,000 HP" },
+        { value: "6000", label: "6,000 HP" },
+        { value: "7000", label: "7,000 HP" },
+        { value: "8000", label: "8,000 HP" },
+        { value: "9000", label: "9,000 HP" },
+        { value: "10000", label: "10,000 HP" },
+    ];
+
 export default function Multiplayer() {
 
     const [mode, setMode] = useState<'menu' | 'create' | 'settings' | 'join'>('menu');
@@ -75,7 +88,7 @@ export default function Multiplayer() {
     const [gameMode, setGameMode] = useState<{ value: string, label: string } | null>(gameModes[0]);
     const [timeLimit, setTimeLimit] = useState<{ value: string, label: string } | null>(null);
     const [HP, setHP] = useState<{ value: string, label: string } | null>(null);
-
+    const [region, setRegion] = useState<{ value: string, label: string } | null>(null);
     
 
     const router = useRouter();
@@ -229,6 +242,17 @@ export default function Multiplayer() {
                             <button type="button" onClick={sendSettings}>Create Lobby</button>
                         )
                     }
+
+                    <div>
+                        <label>Region</label>
+                        <Select
+                            options={regions}
+                            value={region}
+                            onChange={setRegion}
+                            styles={customSelectStyles}
+                            placeholder="Select Region"
+                        />
+                    </div>
                     
                 </>
             )}

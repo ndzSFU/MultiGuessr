@@ -186,7 +186,11 @@ function broadcastToLobby(lobbyId, stringifiedMessage, lobbiesMap = lobbies, cli
         return;
     }
 
-    if(lobby.playerIDS !== undefined) lobby.playerIDS = lobby.playerIDS.filter((playerId) => safeSendToClient(playerId, stringifiedMessage, clientsMap));
+    if(lobby.playerIDS !== undefined) {
+         lobby.playerIDS = lobby.playerIDS.filter((playerId) => safeSendToClient(playerId, stringifiedMessage, clientsMap));
+    } else{
+        console.log("Player ids not defined, broadcast not made!!!")
+    }
 }
 
 // Probably don't need anymore? 
