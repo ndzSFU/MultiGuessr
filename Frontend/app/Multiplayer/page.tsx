@@ -109,11 +109,11 @@ export default function Multiplayer() {
     // Ts deprecatd for now
     function handleJoinLobby(event: React.SubmitEvent<HTMLFormElement>) {
         event.preventDefault();
-        // const formData = new FormData(event.currentTarget);
-        // const lobbyId = formData.get('lobbyId') as string;
-        // setLobbyId(lobbyId);
-        // console.log("Lobby Code: " + lobbyId);
-        // setMode('create');
+        const formData = new FormData(event.currentTarget);
+        const lobbyId = formData.get('lobbyId') as string;
+        setLobbyId(lobbyId);
+        console.log("Lobby Code: " + lobbyId);
+        setMode('create');
     }
 
     async function sendSettings() {
