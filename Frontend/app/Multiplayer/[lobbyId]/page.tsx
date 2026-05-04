@@ -30,7 +30,9 @@ export default function Lobby() {
     const [team2MaxDamage, setTeam2MaxDamage] = useState<number | null>(null);
     const [winner, setWinner] = useState<string| null>(null);
     const [resultsRequested, setResultsRequested] = useState<boolean>(false);
-    
+    const [team1DamageMultiplier, setTeam1DamageMultiplier] = useState<string>("1");
+    const [team2DamageMultiplier, setTeam2DamageMultiplier] = useState<string>("1");
+    // const [multiplierMode, setMultiplierMode] = useState<string | null>(null);
 
     //Map Use States
 
@@ -83,7 +85,9 @@ export default function Lobby() {
                 setMaxTeam1HP(parseInt(data.team1HP, 10));
                 setCurTeam2HP(parseInt(data.team2HP, 10));
                 setMaxTeam2HP(parseInt(data.team2HP, 10));
-                
+                // if(data.multiplierMode !== undefined){
+                //     setMultiplierMode(data.multiplierMode);
+                // }
             }
 
             if(data.method === "finalGuessMade"){
@@ -98,8 +102,8 @@ export default function Lobby() {
                     setCurTeam2HP(parseInt(data.team2HP, 10));
                     setTeam1MaxDamage(parseInt(data.team1Max, 10));
                     setTeam2MaxDamage(parseInt(data.team2Max, 10));
-                    console.log("New team1 hp: " + parseInt(data.team1HP, 10))
-                    console.log("New team2 hp: " + parseInt(data.team2HP, 10))
+                    setTeam1DamageMultiplier(data.team1DamageMultiplier);
+                    setTeam2DamageMultiplier(data.team2DamageMultiplier);
                 }
             }
 
@@ -322,6 +326,14 @@ export default function Lobby() {
                         <Game ws={ws} isHost={isHost} setShowRoundScores={setShowRoundScores} gameMode={gameMode} showRoundScores={showRoundScores} setResultsRequested={setResultsRequested} setState={setState}></Game>
                     </div>
                 )                
+            }
+
+            {
+                 state === "inGame" && gameMode === "knockout" && (
+                    <div>
+                        
+                    </div>
+                 )
             }
 
             {

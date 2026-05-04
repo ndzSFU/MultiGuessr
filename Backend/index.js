@@ -136,7 +136,7 @@ api.post('/api/createLobby', (req, res) => {
     lobbies.set(req.body.lobbyId, {gameMode: req.body.gameMode, timeLimit: req.body.timeLimit, maxPlayers: req.body.maxPlayers, maxRounds: req.body.maxRounds, curRound: 1, host: "",
                                    playerIDS: [], state: "lobby", scoreMap: new Map(), guessesMade: 0, roundScores: [[]], roundLatLngs: [[]], team1: [], team2: [], team1HP: req.body.HP, 
                                    team2HP: req.body.HP, region: req.body.region, damageMultiplierMode: req.body.multiplierMode, damageMultiplierIncrement: req.body.multiplierIncrement, 
-                                   damageMultiplier: 1, });
+                                   team1DamageMultiplier: 1, team2DamageMultiplier: 1, });
     console.log(lobbies);
     res.send("1");
 })
@@ -391,6 +391,7 @@ wsServer.on("request", (request) => {
                     playerScoreMap: playerScoreMap,
                     team1HP: lobby.team1HP,
                     team2HP: lobby.team2HP,
+                    multiplierMode: lobby.multiplierMode
                 }
 
                 
@@ -510,14 +511,31 @@ wsServer.on("request", (request) => {
 
                         if(team1Max > -1 && team2Max > -1) break;
                     }
-
+                    let winner = ""
                     let damage = 0;
-                    if(team1Max > team2Max){
-                        damage = team1Max - team2Max;
+
+                    if(team1Max === team2Max){
+                        winner = "tie";
+                    } else if(team1Max > team2Max){
+                        damage = (team1Max - team2Max) * lobby.team1DamageMultiplier;
                         lobby.team2HP -= damage;
+                        winner = "team1";
                     }else {
-                        damage = team2Max - team1Max;
+                        damage = (team2Max - team1Max) * lobby.team2DamageMultiplier;
                         lobby.team1HP -= damage;
+                        winner = "team2";
+                    }
+
+                    if(lobby.damageMultiplierMode === "winnerGetsMultiplier"){
+                        if(winner === "team1"){
+                            lobby.team1DamageMultiplier += lobby.damageMultiplierIncrement;
+                        } else if (winner === "team2"){
+                            lobby.team2DamageMultiplier += lobby.damageMultiplierIncrement;
+                        }
+                    }else{
+                        //Per round dmg mult, inc both
+                        lobby.team1DamageMultiplier += lobby.damageMultiplierIncrement;
+                        lobby.team2DamageMultiplier += lobby.damageMultiplierIncrement;
                     }
 
                     if(lobby.team1HP <= 0 || lobby.team2HP <= 0){
@@ -545,6 +563,9 @@ wsServer.on("request", (request) => {
                         team2HP: lobby.team2HP,
                         team1Scorer,
                         team2Scorer,
+                        team1DamageMultiplier: lobby.team1DamageMultiplier,
+                        team2DamageMultiplier: lobby.team2DamageMultiplier,
+                        damage,
                     }
                 } else{
                     payload = {
