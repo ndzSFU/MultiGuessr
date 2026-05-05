@@ -32,7 +32,7 @@ export default function Lobby() {
     const [resultsRequested, setResultsRequested] = useState<boolean>(false);
     const [team1DamageMultiplier, setTeam1DamageMultiplier] = useState<string>("1");
     const [team2DamageMultiplier, setTeam2DamageMultiplier] = useState<string>("1");
-    // const [multiplierMode, setMultiplierMode] = useState<string | null>(null);
+    const [multiplierMode, setMultiplierMode] = useState<string | null>(null);
 
     //Map Use States
 
@@ -85,9 +85,9 @@ export default function Lobby() {
                 setMaxTeam1HP(parseInt(data.team1HP, 10));
                 setCurTeam2HP(parseInt(data.team2HP, 10));
                 setMaxTeam2HP(parseInt(data.team2HP, 10));
-                // if(data.multiplierMode !== undefined){
-                //     setMultiplierMode(data.multiplierMode);
-                // }
+                if(data.multiplierMode !== undefined){
+                    setMultiplierMode(data.multiplierMode);
+                }
             }
 
             if(data.method === "finalGuessMade"){
@@ -331,7 +331,17 @@ export default function Lobby() {
             {
                  state === "inGame" && gameMode === "knockout" && (
                     <div>
-                        
+                        {
+                            multiplierMode === "everyRoundIncrement" ? (
+                                <div>
+                                    
+                                </div>
+                            ) : (
+                                <div>
+
+                                </div>
+                            )
+                        }
                     </div>
                  )
             }

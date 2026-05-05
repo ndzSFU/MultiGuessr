@@ -73,6 +73,7 @@ const maxPlayersOptions = [
 
     const multiplierIncrementOptions = [
         { value: "0", label: "No Damage Multiplier" },
+        { value: "0.1", label: "0.1" },
         { value: "0.25", label: "0.25" },
         { value: "0.5", label: "0.5" },
         { value: "0.75", label: "0.75" },

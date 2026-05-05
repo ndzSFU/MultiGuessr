@@ -46,7 +46,7 @@ function getMapillaryCacheKey(lat, lon){
 
 //Returns a promise
 async function fetchMapillaryImageIds(lat, lon, accessToken){
-    const bboxOffset = 0.001;
+    const bboxOffset = 0.002;
 
     const minLon = lon - bboxOffset;
     const maxLon = lon + bboxOffset;
@@ -135,7 +135,7 @@ api.post('/api/createLobby', (req, res) => {
     //Score stores total scores
     lobbies.set(req.body.lobbyId, {gameMode: req.body.gameMode, timeLimit: req.body.timeLimit, maxPlayers: req.body.maxPlayers, maxRounds: req.body.maxRounds, curRound: 1, host: "",
                                    playerIDS: [], state: "lobby", scoreMap: new Map(), guessesMade: 0, roundScores: [[]], roundLatLngs: [[]], team1: [], team2: [], team1HP: req.body.HP, 
-                                   team2HP: req.body.HP, region: req.body.region, damageMultiplierMode: req.body.multiplierMode, damageMultiplierIncrement: req.body.multiplierIncrement, 
+                                   team2HP: req.body.HP, region: req.body.region, damageMultiplierMode: req.body.multiplierMode, damageMultiplierIncrement: parseFloat(req.body.multiplierIncrement), 
                                    team1DamageMultiplier: 1, team2DamageMultiplier: 1, });
     console.log(lobbies);
     res.send("1");
