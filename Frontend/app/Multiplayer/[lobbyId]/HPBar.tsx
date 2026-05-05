@@ -5,7 +5,7 @@ interface HPBarProps {
     position: 'left' | 'right';
 }
 
-export default function HPBar({ label, hp, maxHp, position }: HPBarProps) {
+export default function HPBar({ label, hp, maxHp, position}: HPBarProps) {
     const currentHp = hp ?? maxHp;
     const hpPercentage = Math.max(0, Math.min(100, (currentHp / maxHp) * 100));
     

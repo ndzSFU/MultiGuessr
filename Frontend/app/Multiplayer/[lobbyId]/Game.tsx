@@ -101,6 +101,7 @@ function Game({ ws, isHost, setShowRoundScores, gameMode, showRoundScores, setRe
     }
 
     function rerollCity(attempt = 0): void{
+
         let idx: number = getRandomIdx(cities.length);
 
         setShowRoundScores(false);
@@ -193,11 +194,12 @@ function Game({ ws, isHost, setShowRoundScores, gameMode, showRoundScores, setRe
     return (
         <div className="relative w-full h-full">
             {loadGame && ( gameMode === "setRounds" || (firstGuessMade && (gameMode === "knockout" || gameMode === "timerTrigger"))) && !showRoundScores && (
-                <TimerBox
-                    seconds={roundTimerSeconds}
-                    isActive={loadGame}
-                    onExpire={() => setTimeHasExpired(true)}
-                />
+                    <TimerBox 
+                        seconds={roundTimerSeconds}
+                        isActive={loadGame}
+                        onExpire={() => setTimeHasExpired(true)}
+                       
+                    />
             )}
             {
                 startingImageIdx !== undefined && imageIds.length > 0 && chosenCity && ws && loadGame && (

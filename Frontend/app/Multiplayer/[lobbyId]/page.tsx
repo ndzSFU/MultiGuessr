@@ -81,12 +81,17 @@ export default function Lobby() {
                 console.log(data.playerScoreMap);
                 setState("inGame");
                 console.log("Loading Game!");
+                console.log("Backend sent multiplierMode:", data.multiplierMode);
+                console.log("TESTSTST")
                 setCurTeam1HP(parseInt(data.team1HP, 10));
                 setMaxTeam1HP(parseInt(data.team1HP, 10));
                 setCurTeam2HP(parseInt(data.team2HP, 10));
                 setMaxTeam2HP(parseInt(data.team2HP, 10));
                 if(data.multiplierMode !== undefined){
                     setMultiplierMode(data.multiplierMode);
+                    console.log("Set multiplierMode to:", data.multiplierMode);
+                } else {
+                    console.log("WARNING: multiplierMode is undefined from backend");
                 }
             }
 
@@ -98,6 +103,7 @@ export default function Lobby() {
 
                 if(data.team1HP !== undefined && data.team2HP !== undefined && data.team1Max !== undefined && data.team2Max !== undefined){
                     console.log("Damage dealt!")
+                    console.log("Received multipliers:", { team1: data.team1DamageMultiplier, team2: data.team2DamageMultiplier });
                     setCurTeam1HP(parseInt(data.team1HP, 10));
                     setCurTeam2HP(parseInt(data.team2HP, 10));
                     setTeam1MaxDamage(parseInt(data.team1Max, 10));
@@ -135,6 +141,14 @@ export default function Lobby() {
             socket.close();
         };
     }, [lobbyId]);
+
+    useEffect(() => {
+        console.log("Multiplier state updated:", {
+            multiplierMode: multiplierMode,
+            team1DamageMultiplier: team1DamageMultiplier,
+            team2DamageMultiplier: team2DamageMultiplier,
+        });
+    }, [multiplierMode, team1DamageMultiplier, team2DamageMultiplier]);
 
     function handleUsername(event: React.SubmitEvent<HTMLFormElement>) {
         event.preventDefault();
@@ -195,9 +209,9 @@ export default function Lobby() {
                         {
                             usernames?.map((username) =>{
                                 return (
-                                <div>
-                                    {username}
-                                </div>
+                                    <div key={username}>
+                                        {username}
+                                    </div>
                                 )
                             })
                         }
@@ -210,7 +224,7 @@ export default function Lobby() {
                                         {
                                             team1?.map((username) =>{
                                                 return (
-                                                <div>
+                                                <div key={username}>
                                                     {username}
                                                 </div>
                                                 )
@@ -223,7 +237,7 @@ export default function Lobby() {
                                         {
                                             team2?.map((username) =>{
                                                 return (
-                                                <div>
+                                                <div key={username}>
                                                     {username}
                                                 </div>
                                                 )
@@ -331,17 +345,24 @@ export default function Lobby() {
             {
                  state === "inGame" && gameMode === "knockout" && (
                     <div>
-                        {
-                            multiplierMode === "everyRoundIncrement" ? (
-                                <div>
-                                    
+                        {multiplierMode === "everyRoundIncrement" && (
+                                <div style={{
+                                    position: 'fixed',
+                                    top: '12%',
+                                    left: '50%',
+                                    transform: 'translate(-50%, -50%)',
+                                    padding: '0.75rem 1.25rem',
+                                    borderRadius: '9999px',
+                                    background: 'rgba(15, 23, 42, 0.85)',
+                                    color: 'white',
+                                    fontWeight: "bold",
+                                    fontSize: '1.1rem',
+                                    boxShadow: '0 8px 24px rgba(0, 0, 0, 0.25)',
+                                    zIndex: 99999,
+                                }}>
+                                    {team1DamageMultiplier !== null ? `x${team1DamageMultiplier}` : 'x1'}
                                 </div>
-                            ) : (
-                                <div>
-
-                                </div>
-                            )
-                        }
+                        )}
                     </div>
                  )
             }
@@ -376,8 +397,69 @@ export default function Lobby() {
             {
                 state === "inGame" && gameMode === "knockout" && curTeam1HP !== null && maxTeam1HP !== null && curTeam2HP !== null && maxTeam2HP !== null && (
                     <div>
-                        <HPBar label="Team 1" hp={curTeam1HP} maxHp={maxTeam1HP} position="left" />
-                        <HPBar label="Team 2" hp={curTeam2HP} maxHp={maxTeam2HP} position="right" />
+                        <HPBar
+                            label="Team 1"
+                            hp={curTeam1HP}
+                            maxHp={maxTeam1HP}
+                            position="left"
+                        />
+                        {
+                            multiplierMode === "winnerGetsMultiplier" && (
+                                <div style={{
+                                    position: 'fixed',
+                                    top: '6.5%',
+                                    left: '84.5%',
+                                    display: "flex",
+                                    width: '44px', 
+                                    height: '30px',
+                                    transform: 'translate(-50%, -50%)',
+                                    padding: '0.75rem 1.25rem',
+                                    borderRadius: '9999px',
+                                    background: 'rgba(15, 23, 42, 0.85)',
+                                    color: 'white',
+                                    fontWeight: "bold",
+                                    fontSize: '1.1rem',
+                                    boxShadow: '0 8px 24px rgba(0, 0, 0, 0.25)',
+                                    alignItems: "center",
+                                    justifyContent: 'center',
+                                    zIndex: 99999,
+                                }}>
+                                    {team2DamageMultiplier !== null ? `x${team2DamageMultiplier}` : 'x1'}
+                                </div>
+                            )
+                        }
+                        <HPBar
+                            label="Team 2"
+                            hp={curTeam2HP}
+                            maxHp={maxTeam2HP}
+                            position="right"
+                        />
+
+                        {
+                            multiplierMode === "winnerGetsMultiplier" && (
+                                <div style={{
+                                    position: 'fixed',
+                                    top: '6.5%',
+                                    left: '15.5%',
+                                    display: "flex",
+                                    width: '44px', 
+                                    height: '30px',
+                                    transform: 'translate(-50%, -50%)',
+                                    padding: '0.75rem 1.25rem',
+                                    borderRadius: '9999px',
+                                    background: 'rgba(15, 23, 42, 0.85)',
+                                    color: 'white',
+                                    fontWeight: "bold",
+                                    fontSize: '1.1rem',
+                                    boxShadow: '0 8px 24px rgba(0, 0, 0, 0.25)',
+                                    alignItems: "center",
+                                    justifyContent: 'center',
+                                    zIndex: 99999,
+                                }}>
+                                    {team1DamageMultiplier !== null ? `x${team1DamageMultiplier}` : 'x1'}
+                                </div>
+                            )
+                        }
                     </div>  
                 )                
             }

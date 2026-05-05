@@ -135,7 +135,7 @@ api.post('/api/createLobby', (req, res) => {
     //Score stores total scores
     lobbies.set(req.body.lobbyId, {gameMode: req.body.gameMode, timeLimit: req.body.timeLimit, maxPlayers: req.body.maxPlayers, maxRounds: req.body.maxRounds, curRound: 1, host: "",
                                    playerIDS: [], state: "lobby", scoreMap: new Map(), guessesMade: 0, roundScores: [[]], roundLatLngs: [[]], team1: [], team2: [], team1HP: req.body.HP, 
-                                   team2HP: req.body.HP, region: req.body.region, damageMultiplierMode: req.body.multiplierMode, damageMultiplierIncrement: parseFloat(req.body.multiplierIncrement), 
+                                   team2HP: req.body.HP, region: req.body.region, multiplierMode: req.body.multiplierMode, damageMultiplierIncrement: parseFloat(req.body.multiplierIncrement), 
                                    team1DamageMultiplier: 1, team2DamageMultiplier: 1, });
     console.log(lobbies);
     res.send("1");
@@ -394,6 +394,8 @@ wsServer.on("request", (request) => {
                     multiplierMode: lobby.multiplierMode
                 }
 
+                console.log("MultiMode: " + lobby.multiplierMode);
+
                 
                 
                 lobby.state = "inRound"
@@ -526,7 +528,7 @@ wsServer.on("request", (request) => {
                         winner = "team2";
                     }
 
-                    if(lobby.damageMultiplierMode === "winnerGetsMultiplier"){
+                    if(lobby.multiplierMode === "winnerGetsMultiplier"){
                         if(winner === "team1"){
                             lobby.team1DamageMultiplier += lobby.damageMultiplierIncrement;
                         } else if (winner === "team2"){
