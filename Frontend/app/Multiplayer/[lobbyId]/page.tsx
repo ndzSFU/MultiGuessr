@@ -33,6 +33,7 @@ export default function Lobby() {
     const [team1DamageMultiplier, setTeam1DamageMultiplier] = useState<string>("1");
     const [team2DamageMultiplier, setTeam2DamageMultiplier] = useState<string>("1");
     const [multiplierMode, setMultiplierMode] = useState<string | null>(null);
+    const [region, setRegion] = useState<string>("world");
 
     //Map Use States
 
@@ -93,6 +94,7 @@ export default function Lobby() {
                 } else {
                     console.log("WARNING: multiplierMode is undefined from backend");
                 }
+                setRegion(data.region);
             }
 
             if(data.method === "finalGuessMade"){
@@ -337,7 +339,7 @@ export default function Lobby() {
             {
                 state === "inGame" && ws && (
                     <div>
-                        <Game ws={ws} isHost={isHost} setShowRoundScores={setShowRoundScores} gameMode={gameMode} showRoundScores={showRoundScores} setResultsRequested={setResultsRequested} setState={setState}></Game>
+                        <Game ws={ws} isHost={isHost} setShowRoundScores={setShowRoundScores} gameMode={gameMode} showRoundScores={showRoundScores} setResultsRequested={setResultsRequested} setState={setState} region={region}></Game>
                     </div>
                 )                
             }

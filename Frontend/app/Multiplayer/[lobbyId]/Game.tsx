@@ -3,7 +3,7 @@
 import { JSX, useEffect, useRef, useState } from 'react';
 import RenderMapillary from '../../Map/renderMapillary';
 import { NextResponse } from 'next/server';
-import {cities, City} from '../../Map/cities';
+import {cities, canada_cities, usa_cities, na_cities, City} from '../../Map/cities';
 import MultiplayerGuessMap from './MultiplayerGuessMap';
 import TimerBox from './TimerBox';
 
@@ -37,6 +37,21 @@ function getRandomIdx(array_size: number): number{
     return Math.floor(Math.random() * array_size);
 }
 
+function mapRegionToCityPool(region: string): City[]{
+
+    switch(region){
+        case "canada":
+            return canada_cities;
+        case "usa":
+            return usa_cities;
+        case "na":
+            return na_cities;
+        default:
+            return cities;
+    }
+    
+}
+
 interface GameProps {
     ws: WebSocket | null;
     isHost: true | false;
@@ -45,9 +60,10 @@ interface GameProps {
     showRoundScores: boolean;
     setResultsRequested: (bool: boolean) => void;
     setState: (state: "noName" | "lobby" | "error" | "inGame" | "gameOver") => void;
+    region: string;
 }
 
-function Game({ ws, isHost, setShowRoundScores, gameMode, showRoundScores, setResultsRequested, setState}: GameProps): JSX.Element {
+function Game({ ws, isHost, setShowRoundScores, gameMode, showRoundScores, setResultsRequested, setState, region}: GameProps): JSX.Element {
     const hasInitialized = useRef(false);
     const [timeHasExpired, setTimeHasExpired] = useState<boolean>(false);
     const failedImageIdsRef = useRef<Set<string>>(new Set());
@@ -102,27 +118,29 @@ function Game({ ws, isHost, setShowRoundScores, gameMode, showRoundScores, setRe
 
     function rerollCity(attempt = 0): void{
 
-        let idx: number = getRandomIdx(cities.length);
+        const city_pool = mapRegionToCityPool(region);
+
+        let idx: number = getRandomIdx(city_pool.length);
 
         setShowRoundScores(false);
         setTimeHasExpired(false);
 
         while(chosenCitiesIdxs.includes(idx, 0)){
-            idx = getRandomIdx(cities.length);
+            idx = getRandomIdx(city_pool.length);
         }
 
         chosenCitiesIdxs.push(idx);
 
-        console.log("Chosen City: " + cities[idx].name)
+        console.log("Chosen City: " + city_pool[idx].name)
 
         console.log("Chosen Cities:" + chosenCitiesIdxs);
 
-        setChosenCity(cities[idx]);
+        setChosenCity(city_pool[idx]);
 
         setImageIds([]);
         failedImageIdsRef.current.clear();
 
-        getImageIds(cities[idx].lat, cities[idx].long).then(data => SetAndLogImages(data, cities[idx], attempt)).catch(error => console.error('Error fetching image IDs:', error));
+        getImageIds(city_pool[idx].lat, city_pool[idx].long).then(data => SetAndLogImages(data, city_pool[idx], attempt)).catch(error => console.error('Error fetching image IDs:', error));
 
     }
 

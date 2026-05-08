@@ -67,12 +67,14 @@ const maxPlayersOptions = [
     ];
 
     const multiplierModes = [
-        { value: "everyRoundIncrement", label: "Every Round Increment" },
-        { value: "winnerGetsMultiplier", label: "Winner Gets Multiplier" },
+        { value: "everyRoundIncrement", label: "Casual" },
+        { value: "winnerGetsMultiplier", label: "Competitive" },
+        // { value: "loserGetsMultiplier", label: "Handicap" },
     ];
 
     const multiplierIncrementOptions = [
         { value: "0", label: "No Damage Multiplier" },
+         { value: "0.05", label: "0.05" },
         { value: "0.1", label: "0.1" },
         { value: "0.25", label: "0.25" },
         { value: "0.5", label: "0.5" },
@@ -83,6 +85,8 @@ const maxPlayersOptions = [
     const regions = [
         { value: "world", label: "Worldwide" },
         { value: "canada", label: "Canada" },
+        { value: "usa", label: "USA" },
+        { value: "na", label: "North America" },
     ];
 
 export default function Multiplayer() {

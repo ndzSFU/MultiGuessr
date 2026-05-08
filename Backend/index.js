@@ -391,7 +391,8 @@ wsServer.on("request", (request) => {
                     playerScoreMap: playerScoreMap,
                     team1HP: lobby.team1HP,
                     team2HP: lobby.team2HP,
-                    multiplierMode: lobby.multiplierMode
+                    multiplierMode: lobby.multiplierMode,
+                    region: lobby.region,
                 }
 
                 console.log("MultiMode: " + lobby.multiplierMode);
