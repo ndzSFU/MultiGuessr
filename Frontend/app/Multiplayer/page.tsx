@@ -69,7 +69,7 @@ const maxPlayersOptions = [
     const multiplierModes = [
         { value: "everyRoundIncrement", label: "Casual" },
         { value: "winnerGetsMultiplier", label: "Competitive" },
-        // { value: "loserGetsMultiplier", label: "Handicap" },
+        { value: "loserGetsMultiplier", label: "Handicap" },
     ];
 
     const multiplierIncrementOptions = [

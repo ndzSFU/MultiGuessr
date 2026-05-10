@@ -34,6 +34,7 @@ export default function Lobby() {
     const [team2DamageMultiplier, setTeam2DamageMultiplier] = useState<string>("1");
     const [multiplierMode, setMultiplierMode] = useState<string | null>(null);
     const [region, setRegion] = useState<string>("world");
+    const [showScoreCalculations, setShowScoreCalculations] = useState<Boolean>(false);
 
     //Map Use States
 
@@ -409,13 +410,13 @@ export default function Lobby() {
                             multiplierMode === "winnerGetsMultiplier" && (
                                 <div style={{
                                     position: 'fixed',
-                                    top: '6.5%',
-                                    left: '84.5%',
+                                    top: '9%',
+                                    left: '77%',
                                     display: "flex",
                                     width: '44px', 
                                     height: '30px',
                                     transform: 'translate(-50%, -50%)',
-                                    padding: '0.75rem 1.25rem',
+                                    padding: '0.55rem 1.05rem',
                                     borderRadius: '9999px',
                                     background: 'rgba(15, 23, 42, 0.85)',
                                     color: 'white',
@@ -441,8 +442,8 @@ export default function Lobby() {
                             multiplierMode === "winnerGetsMultiplier" && (
                                 <div style={{
                                     position: 'fixed',
-                                    top: '6.5%',
-                                    left: '15.5%',
+                                    top: '9%',
+                                    left: '23%',
                                     display: "flex",
                                     width: '44px', 
                                     height: '30px',
@@ -464,6 +465,14 @@ export default function Lobby() {
                         }
                     </div>  
                 )                
+            }
+
+            {
+                state === "inGame" && gameMode === "knockout" && (
+                    <div>
+
+                    </div>
+                )
             }
 
 

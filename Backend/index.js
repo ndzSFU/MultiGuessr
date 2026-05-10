@@ -535,6 +535,13 @@ wsServer.on("request", (request) => {
                         } else if (winner === "team2"){
                             lobby.team2DamageMultiplier += lobby.damageMultiplierIncrement;
                         }
+                    else if(lobby.multiplierMode === "loserGetsMultiplier"){
+                        if(winner === "team2"){
+                            lobby.team1DamageMultiplier += lobby.damageMultiplierIncrement;
+                        } else if (winner === "team1"){
+                            lobby.team2DamageMultiplier += lobby.damageMultiplierIncrement;
+                        }
+                    }
                     }else{
                         //Per round dmg mult, inc both
                         lobby.team1DamageMultiplier += lobby.damageMultiplierIncrement;
