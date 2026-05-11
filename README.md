@@ -71,3 +71,7 @@ Add Teams system and differnet variants/gamemodes for it (Main one knockout mode
 Add a final scoreboard graph, maybe displaying points over time? ()
 
 Important Notes: When LatLng are stored as numbers in an array pair, the Lat is always index 0 and lg index 1.
+
+Remember to update cities list in frontend and on backend
+
+Note should have a .env in backend and front end now (If you switch devices)

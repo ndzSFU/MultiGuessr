@@ -88,12 +88,14 @@ async function fetchMapillaryImageIds(lat, lon, accessToken){
 api.get('/api/mapillary-images', async (req, res) => {
     const lat = Number(req.query.lat);
     const lon = Number(req.query.lon);
-    const accessToken = typeof req.query.token === 'string' ? req.query.token : process.env.NEXT_PUBLIC_MAPILLARY_ACCESS_TOKEN;
+    const accessToken = process.env.MAPILLARY_ACCESS_TOKEN;
 
     console.log("Going to grab an imageID")
 
     if(Number.isNaN(lat) || Number.isNaN(lon) || !accessToken){
-        res.status(400).json({ message: 'Invalid lat/lon' });
+        console.log("lat " + lat);
+        console.log("lon " + lon);
+        res.status(400).json({ message: 'Invalid lat/lon or access token ' });
         return;
     }
 

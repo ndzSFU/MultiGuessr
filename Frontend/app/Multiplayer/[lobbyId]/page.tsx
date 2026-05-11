@@ -113,6 +113,7 @@ export default function Lobby() {
                     setTeam2MaxDamage(parseInt(data.team2Max, 10));
                     setTeam1DamageMultiplier(data.team1DamageMultiplier);
                     setTeam2DamageMultiplier(data.team2DamageMultiplier);
+                    setShowScoreCalculations(true);
                 }
             }
 
@@ -340,7 +341,12 @@ export default function Lobby() {
             {
                 state === "inGame" && ws && (
                     <div>
-                        <Game ws={ws} isHost={isHost} setShowRoundScores={setShowRoundScores} gameMode={gameMode} showRoundScores={showRoundScores} setResultsRequested={setResultsRequested} setState={setState} region={region}></Game>
+                        <Game 
+                            ws={ws} isHost={isHost} setShowRoundScores={setShowRoundScores} gameMode={gameMode} 
+                            showRoundScores={showRoundScores} setResultsRequested={setResultsRequested} setState={setState} 
+                            region={region} setShowScoreCalculations={setShowScoreCalculations}>
+
+                        </Game>
                     </div>
                 )                
             }
@@ -468,9 +474,18 @@ export default function Lobby() {
             }
 
             {
-                state === "inGame" && gameMode === "knockout" && (
+                state === "inGame" && gameMode === "knockout" && showScoreCalculations && (
                     <div>
-
+                        <div style={{
+                            position: 'fixed',
+                            top: '50%',
+                            left: '50%',
+                            transform: 'translate(-50%, -50%)',
+                            background: 'white',
+                            zIndex: 99999,
+                        }}>
+                            HELp
+                        </div>
                     </div>
                 )
             }

@@ -14,7 +14,7 @@ function playAudio(pathToAudio: string): void{
 }
 
 async function getImageIds(Lat: number, Lon: number): Promise<any> {
-    const URL: string = `http://localhost:9090/api/mapillary-images?lat=${Lat}&lon=${Lon}&token=${encodeURIComponent(process.env.NEXT_PUBLIC_MAPILLARY_ACCESS_TOKEN ?? '')}`;
+    const URL: string = `http://localhost:9090/api/mapillary-images?lat=${Lat}&lon=${Lon}`;
 
     console.log("Calling backend...");
     let res = await fetch(URL);
@@ -37,7 +37,7 @@ function getRandomIdx(array_size: number): number{
     return Math.floor(Math.random() * array_size);
 }
 
-function mapRegionToCityPool(region: string): City[]{
+function mapRegionToCityArr(region: string): City[]{
 
     switch(region){
         case "canada":
@@ -61,9 +61,10 @@ interface GameProps {
     setResultsRequested: (bool: boolean) => void;
     setState: (state: "noName" | "lobby" | "error" | "inGame" | "gameOver") => void;
     region: string;
+    setShowScoreCalculations: (bool: boolean) => void;
 }
 
-function Game({ ws, isHost, setShowRoundScores, gameMode, showRoundScores, setResultsRequested, setState, region}: GameProps): JSX.Element {
+function Game({ ws, isHost, setShowRoundScores, gameMode, showRoundScores, setResultsRequested, setState, region, setShowScoreCalculations }: GameProps): JSX.Element {
     const hasInitialized = useRef(false);
     const [timeHasExpired, setTimeHasExpired] = useState<boolean>(false);
     const failedImageIdsRef = useRef<Set<string>>(new Set());
@@ -118,7 +119,9 @@ function Game({ ws, isHost, setShowRoundScores, gameMode, showRoundScores, setRe
 
     function rerollCity(attempt = 0): void{
 
-        const city_pool = mapRegionToCityPool(region);
+        console.log("region: " + region);
+
+        const city_pool = mapRegionToCityArr(region);
 
         let idx: number = getRandomIdx(city_pool.length);
 
@@ -174,6 +177,7 @@ function Game({ ws, isHost, setShowRoundScores, gameMode, showRoundScores, setRe
 
             if (data.method === 'setCity'){
                 //Reset prev round states
+                setShowScoreCalculations(false);
                 setFirstGuessMade(false);
                 setShowRoundScores(false);
                 setTimeHasExpired(false);
@@ -184,6 +188,7 @@ function Game({ ws, isHost, setShowRoundScores, gameMode, showRoundScores, setRe
                 failedImageIdsRef.current.clear();
                 console.log("Setting city stats: " + data.startingImageIdx);
                 setLoadGame(true);
+
             }
 
             if(data.method === 'guessMade'){
