@@ -9,6 +9,14 @@ function getRandomIdx(array_size: number): number {
     return Math.floor(Math.random() * array_size);
 }
 
+function calculateNetDamage(team1Damage: number, team2Damage: number): number {
+    if (team2Damage > team1Damage) {
+        return team2Damage - team1Damage;
+    } else {
+        return team1Damage - team2Damage; 
+    }
+}
+
 export default function Lobby() {
     const [clientId, setClientId] = useState<string | null>(null);
     const [ws, setWs] = useState<WebSocket | null>(null);
@@ -20,8 +28,8 @@ export default function Lobby() {
     const [roundScores, setRoundScores] = useState<[[string, number]] | null>(null);
     const [gameMode, setGameMode] = useState<"setRounds" | "knockout" | "timerTrigger">("setRounds");
     const [usernames, setusernames] = useState<[string] | null>(null);
-    const [team1, setTeam1] = useState<[string] | [] >([]);
-    const [team2, setTeam2] = useState<[string] | [] >([]);
+    const [team1, setTeam1] = useState<string[]>([]);
+    const [team2, setTeam2] = useState<string[]>([]);
     const [curTeam1HP, setCurTeam1HP] = useState<number | null>(null);
     const [maxTeam1HP, setMaxTeam1HP] = useState<number | null>(null);
     const [curTeam2HP, setCurTeam2HP] = useState<number | null>(null);
@@ -35,6 +43,8 @@ export default function Lobby() {
     const [multiplierMode, setMultiplierMode] = useState<string | null>(null);
     const [region, setRegion] = useState<string>("world");
     const [showScoreCalculations, setShowScoreCalculations] = useState<Boolean>(false);
+    const [loserOldHp, setLoserOldHp] = useState<string | null>(null);
+
 
     //Map Use States
 
@@ -113,6 +123,8 @@ export default function Lobby() {
                     setTeam2MaxDamage(parseInt(data.team2Max, 10));
                     setTeam1DamageMultiplier(data.team1DamageMultiplier);
                     setTeam2DamageMultiplier(data.team2DamageMultiplier);
+                    setLoserOldHp(data.loserOldHp);
+                    
                     setShowScoreCalculations(true);
                 }
             }
@@ -475,16 +487,145 @@ export default function Lobby() {
 
             {
                 state === "inGame" && gameMode === "knockout" && showScoreCalculations && (
-                    <div>
+                    <div style={{
+                        position: 'fixed',
+                        top: 0, right: 0, bottom: 0, left: 0,
+                        zIndex: 99999,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                        padding: '1rem',
+                        backdropFilter: 'blur(4px)',
+                    }}>
                         <div style={{
-                            position: 'fixed',
-                            top: '50%',
-                            left: '50%',
-                            transform: 'translate(-50%, -50%)',
-                            background: 'white',
-                            zIndex: 99999,
+                            backgroundColor: 'white',
+                            borderRadius: '1rem',
+                            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+                            width: '100%',
+                            maxWidth: '42rem',
+                            overflow: 'hidden',
+                            display: 'flex',
+                            flexDirection: 'column',
                         }}>
-                            HELp
+                            {/* Header */}
+                            <div style={{
+                                backgroundColor: '#0f172a',
+                                color: 'white',
+                                padding: '1rem',
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'center',
+                            }}>
+                                <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', margin: 0 }}>Round Results & Damage</h2>
+                                <button 
+                                    onClick={() => setShowScoreCalculations(false)}
+                                    style={{
+                                        color: '#94a3b8',
+                                        background: 'transparent',
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        padding: '0.25rem',
+                                        display: 'flex',
+                                    }}
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+
+                            {/* Content */}
+                            <div style={{
+                                padding: '1.5rem',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: '2rem',
+                                backgroundColor: '#f8fafc',
+                                color: '#0f172a',
+                            }}>
+                                
+                                {/* Player Score Contributions */}
+                                <div>
+                                    <h3 style={{ fontSize: '1.125rem', fontWeight: 600, borderBottom: '1px solid #e2e8f0', paddingBottom: '0.5rem', marginBottom: '0.75rem', marginTop: 0 }}>Player Scores</h3>
+                                    <div style={{
+                                        display: 'grid',
+                                        gridTemplateColumns: '1fr 1fr',
+                                        gap: '1.5rem',
+                                    }}>
+                                       
+                                    </div>
+                                </div>
+
+                                {/* Damage Calculations */}
+                                <div>
+                                    <h3 style={{ fontSize: '1.125rem', fontWeight: 600, borderBottom: '1px solid #e2e8f0', paddingBottom: '0.5rem', marginBottom: '0.75rem', marginTop: 0 }}>Damage Calculation</h3>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: 'white', padding: '0.75rem', borderRadius: '0.5rem', border: '1px solid #e2e8f0' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                                <div style={{ width: '0.75rem', height: '0.75rem', borderRadius: '9999px', backgroundColor: '#3b82f6' }}></div>
+                                                <span style={{ fontWeight: 500, color: '#334155' }}>Team 1 Damage Output</span>
+                                            </div>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontFamily: 'monospace', fontSize: '0.875rem' }}>
+                                                <span>{team1MaxDamage}</span>
+                                                <span style={{ color: '#94a3b8' }}>×</span>
+                                                <span style={{ backgroundColor: '#f1f5f9', padding: '0.125rem 0.5rem', borderRadius: '0.25rem', color: '#334155', fontWeight: 'bold' }}>{team1DamageMultiplier !== null ? team1DamageMultiplier : '1'}</span>
+                                                <span style={{ color: '#94a3b8' }}>=</span>
+                                                <span style={{ color: '#ef4444', fontWeight: 'bold' }}>-{Math.round((team1MaxDamage ?? 0) * parseFloat(team1DamageMultiplier))}</span>
+                                            </div>
+                                        </div>
+
+                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: 'white', padding: '0.75rem', borderRadius: '0.5rem', border: '1px solid #e2e8f0' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                                <div style={{ width: '0.75rem', height: '0.75rem', borderRadius: '9999px', backgroundColor: '#ef4444' }}></div>
+                                                <span style={{ fontWeight: 500, color: '#334155' }}>Team 2 Damage Output</span>
+                                            </div>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontFamily: 'monospace', fontSize: '0.875rem' }}>
+                                                <span>{team2MaxDamage}</span>
+                                                <span style={{ color: '#94a3b8' }}>×</span>
+                                                <span style={{ backgroundColor: '#f1f5f9', padding: '0.125rem 0.5rem', borderRadius: '0.25rem', color: '#334155', fontWeight: 'bold' }}>{team2DamageMultiplier !== null ? team2DamageMultiplier : '1'}</span>
+                                                <span style={{ color: '#94a3b8' }}>=</span>
+                                                <span style={{ color: '#ef4444', fontWeight: 'bold' }}>-{Math.round((team2MaxDamage ?? 0) * parseFloat(team2DamageMultiplier))}</span>
+                                            </div>
+                                        </div>
+
+                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: 'white', padding: '0.75rem', borderRadius: '0.5rem', border: '1px solid #e2e8f0' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                                <div style={{ width: '0.75rem', height: '0.75rem', borderRadius: '9999px', backgroundColor: '#44ef4dff' }}></div>
+                                                <span style={{ fontWeight: 500, color: '#334155' }}>Results</span>
+                                            </div>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontFamily: 'monospace', fontSize: '0.875rem' }}>
+                                                {(() => {
+                                                    const team1Dmg = Math.round((team1MaxDamage ?? 0) * parseFloat(team1DamageMultiplier));
+                                                    const team2Dmg = Math.round((team2MaxDamage ?? 0) * parseFloat(team2DamageMultiplier));
+                                                    const netDmg = calculateNetDamage(team1Dmg, team2Dmg);
+                                                    return <span style={{ color: '#ef4444', fontWeight: 'bold' }}>-{netDmg}</span>;
+                                                })()}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div style={{ paddingTop: '0.5rem', display: 'flex', justifyContent: 'center' }}>
+                                    <button
+                                        onClick={() => setShowScoreCalculations(false)}
+                                        style={{
+                                            backgroundColor: '#4f46e5',
+                                            color: 'white',
+                                            padding: '0.625rem 2rem',
+                                            borderRadius: '9999px',
+                                            fontWeight: 600,
+                                            border: 'none',
+                                            cursor: 'pointer',
+                                            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                                            fontSize: '1rem',
+                                        }}
+                                    >
+                                        Continue
+                                    </button>
+                                </div>
+
+                            </div>
                         </div>
                     </div>
                 )

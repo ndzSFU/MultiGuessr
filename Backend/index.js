@@ -518,16 +518,21 @@ wsServer.on("request", (request) => {
                     }
                     let winner = ""
                     let damage = 0;
+                    let loserOldHp = 0;
+                    
 
                     if(team1Max === team2Max){
                         winner = "tie";
                     } else if(team1Max > team2Max){
+
                         damage = (team1Max - team2Max) * lobby.team1DamageMultiplier;
-                        lobby.team2HP -= damage;
+                        loserOldHp = lobby.team2HP;
+                        lobby.team2HP -= Math.round(damage);
                         winner = "team1";
                     }else {
                         damage = (team2Max - team1Max) * lobby.team2DamageMultiplier;
-                        lobby.team1HP -= damage;
+                        loserOldHp = lobby.team1HP;
+                        lobby.team1HP -= Math.round(damage);
                         winner = "team2";
                     }
 
@@ -571,6 +576,7 @@ wsServer.on("request", (request) => {
                         roundLatLngs: lobby.roundLatLngs[curRoundIdx],
                         team1Max,
                         team2Max,
+                        loserOldHp,
                         team1HP: lobby.team1HP,
                         team2HP: lobby.team2HP,
                         team1Scorer,
