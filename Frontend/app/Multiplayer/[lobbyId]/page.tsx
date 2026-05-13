@@ -47,6 +47,10 @@ export default function Lobby() {
     const [loserOldHp, setLoserOldHp] = useState<string | null>(null);
     const [prevTeam1DamageMultiplier, setPrevTeam1DamageMultiplier] = useState<string>("1");
     const [prevTeam2DamageMultiplier, setPrevTeam2DamageMultiplier] = useState<string>("1");
+    // Animation states for sequential reveal of damage calculations
+    const [showTeam1CalcAnim, setShowTeam1CalcAnim] = useState<boolean>(false);
+    const [showTeam2CalcAnim, setShowTeam2CalcAnim] = useState<boolean>(false);
+    const [showResultAnim, setShowResultAnim] = useState<boolean>(false);
 
 
     //Map Use States
@@ -118,8 +122,8 @@ export default function Lobby() {
                 setRoundScores(data.roundScores);
 
                 if(data.team1HP !== undefined && data.team2HP !== undefined && data.team1Max !== undefined && data.team2Max !== undefined){
-                    setPrevTeam1DamageMultiplier(team1DamageMultiplier);
-                    setPrevTeam2DamageMultiplier(team2DamageMultiplier);
+                    setPrevTeam1DamageMultiplier(data.prevTeam1DamageMultiplier);
+                    setPrevTeam2DamageMultiplier(data.prevTeam2DamageMultiplier);
                     console.log("Damage dealt!")
                     console.log("Received multipliers:", { team1: data.team1DamageMultiplier, team2: data.team2DamageMultiplier });
                     setCurTeam1HP(parseInt(data.team1HP, 10));
@@ -171,6 +175,35 @@ export default function Lobby() {
             team2DamageMultiplier: team2DamageMultiplier,
         });
     }, [multiplierMode, team1DamageMultiplier, team2DamageMultiplier]);
+
+    // Sequence animation when the score-calculation modal is shown
+    useEffect(() => {
+        let t1: ReturnType<typeof setTimeout> | null = null;
+        let t2: ReturnType<typeof setTimeout> | null = null;
+        let t3: ReturnType<typeof setTimeout> | null = null;
+
+        if (showScoreCalculations) {
+            // reset
+            setShowTeam1CalcAnim(false);
+            setShowTeam2CalcAnim(false);
+            setShowResultAnim(false);
+
+            // staggered reveal
+            t1 = setTimeout(() => setShowTeam1CalcAnim(true), 220);
+            t2 = setTimeout(() => setShowTeam2CalcAnim(true), 620);
+            t3 = setTimeout(() => setShowResultAnim(true), 1020);
+        } else {
+            setShowTeam1CalcAnim(false);
+            setShowTeam2CalcAnim(false);
+            setShowResultAnim(false);
+        }
+
+        return () => {
+            if (t1) clearTimeout(t1);
+            if (t2) clearTimeout(t2);
+            if (t3) clearTimeout(t3);
+        };
+    }, [showScoreCalculations, prevTeam1DamageMultiplier, prevTeam2DamageMultiplier, team1MaxDamage, team2MaxDamage]);
 
     function handleUsername(event: React.SubmitEvent<HTMLFormElement>) {
         event.preventDefault();
@@ -369,13 +402,7 @@ export default function Lobby() {
                 )                
             }
 
-            {
-                 state === "inGame" && gameMode === "knockout" && multiplierMode === "everyRoundIncrement" && (
-                    <div>
-                        <MultiplierContainer Multiplier={team1DamageMultiplier} top="7%" left="50%"></MultiplierContainer>
-                    </div>
-                 )
-            }
+            
 
             {
                 state === "inGame" && ws && (
@@ -402,6 +429,14 @@ export default function Lobby() {
                         }
                     </div>
                 )                
+            }
+
+            {
+                 state === "inGame" && gameMode === "knockout" && multiplierMode === "everyRoundIncrement" && (
+                    <div>
+                        <MultiplierContainer Multiplier={team1DamageMultiplier} top="15%" left="50%"></MultiplierContainer>
+                    </div>
+                 )
             }
 
             {
@@ -531,7 +566,9 @@ export default function Lobby() {
                                                 <span style={{ color: '#94a3b8' }}>×</span>
                                                 <span style={{ backgroundColor: '#f1f5f9', padding: '0.125rem 0.5rem', borderRadius: '0.25rem', color: '#334155', fontWeight: 'bold' }}>{prevTeam1DamageMultiplier !== null ? prevTeam1DamageMultiplier : '1'}</span>
                                                 <span style={{ color: '#94a3b8' }}>=</span>
-                                                <span style={{ color: '#ef4444', fontWeight: 'bold' }}>-{Math.round((team1MaxDamage ?? 0) * parseFloat(prevTeam1DamageMultiplier))}</span>
+                                                <div style={{ transition: 'opacity 300ms ease, transform 300ms ease', opacity: showTeam1CalcAnim ? 1 : 0, transform: showTeam1CalcAnim ? 'translateY(0)' : 'translateY(6px)' }} aria-hidden={!showTeam1CalcAnim}>
+                                                    <span style={{ color: 'rgba(36, 151, 71, 1)', fontWeight: 'bold' }}>{Math.round((team1MaxDamage ?? 0) * parseFloat(prevTeam1DamageMultiplier))}</span>
+                                                </div>
                                             </div>
                                         </div>
 
@@ -545,7 +582,9 @@ export default function Lobby() {
                                                 <span style={{ color: '#94a3b8' }}>×</span>
                                                 <span style={{ backgroundColor: '#f1f5f9', padding: '0.125rem 0.5rem', borderRadius: '0.25rem', color: '#334155', fontWeight: 'bold' }}>{prevTeam2DamageMultiplier !== null ? prevTeam2DamageMultiplier : '1'}</span>
                                                 <span style={{ color: '#94a3b8' }}>=</span>
-                                                <span style={{ color: '#ef4444', fontWeight: 'bold' }}>-{Math.round((team2MaxDamage ?? 0) * parseFloat(prevTeam2DamageMultiplier))}</span>
+                                                <div style={{ transition: 'opacity 300ms ease, transform 300ms ease', opacity: showTeam2CalcAnim ? 1 : 0, transform: showTeam2CalcAnim ? 'translateY(0)' : 'translateY(6px)' }} aria-hidden={!showTeam2CalcAnim}>
+                                                    <span style={{ color: 'rgba(36, 151, 71, 1)', fontWeight: 'bold' }}>{Math.round((team2MaxDamage ?? 0) * parseFloat(prevTeam2DamageMultiplier))}</span>
+                                                </div>
                                             </div>
                                         </div>
 
@@ -560,13 +599,13 @@ export default function Lobby() {
                                                     const team1Dmg = Math.round((team1MaxDamage ?? 0) * parseFloat(prevTeam1DamageMultiplier));
                                                     const team2Dmg = Math.round((team2MaxDamage ?? 0) * parseFloat(prevTeam2DamageMultiplier));
                                                     const netDmg = calculateNetDamage(team1Dmg, team2Dmg);
-                                                    const damageTaker = team1Dmg > team2Dmg ? "Team 2 receives:" : "Team 1 receives:";
-                                                    return(
-                                                        <div>
+                                                    const damageTaker = team1Dmg == team2Dmg ? "No Damage Dealth" : team1Dmg > team2Dmg  ? "Team 1 receives:": "Team 2 receives:";
+                                                    return (
+                                                        <div style={{ transition: 'opacity 300ms ease, transform 300ms ease', opacity: showResultAnim ? 1 : 0, transform: showResultAnim ? 'translateY(0)' : 'translateY(6px)' }} aria-hidden={!showResultAnim}>
                                                             <span style={{ backgroundColor: '#f1f5f9', padding: '0.125rem 0.5rem', borderRadius: '0.25rem', color: '#334155', fontWeight: 'bold' }}>{damageTaker}</span>
-                                                            <span style={{ color: '#ef4444', fontWeight: 'bold' }}>-{netDmg}</span>;
-                                                         </div>
-                                                         ) 
+                                                            <span style={{ color: '#ef4444', fontWeight: 'bold', marginLeft: '0.5rem' }}>-{netDmg}</span>
+                                                        </div>
+                                                    );
                                                 })()}
 
                                                 

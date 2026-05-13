@@ -154,8 +154,12 @@ api.get('/api/createLobbyId', (req, res) => {
 })
 
 const wsServer = new websocketServer({
-  httpServer: httpServer,
+    httpServer: httpServer,
 }); 
+
+function roundToDecimals(num, decimals = 2) {
+    return Number(Math.round(num * Math.pow(10, decimals)) / Math.pow(10, decimals));
+}
 
 function safeSendConnection(connection, stringifiedMessage){
     if(!connection || connection.connected !== true){
@@ -536,6 +540,9 @@ wsServer.on("request", (request) => {
                         winner = "team2";
                     }
 
+                    let prevTeam1DamageMultiplier = lobby.team1DamageMultiplier;
+                    let prevTeam2DamageMultiplier = lobby.team2DamageMultiplier;
+
                     if(lobby.multiplierMode === "winnerGetsMultiplier"){
                         if(winner === "team1"){
                             lobby.team1DamageMultiplier += lobby.damageMultiplierIncrement;
@@ -581,9 +588,11 @@ wsServer.on("request", (request) => {
                         team2HP: lobby.team2HP,
                         team1Scorer,
                         team2Scorer,
-                        team1DamageMultiplier: lobby.team1DamageMultiplier,
-                        team2DamageMultiplier: lobby.team2DamageMultiplier,
+                        team1DamageMultiplier: roundToDecimals(lobby.team1DamageMultiplier),
+                        team2DamageMultiplier: roundToDecimals(lobby.team2DamageMultiplier),
                         damage,
+                        prevTeam1DamageMultiplier,
+                        prevTeam2DamageMultiplier,
                     }
                 } else{
                     payload = {
