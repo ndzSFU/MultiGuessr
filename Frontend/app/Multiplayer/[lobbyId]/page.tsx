@@ -4,6 +4,7 @@ import { useParams } from 'next/navigation';
 
 import Game from "./Game";
 import HPBar from "./HPBar";
+import MultiplierContainer from './MultiplierContainer';
 
 function getRandomIdx(array_size: number): number {
     return Math.floor(Math.random() * array_size);
@@ -369,26 +370,9 @@ export default function Lobby() {
             }
 
             {
-                 state === "inGame" && gameMode === "knockout" && (
+                 state === "inGame" && gameMode === "knockout" && multiplierMode === "everyRoundIncrement" && (
                     <div>
-                        {multiplierMode === "everyRoundIncrement" && (
-                                <div style={{
-                                    position: 'fixed',
-                                    top: '12%',
-                                    left: '50%',
-                                    transform: 'translate(-50%, -50%)',
-                                    padding: '0.75rem 1.25rem',
-                                    borderRadius: '9999px',
-                                    background: 'rgba(15, 23, 42, 0.85)',
-                                    color: 'white',
-                                    fontWeight: "bold",
-                                    fontSize: '1.1rem',
-                                    boxShadow: '0 8px 24px rgba(0, 0, 0, 0.25)',
-                                    zIndex: 99999,
-                                }}>
-                                    {team1DamageMultiplier !== null ? `x${team1DamageMultiplier}` : 'x1'}
-                                </div>
-                        )}
+                        <MultiplierContainer Multiplier={team1DamageMultiplier} top="7%" left="50%"></MultiplierContainer>
                     </div>
                  )
             }
@@ -423,69 +407,40 @@ export default function Lobby() {
             {
                 state === "inGame" && gameMode === "knockout" && curTeam1HP !== null && maxTeam1HP !== null && curTeam2HP !== null && maxTeam2HP !== null && (
                     <div>
-                        <HPBar
-                            label="Team 1"
-                            hp={curTeam1HP}
-                            maxHp={maxTeam1HP}
-                            position="left"
-                        />
-                        {
+                        <div>
+                            <HPBar
+                                label="Team 1"
+                                hp={curTeam1HP}
+                                maxHp={maxTeam1HP}
+                                position="left"
+                            />
+                            {
+                            //Note Next to Team1 hp it should show Team2's Dmg mult because the team 2 dmg mult represents how much more damage team 2 it taking because of team1's wins
+                            //Just to mimic the real geoguesser game this mult gets placed next to team
                             multiplierMode === "winnerGetsMultiplier" && (
-                                <div style={{
-                                    position: 'fixed',
-                                    top: '9%',
-                                    left: '77%',
-                                    display: "flex",
-                                    width: '44px', 
-                                    height: '30px',
-                                    transform: 'translate(-50%, -50%)',
-                                    padding: '0.55rem 1.05rem',
-                                    borderRadius: '9999px',
-                                    background: 'rgba(15, 23, 42, 0.85)',
-                                    color: 'white',
-                                    fontWeight: "bold",
-                                    fontSize: '1.1rem',
-                                    boxShadow: '0 8px 24px rgba(0, 0, 0, 0.25)',
-                                    alignItems: "center",
-                                    justifyContent: 'center',
-                                    zIndex: 99999,
-                                }}>
-                                    {team2DamageMultiplier !== null ? `x${team2DamageMultiplier}` : 'x1'}
-                                </div>
+                                <MultiplierContainer Multiplier={team2DamageMultiplier} top="7%" left="84%"></MultiplierContainer>
                             )
                         }
-                        <HPBar
-                            label="Team 2"
-                            hp={curTeam2HP}
-                            maxHp={maxTeam2HP}
-                            position="right"
-                        />
+                        </div>
+                        
+                        <div>
+                            <HPBar
+                                label="Team 2"
+                                hp={curTeam2HP}
+                                maxHp={maxTeam2HP}
+                                position="right"
 
-                        {
-                            multiplierMode === "winnerGetsMultiplier" && (
-                                <div style={{
-                                    position: 'fixed',
-                                    top: '9%',
-                                    left: '23%',
-                                    display: "flex",
-                                    width: '44px', 
-                                    height: '30px',
-                                    transform: 'translate(-50%, -50%)',
-                                    padding: '0.75rem 1.25rem',
-                                    borderRadius: '9999px',
-                                    background: 'rgba(15, 23, 42, 0.85)',
-                                    color: 'white',
-                                    fontWeight: "bold",
-                                    fontSize: '1.1rem',
-                                    boxShadow: '0 8px 24px rgba(0, 0, 0, 0.25)',
-                                    alignItems: "center",
-                                    justifyContent: 'center',
-                                    zIndex: 99999,
-                                }}>
-                                    {team1DamageMultiplier !== null ? `x${team1DamageMultiplier}` : 'x1'}
-                                </div>
-                            )
-                        }
+                            />
+
+                            {
+                                multiplierMode === "winnerGetsMultiplier" && (
+                                    <MultiplierContainer Multiplier={team1DamageMultiplier} top="7%" left="16%"></MultiplierContainer>
+                                )
+                            }
+                        </div>
+                        
+
+                        
                     </div>  
                 )                
             }
@@ -550,9 +505,9 @@ export default function Lobby() {
                                 color: '#0f172a',
                             }}>
                                 
-                                {/* Player Score Contributions */}
+                                {/* Scoring Players */}
                                 <div>
-                                    <h3 style={{ fontSize: '1.125rem', fontWeight: 600, borderBottom: '1px solid #e2e8f0', paddingBottom: '0.5rem', marginBottom: '0.75rem', marginTop: 0 }}>Player Scores</h3>
+                                    <h3 style={{ fontSize: '1.125rem', fontWeight: 600, borderBottom: '1px solid #e2e8f0', paddingBottom: '0.5rem', marginBottom: '0.75rem', marginTop: 0 }}>Scoring Players</h3>
                                     <div style={{
                                         display: 'grid',
                                         gridTemplateColumns: '1fr 1fr',
@@ -574,7 +529,7 @@ export default function Lobby() {
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontFamily: 'monospace', fontSize: '0.875rem' }}>
                                                 <span>{team1MaxDamage}</span>
                                                 <span style={{ color: '#94a3b8' }}>×</span>
-                                                <span style={{ backgroundColor: '#f1f5f9', padding: '0.125rem 0.5rem', borderRadius: '0.25rem', color: '#334155', fontWeight: 'bold' }}>{team1DamageMultiplier !== null ? team1DamageMultiplier : '1'}</span>
+                                                <span style={{ backgroundColor: '#f1f5f9', padding: '0.125rem 0.5rem', borderRadius: '0.25rem', color: '#334155', fontWeight: 'bold' }}>{prevTeam1DamageMultiplier !== null ? prevTeam1DamageMultiplier : '1'}</span>
                                                 <span style={{ color: '#94a3b8' }}>=</span>
                                                 <span style={{ color: '#ef4444', fontWeight: 'bold' }}>-{Math.round((team1MaxDamage ?? 0) * parseFloat(prevTeam1DamageMultiplier))}</span>
                                             </div>
@@ -588,7 +543,7 @@ export default function Lobby() {
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontFamily: 'monospace', fontSize: '0.875rem' }}>
                                                 <span>{team2MaxDamage}</span>
                                                 <span style={{ color: '#94a3b8' }}>×</span>
-                                                <span style={{ backgroundColor: '#f1f5f9', padding: '0.125rem 0.5rem', borderRadius: '0.25rem', color: '#334155', fontWeight: 'bold' }}>{team2DamageMultiplier !== null ? team2DamageMultiplier : '1'}</span>
+                                                <span style={{ backgroundColor: '#f1f5f9', padding: '0.125rem 0.5rem', borderRadius: '0.25rem', color: '#334155', fontWeight: 'bold' }}>{prevTeam2DamageMultiplier !== null ? prevTeam2DamageMultiplier : '1'}</span>
                                                 <span style={{ color: '#94a3b8' }}>=</span>
                                                 <span style={{ color: '#ef4444', fontWeight: 'bold' }}>-{Math.round((team2MaxDamage ?? 0) * parseFloat(prevTeam2DamageMultiplier))}</span>
                                             </div>
@@ -606,10 +561,12 @@ export default function Lobby() {
                                                     const team2Dmg = Math.round((team2MaxDamage ?? 0) * parseFloat(prevTeam2DamageMultiplier));
                                                     const netDmg = calculateNetDamage(team1Dmg, team2Dmg);
                                                     const damageTaker = team1Dmg > team2Dmg ? "Team 2 receives:" : "Team 1 receives:";
-                                                    return(<div>
-                                                        <span style={{ backgroundColor: '#f1f5f9', padding: '0.125rem 0.5rem', borderRadius: '0.25rem', color: '#334155', fontWeight: 'bold' }}>{damageTaker}</span>
-                                                                <span style={{ color: '#ef4444', fontWeight: 'bold' }}>-{netDmg}</span>;
-                                                         </div>) 
+                                                    return(
+                                                        <div>
+                                                            <span style={{ backgroundColor: '#f1f5f9', padding: '0.125rem 0.5rem', borderRadius: '0.25rem', color: '#334155', fontWeight: 'bold' }}>{damageTaker}</span>
+                                                            <span style={{ color: '#ef4444', fontWeight: 'bold' }}>-{netDmg}</span>;
+                                                         </div>
+                                                         ) 
                                                 })()}
 
                                                 
