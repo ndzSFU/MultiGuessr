@@ -75,3 +75,5 @@ Important Notes: When LatLng are stored as numbers in an array pair, the Lat is 
 Remember to update cities list in frontend and on backend
 
 Note should have a .env in backend and front end now (If you switch devices)
+
+When setting up env in backend just remove the NEXT_PUBLIC from the front end vars

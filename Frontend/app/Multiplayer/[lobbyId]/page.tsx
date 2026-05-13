@@ -44,6 +44,8 @@ export default function Lobby() {
     const [region, setRegion] = useState<string>("world");
     const [showScoreCalculations, setShowScoreCalculations] = useState<Boolean>(false);
     const [loserOldHp, setLoserOldHp] = useState<string | null>(null);
+    const [prevTeam1DamageMultiplier, setPrevTeam1DamageMultiplier] = useState<string>("1");
+    const [prevTeam2DamageMultiplier, setPrevTeam2DamageMultiplier] = useState<string>("1");
 
 
     //Map Use States
@@ -115,6 +117,8 @@ export default function Lobby() {
                 setRoundScores(data.roundScores);
 
                 if(data.team1HP !== undefined && data.team2HP !== undefined && data.team1Max !== undefined && data.team2Max !== undefined){
+                    setPrevTeam1DamageMultiplier(team1DamageMultiplier);
+                    setPrevTeam2DamageMultiplier(team2DamageMultiplier);
                     console.log("Damage dealt!")
                     console.log("Received multipliers:", { team1: data.team1DamageMultiplier, team2: data.team2DamageMultiplier });
                     setCurTeam1HP(parseInt(data.team1HP, 10));
@@ -124,6 +128,7 @@ export default function Lobby() {
                     setTeam1DamageMultiplier(data.team1DamageMultiplier);
                     setTeam2DamageMultiplier(data.team2DamageMultiplier);
                     setLoserOldHp(data.loserOldHp);
+                    
                     
                     setShowScoreCalculations(true);
                 }
@@ -571,7 +576,7 @@ export default function Lobby() {
                                                 <span style={{ color: '#94a3b8' }}>×</span>
                                                 <span style={{ backgroundColor: '#f1f5f9', padding: '0.125rem 0.5rem', borderRadius: '0.25rem', color: '#334155', fontWeight: 'bold' }}>{team1DamageMultiplier !== null ? team1DamageMultiplier : '1'}</span>
                                                 <span style={{ color: '#94a3b8' }}>=</span>
-                                                <span style={{ color: '#ef4444', fontWeight: 'bold' }}>-{Math.round((team1MaxDamage ?? 0) * parseFloat(team1DamageMultiplier))}</span>
+                                                <span style={{ color: '#ef4444', fontWeight: 'bold' }}>-{Math.round((team1MaxDamage ?? 0) * parseFloat(prevTeam1DamageMultiplier))}</span>
                                             </div>
                                         </div>
 
@@ -585,7 +590,7 @@ export default function Lobby() {
                                                 <span style={{ color: '#94a3b8' }}>×</span>
                                                 <span style={{ backgroundColor: '#f1f5f9', padding: '0.125rem 0.5rem', borderRadius: '0.25rem', color: '#334155', fontWeight: 'bold' }}>{team2DamageMultiplier !== null ? team2DamageMultiplier : '1'}</span>
                                                 <span style={{ color: '#94a3b8' }}>=</span>
-                                                <span style={{ color: '#ef4444', fontWeight: 'bold' }}>-{Math.round((team2MaxDamage ?? 0) * parseFloat(team2DamageMultiplier))}</span>
+                                                <span style={{ color: '#ef4444', fontWeight: 'bold' }}>-{Math.round((team2MaxDamage ?? 0) * parseFloat(prevTeam2DamageMultiplier))}</span>
                                             </div>
                                         </div>
 
@@ -595,12 +600,19 @@ export default function Lobby() {
                                                 <span style={{ fontWeight: 500, color: '#334155' }}>Results</span>
                                             </div>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontFamily: 'monospace', fontSize: '0.875rem' }}>
+                                               
                                                 {(() => {
-                                                    const team1Dmg = Math.round((team1MaxDamage ?? 0) * parseFloat(team1DamageMultiplier));
-                                                    const team2Dmg = Math.round((team2MaxDamage ?? 0) * parseFloat(team2DamageMultiplier));
+                                                    const team1Dmg = Math.round((team1MaxDamage ?? 0) * parseFloat(prevTeam1DamageMultiplier));
+                                                    const team2Dmg = Math.round((team2MaxDamage ?? 0) * parseFloat(prevTeam2DamageMultiplier));
                                                     const netDmg = calculateNetDamage(team1Dmg, team2Dmg);
-                                                    return <span style={{ color: '#ef4444', fontWeight: 'bold' }}>-{netDmg}</span>;
+                                                    const damageTaker = team1Dmg > team2Dmg ? "Team 2 receives:" : "Team 1 receives:";
+                                                    return(<div>
+                                                        <span style={{ backgroundColor: '#f1f5f9', padding: '0.125rem 0.5rem', borderRadius: '0.25rem', color: '#334155', fontWeight: 'bold' }}>{damageTaker}</span>
+                                                                <span style={{ color: '#ef4444', fontWeight: 'bold' }}>-{netDmg}</span>;
+                                                         </div>) 
                                                 })()}
+
+                                                
                                             </div>
                                         </div>
                                     </div>
