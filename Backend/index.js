@@ -153,6 +153,10 @@ api.get('/api/createLobbyId', (req, res) => {
     res.send(id);
 })
 
+api.post('/api/validateLobbyId', (req, res) => {
+    res.json(Boolean(lobbies.has(req.body.lobbyId)));
+})
+
 const wsServer = new websocketServer({
     httpServer: httpServer,
 }); 
