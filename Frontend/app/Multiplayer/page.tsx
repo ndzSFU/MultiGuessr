@@ -271,7 +271,7 @@ export default function Multiplayer() {
                         {mode === 'settings' && (
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginTop: '0.75rem' }}>
                                 {(lobbyId !== null) && (
-                                    <>
+                                    <div>
                                         <label style={{ fontWeight: 600, color: '#0b1220' }}>Game Mode</label>
                                         <Select
                                             options={gameModes}
@@ -280,7 +280,7 @@ export default function Multiplayer() {
                                             styles={customSelectStyles}
                                             placeholder="Select Game Mode"
                                         />
-                                    </>
+                                    </div>
                                 )}
 
                                 <div>
@@ -294,59 +294,84 @@ export default function Multiplayer() {
                                     />
                                 </div>
 
-                                {(gameMode?.value === "knockout") && (
+                                 { (gameMode?.value === "setRounds") ? (
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                                        <div>
+
+                                            <label style={{ fontWeight: 600, color: '#0b1220' }}>Max rounds</label>
+                                            <Select
+                                                options={maxRoundsOptions}
+                                                value={maxRounds}
+                                                onChange={setMaxRounds}
+                                                styles={customSelectStyles}
+                                            />
+
+                                         </div>
+
+                                         <div>
+                                        <label style={{ fontWeight: 600, color: '#0b1220' }}>Round Time Limit</label>
+                                            <Select
+                                                    options={timeOptions}
+                                                    value={timeLimit}
+                                                    onChange={setTimeLimit}
+                                                    styles={customSelectStyles}
+                                                />
+                                         </div>
+                                    </div>
+                                ) : (
                                     <div>
-                                        <label style={{ fontWeight: 600, color: '#0b1220' }}>Select HitPoints</label>
-                                        <Select
-                                            options={hpOptions}
-                                            value={HP}
-                                            onChange={setHP}
-                                            styles={customSelectStyles}
-                                            placeholder="Select HP"
-                                        />
-
-                                        <label style={{ fontWeight: 600, color: '#0b1220', marginTop: '0.5rem' }}>Damage Multiplier Mode</label>
-                                        <Select
-                                            options={multiplierModes}
-                                            value={multiplierMode}
-                                            onChange={setMultiplierMode}
-                                            styles={customSelectStyles}
-                                            placeholder="Select Multiplier Mode"
-                                        />
-
-                                        <label style={{ fontWeight: 600, color: '#0b1220', marginTop: '0.5rem' }}>Damage Multiplier Increment</label>
-                                        <Select
-                                            options={multiplierIncrementOptions}
-                                            value={multiplierIncrement}
-                                            onChange={setMultiplierIncrement}
-                                            styles={customSelectStyles}
-                                            placeholder="Select Increment"
-                                        />
+                                        <label style={{ fontWeight: 600, color: '#0b1220' }}>Countdown After First Guess</label>
+                                        
+                                            <Select
+                                                options={timeOptions}
+                                                value={timeLimit}
+                                                onChange={setTimeLimit}
+                                                styles={customSelectStyles}
+                                            />
+                                       
                                     </div>
                                 )}
 
-                                { (gameMode?.value === "setRounds") ? (
-                                    <>
-                                        <label style={{ fontWeight: 600, color: '#0b1220' }}>Max rounds</label>
-                                        <Select
-                                            options={maxRoundsOptions}
-                                            value={maxRounds}
-                                            onChange={setMaxRounds}
-                                            styles={customSelectStyles}
-                                        />
+                               
 
-                                        <label style={{ fontWeight: 600, color: '#0b1220' }}>Round Time Limit</label>
-                                    </>
-                                ) : (
-                                    <label style={{ fontWeight: 600, color: '#0b1220' }}>Countdown After First Guess</label>
+                                {(gameMode?.value === "knockout") && (
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                                        <div>
+                                            <label style={{ fontWeight: 600, color: '#0b1220' }}>Select HitPoints</label>
+                                            <Select
+                                                options={hpOptions}
+                                                value={HP}
+                                                onChange={setHP}
+                                                styles={customSelectStyles}
+                                                placeholder="Select HP"
+                                            />
+                                        </div>
+                                
+                                        <div>
+                                            <label style={{ fontWeight: 600, color: '#0b1220' }}>Damage Multiplier Increment</label>
+                                            <Select
+                                                options={multiplierIncrementOptions}
+                                                value={multiplierIncrement}
+                                                onChange={setMultiplierIncrement}
+                                                styles={customSelectStyles}
+                                                placeholder="Select Increment"
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label style={{ fontWeight: 600, color: '#0b1220' }}>Damage Multiplier Mode</label>
+                                            <Select
+                                                options={multiplierModes}
+                                                value={multiplierMode}
+                                                onChange={setMultiplierMode}
+                                                styles={customSelectStyles}
+                                                placeholder="Select Multiplier Mode"
+                                            />
+                                        </div>
+                                    </div>
                                 )}
 
-                                <Select
-                                    options={timeOptions}
-                                    value={timeLimit}
-                                    onChange={setTimeLimit}
-                                    styles={customSelectStyles}
-                                />
+                               
 
                                 {(timeLimit && (maxRounds || gameMode?.value === "knockout" || gameMode?.value === "timerTrigger")) && (HP || gameMode?.value !== "knockout") && region && (gameMode?.value !== "knockout" || (multiplierMode && multiplierIncrement)) && (
                                     <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '0.5rem' }}>
