@@ -239,20 +239,38 @@ export default function Lobby() {
         <>
             {
                 state === "noName" && (
-                    <>
-                        Test
-                        <>
-                            <form onSubmit={handleUsername}>
-                                <label>
-                                    Username: <input name="username" />
+                    <div style={{
+                        minHeight: '100vh',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        backgroundImage: "url('/main_menu_background.jpg')",
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                    }}>
+                        <div style={{
+                            width: 720,
+                            maxWidth: '92%',
+                            padding: '2.5rem',
+                            borderRadius: 12,
+                            background: 'rgba(255,255,255,0.9)',
+                            boxShadow: '0 10px 30px rgba(2,6,23,0.35)',
+                            backdropFilter: 'blur(6px)',
+                            alignItems: 'center',
+                            
+                        }}>
+                            <h1 style={{ margin: 0, fontSize: '1.5rem', letterSpacing: '0.6px', color: '#0b1220' }}>What should we call you?</h1>
+                            <form onSubmit={handleUsername} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '0.8rem' }}>
+                                <label style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                    <input name="username" placeholder="Enter your username" style={{ width: '100%', height: '40px', boxSizing: 'border-box', borderRadius: 6, fontSize: '1rem', padding: '0.5rem', border: '1px solid #e5e7eb', fontFamily: 'inherit' }} />
                                 </label>
-                                <button type="submit">Submit</button>
+                                <button type="submit" style={{ height: '40px', borderRadius: 8, background: 'linear-gradient(90deg,#06b6d4,#3b82f6)', color: 'white', fontWeight: 700, border: 'none', cursor: 'pointer', fontSize: '1rem' }}>Enter Lobby</button>
                                 {usernameError && (
-                                    <p style={{ color: '#dc2626', marginTop: '0.5rem' }}>{usernameError}</p>
+                                    <p style={{ color: '#dc2626', marginTop: '0.5rem', fontWeight: 500, textAlign: 'center', margin: '0.5rem 0 0 0' }}>{usernameError}</p>
                                 )}
                             </form>
-                        </>
-                    </>
+                        </div>
+                    </div>
                 )
             }
 
