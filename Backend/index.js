@@ -638,13 +638,24 @@ wsServer.on("request", (request) => {
             let username = clientData.username
 
             if(teamToJoin === "team1"){
+
+                if(team1.includes(username)){
+                    return;
+                }
+
                 if(team2.includes(username)){
                     removeFromTeam(team2, username);
                 } 
 
+                
                 team1.push(username);
                 
             } else if(teamToJoin === "team2"){
+
+                if(team2.includes(username)){
+                    return;
+                }
+
                 if(team1.includes(username)){
                     removeFromTeam(team1, username);
                 } 

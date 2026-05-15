@@ -280,17 +280,23 @@ export default function Lobby() {
                         Welcome to lobby: {lobbyId}
 
                         {
+                                                       
                             usernames?.map((username) =>{
-                                return (
-                                    <div key={username}>
-                                        {username}
-                                    </div>
-                                )
+                                if(!team1.includes(username) && !team2.includes(username)){
+                                    return (
+                                        <div key={username}>
+                                            {username}
+                                        </div>
+                                    )
+                                }                                
                             })
+                            
+                            
                         }
 
                         {
-                            team1 && team2 && (
+                           
+                            team1 && team2 && gameMode === "knockout" && (
                                 <>
                                     <div>
                                         Team1
