@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import Game from "./Game";
 import HPBar from "./HPBar";
 import MultiplierContainer from './MultiplierContainer';
+import { cursorTo } from 'node:readline';
 
 function getRandomIdx(array_size: number): number {
     return Math.floor(Math.random() * array_size);
@@ -22,13 +23,13 @@ export default function Lobby() {
     const [clientId, setClientId] = useState<string | null>(null);
     const [ws, setWs] = useState<WebSocket | null>(null);
     const [state, setState] = useState<"noName" | "lobby" | "error" | "inGame" | "gameOver">("noName");
-    const [usernameError, setUsernameError] = useState<string | null>(null);
+    const [usernameErrorMsg, setUsernameErrorMsg] = useState<string | null>(null);
     const [isHost, setIsHost] = useState<boolean>(false);
     const [scores, setScores] = useState<[[string, number]]>();
     const [showRoundScores, setShowRoundScores] = useState<boolean>(false);
     const [roundScores, setRoundScores] = useState<[[string, number]] | null>(null);
     const [gameMode, setGameMode] = useState<"setRounds" | "knockout" | "timerTrigger">("setRounds");
-    const [usernames, setusernames] = useState<[string] | null>(null);
+    const [playerList, setPlayerList] = useState<[string] | null>(null);
     const [team1, setTeam1] = useState<string[]>([]);
     const [team2, setTeam2] = useState<string[]>([]);
     const [curTeam1HP, setCurTeam1HP] = useState<number | null>(null);
@@ -51,6 +52,7 @@ export default function Lobby() {
     const [showTeam1CalcAnim, setShowTeam1CalcAnim] = useState<boolean>(false);
     const [showTeam2CalcAnim, setShowTeam2CalcAnim] = useState<boolean>(false);
     const [showResultAnim, setShowResultAnim] = useState<boolean>(false);
+    const [currentUsername, setCurrentUsername] = useState<string | null>(null);
 
 
     //Map Use States
@@ -87,7 +89,7 @@ export default function Lobby() {
             if (data.method === 'lobbyJoined') {
                 setIsHost(Boolean(data.isHost));
                 setGameMode(data.gameMode);
-                console.log(usernames);
+                console.log(playerList);
             }
 
             if (data.method === "setHost") {
@@ -140,11 +142,11 @@ export default function Lobby() {
             }
 
             if(data.method === "playerLeft"){
-                setusernames(data.remainingUsernames);
+                setPlayerList(data.remainingUsernames);
             }
 
             if(data.method === "updatePlayers"){
-                setusernames(data.takenUsernames);
+                setPlayerList(data.takenUsernames);
             }
 
             if(data.method === "updateTeams"){
@@ -210,12 +212,13 @@ export default function Lobby() {
         const formData = new FormData(event.currentTarget);
         const username = ((formData.get('username') as string) ?? "").trim();
         if(username.length < 1){
-            setUsernameError("Username must be at least 1 character long.");
-        }else if(usernames?.includes(username)){
-            setUsernameError("Name already in use in this lobby.");
+            setUsernameErrorMsg("Username must be at least 1 character long.");
+        }else if(playerList?.includes(username)){
+            setUsernameErrorMsg("Name already in use in this lobby.");
         } else{
-            setUsernameError(null);
+            setUsernameErrorMsg(null);
             if (ws && username) ws.send(JSON.stringify({ method: 'setUsername', username: username }));
+            setCurrentUsername(username);
             setState("lobby");
         }
 
@@ -265,8 +268,8 @@ export default function Lobby() {
                                     <input name="username" placeholder="Enter your username" style={{ width: '100%', height: '40px', boxSizing: 'border-box', borderRadius: 6, fontSize: '1rem', padding: '0.5rem', border: '1px solid #e5e7eb', fontFamily: 'inherit' }} />
                                 </label>
                                 <button type="submit" style={{ height: '40px', borderRadius: 8, background: 'linear-gradient(90deg,#06b6d4,#3b82f6)', color: 'white', fontWeight: 700, border: 'none', cursor: 'pointer', fontSize: '1rem' }}>Enter Lobby</button>
-                                {usernameError && (
-                                    <p style={{ color: '#dc2626', marginTop: '0.5rem', fontWeight: 500, textAlign: 'center', margin: '0.5rem 0 0 0' }}>{usernameError}</p>
+                                {usernameErrorMsg && (
+                                    <p style={{ color: '#dc2626', marginTop: '0.5rem', fontWeight: 500, textAlign: 'center', margin: '0.5rem 0 0 0' }}>{usernameErrorMsg}</p>
                                 )}
                             </form>
                         </div>
@@ -276,76 +279,103 @@ export default function Lobby() {
 
             {
                 state === "lobby" && (
-                    <>
-                        Welcome to lobby: {lobbyId}
+                    <div style={{
+                        minHeight: '100vh',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        backgroundImage: "url('/main_menu_background.jpg')",
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        padding: '1rem',
+                    }}>
+                        <div style={{
+                            width: 900,
+                            maxWidth: '96%',
+                            padding: '2.5rem',
+                            borderRadius: 12,
+                            background: 'rgba(255,255,255,0.9)',
+                            boxShadow: '0 10px 30px rgba(2,6,23,0.35)',
+                            backdropFilter: 'blur(6px)',
+                            color: '#0b1220',
+                        }}>
+                            <h1 style={{ margin: 0, fontSize: '1.5rem', letterSpacing: '0.6px' }}>Welcome to lobby: {lobbyId}</h1>
+                            <p style={{ marginTop: '0.35rem', marginBottom: '1.5rem', color: '#334155' }}>Players are grouped below. Join a team before the host starts the match.</p>
 
-                        {
-                                                       
-                            usernames?.map((username) =>{
-                                if(!team1.includes(username) && !team2.includes(username)){
-                                    return (
-                                        <div key={username}>
-                                            {username}
-                                        </div>
-                                    )
-                                }                                
-                            })
-                            
-                            
-                        }
-
-                        {
-                           
-                            team1 && team2 && gameMode === "knockout" && (
-                                <>
-                                    <div>
-                                        Team1
-                                        {
-                                            team1?.map((username) =>{
+                            <div style={{
+                                display: 'grid',
+                                gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
+                                gap: '1rem',
+                            }}>
+                                <div style={{ background: 'rgba(255,255,255,0.9)', border: '1px solid #e2e8f0', borderRadius: 12, padding: '1rem' }}>
+                                    <h2 style={{ margin: 0, marginBottom: '0.75rem', color: '#0f172a', fontSize: '1.1rem' }}>No Team</h2>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                        {playerList?.map((username) => {
+                                            if (!team1.includes(username) && !team2.includes(username)) {
+                                                let usernameDisplay = currentUsername === username ? username + " (You)" : username;
+                                                                               
                                                 return (
-                                                <div key={username}>
-                                                    {username}
-                                                </div>
-                                                )
-                                            })
-                                        }
+                                                    <div key={username} style={{ padding: '0.55rem 0.7rem', borderRadius: 8, background: '#f8fafc', border: '1px solid #e2e8f0' }}>
+                                                        {usernameDisplay}
+                                                    </div>
+                                                );
+                                            }
+                                            return null;
+                                        })}
                                     </div>
+                                </div>
 
-                                    <div>
-                                        Team2
-                                        {
-                                            team2?.map((username) =>{
-                                                return (
-                                                <div key={username}>
-                                                    {username}
+                                <div style={{ background: 'rgba(239,246,255,0.95)', border: '1px solid #bfdbfe', borderRadius: 12, padding: '1rem' }}>
+                                    <h2 style={{ margin: 0, marginBottom: '0.75rem', color: '#2563eb', fontSize: '1.1rem' }}>Team 1</h2>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                        {team1?.map((username) => {
+                                            let usernameDisplay = currentUsername === username ? username + " (You)" : username;
+                                            return(
+                                                <div key={username} style={{ padding: '0.55rem 0.7rem', borderRadius: 8, background: '#eff6ff', border: '1px solid #bfdbfe' }}>
+                                                    {usernameDisplay}
                                                 </div>
-                                                )
-                                            })
-                                        }
+                                            )                                          
+                                        })}
                                     </div>
+                                </div>                               
 
-                                </>
-                            )
-                        }
+                                <div style={{ background: 'rgba(254,242,242,0.95)', border: '1px solid #fecaca', borderRadius: 12, padding: '1rem' }}>
+                                    <h2 style={{ margin: 0, marginBottom: '0.75rem', color: '#dc2626', fontSize: '1.1rem' }}>Team 2</h2>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                        {team2?.map((username) => {
+                                            let usernameDisplay = currentUsername === username ? username + " (You)" : username;
+                                            return(
+                                                <div key={username} style={{ padding: '0.55rem 0.7rem', borderRadius: 8, background: '#fef2f2', border: '1px solid #fecaca' }}>
+                                                    {usernameDisplay}
+                                                </div>
+                                            )                                          
+                                        })}
+                                    </div>
+                                </div>
+                            </div>
 
-                    </>
-                )
-            }
+                            <div style={{ marginTop: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                                    {gameMode === "knockout" && (
+                                        <>
+                                            <button type="button" onClick={handleJoinTeam1} style={{ padding: '0.65rem 1rem', borderRadius: 10, border: '1px solid #bfdbfe', background: '#eff6ff', color: '#2563eb', fontWeight: 700, cursor: 'pointer' }}>
+                                                Join Team 1
+                                            </button>
+                                            <button type="button" onClick={handleJoinTeam2} style={{ padding: '0.65rem 1rem', borderRadius: 10, border: '1px solid #fecaca', background: '#fef2f2', color: '#dc2626', fontWeight: 700, cursor: 'pointer' }}>
+                                                Join Team 2
+                                            </button>
+                                        </>
+                                    )}
+                                </div>
 
-            {
-                isHost && state === "lobby" && (gameMode !== "knockout" || (team1.length > 0 && team2.length > 0)) && (
-                    <div>
-                        <button onClick={handleStartGame} >Start Game</button>
+                                {isHost && (gameMode !== "knockout" || (team1.length > 0 && team2.length > 0)) && (
+                                    <button onClick={handleStartGame} style={{ marginLeft: 'auto', padding: '0.75rem 1.25rem', borderRadius: 10, border: 'none', background: 'linear-gradient(90deg,#06b6d4,#3b82f6)', color: 'white', fontWeight: 700, cursor: 'pointer' }}>
+                                        Start Game
+                                    </button>
+                                )}
+                            </div>
+                        </div>
                     </div>
-                )
-            }
-
-            {
-                gameMode === "knockout" && state === "lobby" && (
-                    <>
-                        <button type="button" onClick={handleJoinTeam1}>Join Team 1</button>
-                        <button type="button" onClick={handleJoinTeam2}>Join Team 2</button>
-                     </>
                 )
             }
 
