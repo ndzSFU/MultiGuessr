@@ -5,7 +5,7 @@ import { useParams } from 'next/navigation';
 import Game from "./Game";
 import HPBar from "./HPBar";
 import MultiplierContainer from './MultiplierContainer';
-import { cursorTo } from 'node:readline';
+import type { CSSProperties } from 'react';
 
 function getRandomIdx(array_size: number): number {
     return Math.floor(Math.random() * array_size);
@@ -238,6 +238,13 @@ export default function Lobby() {
         if (ws) ws.send(JSON.stringify({ method: 'joinTeam2' }));
     }
 
+    const knockoutStylePlayerList: CSSProperties = { display: 'flex', flexDirection: 'column', gap: '0.5rem' };
+    const noTeamsStylePlayerList: CSSProperties = {
+        display: 'flex',
+        flexWrap: 'wrap',
+        gap: '0.5rem',
+    };
+
     return (
         <>
             {
@@ -299,23 +306,32 @@ export default function Lobby() {
                             backdropFilter: 'blur(6px)',
                             color: '#0b1220',
                         }}>
-                            <h1 style={{ margin: 0, fontSize: '1.5rem', letterSpacing: '0.6px' }}>Welcome to lobby: {lobbyId}</h1>
-                            <p style={{ marginTop: '0.35rem', marginBottom: '1.5rem', color: '#334155' }}>Players are grouped below. Join a team before the host starts the match.</p>
+                            <h1 style={{ margin: 0, paddingBottom: "10px", fontSize: '1.5rem', letterSpacing: '0.6px' }}>Welcome to lobby: {lobbyId}</h1>
 
                             <div style={{
                                 display: 'grid',
                                 gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
                                 gap: '1rem',
                             }}>
-                                <div style={{ background: 'rgba(255,255,255,0.9)', border: '1px solid #e2e8f0', borderRadius: 12, padding: '1rem' }}>
-                                    <h2 style={{ margin: 0, marginBottom: '0.75rem', color: '#0f172a', fontSize: '1.1rem' }}>No Team</h2>
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                <div style={{ background: 'rgba(255,255,255,0.9)', border: '1px solid #e2e8f0', borderRadius: 12, padding: '1rem', gridColumn: gameMode === "knockout" ? 'auto' : '1 / -1' }}>
+                                    
+                                    {
+                                        gameMode === "knockout" ? (
+                                            <h2 style={{ margin: 0, marginBottom: '0.75rem', color: '#0f172a', fontSize: '1.1rem' }}>No Team</h2>
+                                        ) : (
+                                            <h2 style={{ margin: 0, marginBottom: '0.75rem', color: '#0f172a', fontSize: '1.1rem' }}>Players</h2>
+                                        )
+
+                                    }
+                                    
+                                    
+                                    <div style={gameMode === "knockout" ? knockoutStylePlayerList : noTeamsStylePlayerList}>
                                         {playerList?.map((username) => {
                                             if (!team1.includes(username) && !team2.includes(username)) {
                                                 let usernameDisplay = currentUsername === username ? username + " (You)" : username;
                                                                                
                                                 return (
-                                                    <div key={username} style={{ padding: '0.55rem 0.7rem', borderRadius: 8, background: '#f8fafc', border: '1px solid #e2e8f0' }}>
+                                                    <div key={username} style={{ padding: '0.55rem 0.75rem', borderRadius: 7, background: '#f8fafc', border: '1px solid #e2e8f0', width: 'fit-content', maxWidth: '100%' }}>
                                                         {usernameDisplay}
                                                     </div>
                                                 );
@@ -325,33 +341,41 @@ export default function Lobby() {
                                     </div>
                                 </div>
 
-                                <div style={{ background: 'rgba(239,246,255,0.95)', border: '1px solid #bfdbfe', borderRadius: 12, padding: '1rem' }}>
-                                    <h2 style={{ margin: 0, marginBottom: '0.75rem', color: '#2563eb', fontSize: '1.1rem' }}>Team 1</h2>
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                                        {team1?.map((username) => {
-                                            let usernameDisplay = currentUsername === username ? username + " (You)" : username;
-                                            return(
-                                                <div key={username} style={{ padding: '0.55rem 0.7rem', borderRadius: 8, background: '#eff6ff', border: '1px solid #bfdbfe' }}>
-                                                    {usernameDisplay}
+                                {
+                                    gameMode === "knockout" && (
+                                        <>
+                                            <div style={{ background: 'rgba(239,246,255,0.95)', border: '1px solid #bfdbfe', borderRadius: 12, padding: '1rem' }}>
+                                                <h2 style={{ margin: 0, marginBottom: '0.75rem', color: '#2563eb', fontSize: '1.1rem' }}>Team 1</h2>
+                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                                    {team1?.map((username) => {
+                                                        let usernameDisplay = currentUsername === username ? username + " (You)" : username;
+                                                        return(
+                                                            <div key={username} style={{ padding: '0.55rem 0.7rem', borderRadius: 8, background: '#eff6ff', border: '1px solid #bfdbfe' }}>
+                                                                {usernameDisplay}
+                                                            </div>
+                                                        )                                          
+                                                    })}
                                                 </div>
-                                            )                                          
-                                        })}
-                                    </div>
-                                </div>                               
+                                            </div>                               
 
-                                <div style={{ background: 'rgba(254,242,242,0.95)', border: '1px solid #fecaca', borderRadius: 12, padding: '1rem' }}>
-                                    <h2 style={{ margin: 0, marginBottom: '0.75rem', color: '#dc2626', fontSize: '1.1rem' }}>Team 2</h2>
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                                        {team2?.map((username) => {
-                                            let usernameDisplay = currentUsername === username ? username + " (You)" : username;
-                                            return(
-                                                <div key={username} style={{ padding: '0.55rem 0.7rem', borderRadius: 8, background: '#fef2f2', border: '1px solid #fecaca' }}>
-                                                    {usernameDisplay}
+                                            <div style={{ background: 'rgba(254,242,242,0.95)', border: '1px solid #fecaca', borderRadius: 12, padding: '1rem' }}>
+                                                <h2 style={{ margin: 0, marginBottom: '0.75rem', color: '#dc2626', fontSize: '1.1rem' }}>Team 2</h2>
+                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                                    {team2?.map((username) => {
+                                                        let usernameDisplay = currentUsername === username ? username + " (You)" : username;
+                                                        return(
+                                                            <div key={username} style={{ padding: '0.55rem 0.7rem', borderRadius: 8, background: '#fef2f2', border: '1px solid #fecaca' }}>
+                                                                {usernameDisplay}
+                                                            </div>
+                                                        )                                          
+                                                    })}
                                                 </div>
-                                            )                                          
-                                        })}
-                                    </div>
-                                </div>
+                                            </div>
+                                        
+                                        </>
+                                    )
+                                }
+                                
                             </div>
 
                             <div style={{ marginTop: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
