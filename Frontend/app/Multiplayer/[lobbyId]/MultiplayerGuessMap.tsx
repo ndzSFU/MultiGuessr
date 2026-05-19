@@ -193,12 +193,12 @@ export default function MultiplayerGuessMap({lat, long, rerollCity, ws, isHost, 
                     ) 
                 } 
                 {
-                    gameOver && (
-                        <>
-                            <p style={{ color: '#ef4444' }}>Game Over</p>
-                            <button className="gameOverBtn" onClick={handleGameOver} style={{padding: '2px 4px', cursor: 'pointer'}}>View Stats</button> 
-                        </>
-                    )
+                    // gameOver && (
+                    //     <>
+                    //         <p style={{ color: '#ef4444' }}>Game Over</p>
+                    //         <button className="gameOverBtn" onClick={handleGameOver} style={{padding: '2px 4px', cursor: 'pointer'}}>View Stats</button> 
+                    //     </>
+                    // )
                 }
                 {
                     hasGuessed && (

@@ -6,6 +6,7 @@ import Game from "./Game";
 import HPBar from "./HPBar";
 import MultiplierContainer from './MultiplierContainer';
 import type { CSSProperties } from 'react';
+import { useRouter } from 'next/navigation';
 
 function getRandomIdx(array_size: number): number {
     return Math.floor(Math.random() * array_size);
@@ -54,6 +55,8 @@ export default function Lobby() {
     const [showResultAnim, setShowResultAnim] = useState<boolean>(false);
     const [currentUsername, setCurrentUsername] = useState<string | null>(null);
     const [allRoundScores, setAllRoundScores] = useState<[[[string, number]]] | null>(null);
+
+    const router = useRouter();
 
 
     //Map Use States
@@ -836,6 +839,26 @@ export default function Lobby() {
                                 to { opacity: 1; transform: translateY(0); }
                             }
                         `}</style>
+
+                        <button
+                            onClick={() => {
+                                setState("results");
+                            }}
+                            style={{
+                                width: '100%',
+                                marginTop: '0.25rem',
+                                padding: '0.75rem',
+                                borderRadius: '0.5rem',
+                                border: 'none',
+                                background: '#4f46e5',
+                                color: 'white',
+                                fontWeight: 600,
+                                cursor: 'pointer',
+                                fontSize: '1rem'
+                            }}
+                        >
+                            View Stats
+                        </button>
                     </div>
                 )
                 
@@ -879,7 +902,7 @@ export default function Lobby() {
                                                 <th style={{ padding: '1rem', textAlign: 'left', fontWeight: 700, color: '#64748b', fontSize: '0.875rem', textTransform: 'uppercase', letterSpacing: '0.05em', minWidth: '120px' }}>Player</th>
                                                 {Array.from({ length: (allRoundScores as any).length - 1 }).map((_, roundIdx) => (
                                                     <th key={roundIdx} style={{ padding: '1rem', textAlign: 'center', fontWeight: 700, color: '#64748b', fontSize: '0.875rem', textTransform: 'uppercase', letterSpacing: '0.05em', minWidth: '80px', borderLeft: '1px solid #e2e8f0' }}>
-                                                        R{roundIdx + 1}
+                                                        Round {roundIdx + 1}
                                                     </th>
                                                 ))}
                                             </tr>
@@ -936,9 +959,7 @@ export default function Lobby() {
 
                         <button
                             onClick={() => {
-                                setState('lobby');
-                                setAllRoundScores(null);
-                                setResultsRequested(false);
+                                router.push(`/Multiplayer`);
                             }}
                             style={{
                                 width: '100%',
@@ -953,7 +974,7 @@ export default function Lobby() {
                                 fontSize: '1rem'
                             }}
                         >
-                            Close
+                            Return to Menu
                         </button>
                    </div>
                 )
