@@ -28,9 +28,9 @@ const maxPlayersOptions = [
         { value: "8", label: "8" },
         { value: "9", label: "9" },
         { value: "10", label: "10" },
-        { value: "10", label: "15" },
-        { value: "10", label: "20" },
-        { value: "10", label: "25" },
+        { value: "15", label: "15" },
+        { value: "20", label: "20" },
+        { value: "25", label: "25" },
     ];
 
     const timeOptions = [
@@ -62,9 +62,9 @@ const maxPlayersOptions = [
     ];
 
     const gameModes = [
-        {value: "setRounds", label:"Set Time"},
-        {value: "knockout", label:"Knockout Teams"},
-        {value: "timerTrigger", label:"Triggered Timer"},
+        {value: "setRounds", label:"Regular"},
+        {value: "knockout", label:"Teams"},
+        {value: "timerTrigger", label:"Time Trigger"},
     ];
 
     const multiplierModes = [
@@ -95,9 +95,9 @@ export default function Multiplayer() {
     const [state, setState] = useState<'multiplayerMenu' | 'create' | 'settings' | 'join'>('multiplayerMenu');
     const [lobbyId, setLobbyId] = useState<string | null>(null);
     const [maxPlayers, setMaxPlayers] = useState<{ value: string, label: string } | null>(null);
-    const [maxRounds, setMaxRounds] = useState<{ value: string, label: string } | null>(null);
+    const [maxRounds, setMaxRounds] = useState<{ value: string, label: string } | null>({value: "10", label: "10" });
     const [gameMode, setGameMode] = useState<{ value: string, label: string } | null>(gameModes[0]);
-    const [timeLimit, setTimeLimit] = useState<{ value: string, label: string } | null>(null);
+    const [timeLimit, setTimeLimit] = useState<{ value: string, label: string } | null>({ value: "60", label: "1 Minute" });
     const [HP, setHP] = useState<{ value: string, label: string } | null>({ value: "3000", label: "3,000 HP" });
     const [multiplierMode, setMultiplierMode] = useState<{ value: string, label: string } | null>( { value: "everyRoundIncrement", label: "Casual" });
     const [multiplierIncrement, setMultiplierIncrement] = useState<{ value: string, label: string } | null>({ value: "0.25", label: "0.25" });
@@ -206,6 +206,14 @@ export default function Multiplayer() {
         }
     }, [state, router]);
 
+    useEffect(() => {
+        if(gameMode?.value === "knockout"){
+            setTimeLimit({ value: "15", label: "15 Seconds" },)
+        } else {
+            setTimeLimit({ value: "60", label: "1 Minute" });
+        }
+    }, [gameMode]);
+
         return (
                 <div
                     style={{
@@ -242,7 +250,7 @@ export default function Multiplayer() {
                                 }
                                 
                             }}
-                            title={"Return to Main Menu"}
+                            title={"Return to previous page"}
                             style={{
                                 position: 'absolute',
                                 top: '1rem',
@@ -340,6 +348,7 @@ export default function Multiplayer() {
                                                 value={maxRounds}
                                                 onChange={setMaxRounds}
                                                 styles={customSelectStyles}
+                                                placeholder="10"
                                             />
 
                                          </div>
