@@ -22,12 +22,12 @@ function calculateNetDamage(team1Damage: number, team2Damage: number): number {
 export default function Lobby() {
     const [clientId, setClientId] = useState<string | null>(null);
     const [ws, setWs] = useState<WebSocket | null>(null);
-    const [state, setState] = useState<"noName" | "lobby" | "error" | "inGame" | "gameOver">("noName");
+    const [state, setState] = useState<"noName" | "lobby" | "error" | "inGame" | "gameOver" | "results">("noName");
     const [usernameErrorMsg, setUsernameErrorMsg] = useState<string | null>(null);
     const [isHost, setIsHost] = useState<boolean>(false);
-    const [scores, setScores] = useState<[[string, number]]>();
+    const [totalScores, setTotalScores] = useState<[[string, number]]>();
     const [showRoundScores, setShowRoundScores] = useState<boolean>(false);
-    const [roundScores, setRoundScores] = useState<[[string, number]] | null>(null);
+    const [currRoundScores, setCurrRoundScores] = useState<[[string, number]] | null>(null);
     const [gameMode, setGameMode] = useState<"setRounds" | "knockout" | "timerTrigger">("setRounds");
     const [playerList, setPlayerList] = useState<[string] | null>(null);
     const [team1, setTeam1] = useState<string[]>([]);
@@ -53,6 +53,7 @@ export default function Lobby() {
     const [showTeam2CalcAnim, setShowTeam2CalcAnim] = useState<boolean>(false);
     const [showResultAnim, setShowResultAnim] = useState<boolean>(false);
     const [currentUsername, setCurrentUsername] = useState<string | null>(null);
+    const [allRoundScores, setAllRoundScores] = useState<[[[string, number]]] | null>(null);
 
 
     //Map Use States
@@ -98,7 +99,7 @@ export default function Lobby() {
             }
 
             if (data.method === "loadGame") {
-                setScores(data.playerScoreMap);
+                setTotalScores(data.playerScoreMap);
                 console.log(data.playerScoreMap);
                 setState("inGame");
                 console.log("Loading Game!");
@@ -118,10 +119,10 @@ export default function Lobby() {
             }
 
             if(data.method === "finalGuessMade"){
-                setScores(data.scores);
+                setTotalScores(data.scores);
                 console.log(data.roundScores);
                 setShowRoundScores(true);
-                setRoundScores(data.roundScores);
+                setCurrRoundScores(data.roundScores);
 
                 if(data.team1HP !== undefined && data.team2HP !== undefined && data.team1Max !== undefined && data.team2Max !== undefined){
                     setPrevTeam1DamageMultiplier(data.prevTeam1DamageMultiplier);
@@ -157,8 +158,9 @@ export default function Lobby() {
             }
             
             if(data.method === "gameOver"){
-                // setState("gameOver");
                 setWinner(data.winner);
+                setAllRoundScores(data.allRoundScores);
+                setState("gameOver");
             }
         };
 
@@ -404,7 +406,7 @@ export default function Lobby() {
             }
 
             {
-                showRoundScores && roundScores !== null && gameMode !== "knockout" && (
+                showRoundScores && currRoundScores !== null && gameMode !== "knockout" && (state === "inGame" || state === "gameOver") && (
                     <div style={{
                         position: 'fixed',
                         top: '50%',
@@ -441,9 +443,9 @@ export default function Lobby() {
                         </button>
                         <h3 style={{ color: '#040405', marginBottom: '1rem', fontWeight: 600, fontSize: '1.2rem' }}>Round Score Changes</h3>
                         <div style={{ width: '100%' }}>
-                            {Array.isArray(roundScores) && roundScores.length > 0 ? (
+                            {Array.isArray(currRoundScores) && currRoundScores.length > 0 ? (
                                 <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-                                    {roundScores.map(([username, score], idx) => (
+                                    {currRoundScores.map(([username, score], idx) => (
                                         <li key={username + idx} style={{
                                             display: 'flex',
                                             justifyContent: 'space-between',
@@ -468,11 +470,12 @@ export default function Lobby() {
             
 
             {
-                state === "inGame" && ws && (
+                // Keep the game alive even when game's over so players can see the results on the map of the final round
+                (state === "inGame" || state === "gameOver") && ws && (
                     <div>
                         <Game 
                             ws={ws} isHost={isHost} setShowRoundScores={setShowRoundScores} gameMode={gameMode} 
-                            showRoundScores={showRoundScores} setResultsRequested={setResultsRequested} setState={setState} 
+                            showRoundScores={showRoundScores} setState={setState} 
                             region={region} setShowScoreCalculations={setShowScoreCalculations}>
 
                         </Game>
@@ -486,7 +489,7 @@ export default function Lobby() {
                 state === "inGame" && ws && (
                     <div>
                         {/* All other modes besides knockout */}
-                        {scores && (scores.length > 0) && gameMode !== "knockout" && (
+                        {totalScores && (totalScores.length > 0) && gameMode !== "knockout" && (
                             <div className="scoreboard">
                                 <h3 className="scoreboard-title">Scoreboard</h3>
                                 <div className="scoreboard-header">
@@ -494,7 +497,7 @@ export default function Lobby() {
                                     <span className="scoreboard-col-right">Score</span>
                                 </div>
                                 <ul className="scoreboard-list">
-                                {scores.map(([username, score], idx) => (
+                                {totalScores.map(([username, score], idx) => (
                                     <li key={idx} className="scoreboard-item">
                                         <span className="scoreboard-username">{username}</span>
                                         <span className="scoreboard-score">{score}</span>
@@ -526,6 +529,7 @@ export default function Lobby() {
                                 hp={curTeam1HP}
                                 maxHp={maxTeam1HP}
                                 position="left"
+                                colour="#0066ff"
                             />
                             {
                             //Note Next to Team1 hp it should show Team2's Dmg mult because the team 2 dmg mult represents how much more damage team 2 it taking because of team1's wins
@@ -542,7 +546,7 @@ export default function Lobby() {
                                 hp={curTeam2HP}
                                 maxHp={maxTeam2HP}
                                 position="right"
-
+                                colour="red"
                             />
 
                             {
@@ -677,7 +681,7 @@ export default function Lobby() {
                                                     const team1Dmg = Math.round((team1MaxDamage ?? 0) * parseFloat(prevTeam1DamageMultiplier));
                                                     const team2Dmg = Math.round((team2MaxDamage ?? 0) * parseFloat(prevTeam2DamageMultiplier));
                                                     const netDmg = calculateNetDamage(team1Dmg, team2Dmg);
-                                                    const damageTaker = team1Dmg == team2Dmg ? "No Damage Dealth" : team1Dmg > team2Dmg  ? "Team 1 receives:": "Team 2 receives:";
+                                                    const damageTaker = team1Dmg == team2Dmg ? "No Damage Dealth" : team1Dmg > team2Dmg  ? "Team 2 receives:": "Team 1 receives:";
                                                     return (
                                                         <div style={{ transition: 'opacity 300ms ease, transform 300ms ease', opacity: showResultAnim ? 1 : 0, transform: showResultAnim ? 'translateY(0)' : 'translateY(6px)' }} aria-hidden={!showResultAnim}>
                                                             <span style={{ backgroundColor: '#f1f5f9', padding: '0.125rem 0.5rem', borderRadius: '0.25rem', color: '#334155', fontWeight: 'bold' }}>{damageTaker}</span>
@@ -717,9 +721,129 @@ export default function Lobby() {
                 )
             }
 
+            {
+                state === "gameOver" && (
+                    <div style={{
+                        position: 'fixed',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        background: 'white',
+                        borderRadius: '1rem',
+                        boxShadow: '0 8px 32px rgba(0,0,0,0.25)',
+                        padding: '2rem',
+                        zIndex: 10000,
+                        width: `max(560px, min(${560 + ((allRoundScores as any)?.length ?? 0) * 60}px, 95vw))`,
+                        maxHeight: '90vh',
+                        overflow: 'auto',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        color: 'black',
+                        gap: '1.25rem',
+                    }}>
+                        {
+                            gameMode === "knockout" ? (
+                                <div style={{ width: '100%', textAlign: 'center', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+                                    <div style={{ marginBottom: '2rem' }}>
+                                        <div style={{ fontSize: '0.875rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: '#64748b', fontWeight: 600, marginBottom: '0.5rem' }}>Match Concluded</div>
+                                        <h1 style={{ fontSize: '2.5rem', fontWeight: 800, margin: 0, letterSpacing: '-0.025em' }}>
+                                            <span style={{ color: winner === "team1" ? '#2563eb' : '#dc2626' }}>
+                                                {winner === "team1" ? 'Team 1 Wins' : 'Team 2 Wins'}
+                                            </span>
+                                        </h1>
+                                    </div>
+                                    
+                                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '3rem', padding: '1.5rem', background: '#f8fafc', borderRadius: '1rem', border: '1px solid #e2e8f0' }}>
+                                        <div style={{ flex: 1, textAlign: 'center', animation: 'fadeUp 0.6s ease-out forwards' }}>
+                                            <div style={{ fontSize: '1.5rem', fontWeight: 700, color: winner === "team1" ? '#2563eb' : '#dc2626' }}>
+                                                {winner === "team1" ? 'Team 1' : 'Team 2'}
+                                            </div>
+                                            <div style={{ fontSize: '0.875rem', color: '#64748b', marginTop: '0.25rem' }}>
+                                                {winner === "team1" ? team1.length : team2.length} Players • Victorious
+                                            </div>
+                                        </div>
+
+                                        <div style={{ color: '#cbd5e1', fontSize: '1.5rem', fontWeight: 300, fontStyle: 'italic' }}>vs</div>
+
+                                        <div style={{ flex: 1, textAlign: 'center', opacity: 0.6, animation: 'fadeUp 0.6s ease-out 0.2s forwards' }}>
+                                            <div style={{ fontSize: '1.5rem', fontWeight: 600, color: winner === "team1" ? '#dc2626' : '#2563eb' }}>
+                                                {winner === "team1" ? 'Team 2' : 'Team 1'}
+                                            </div>
+                                            <div style={{ fontSize: '0.875rem', color: '#94a3b8', marginTop: '0.25rem' }}>
+                                                {winner === "team1" ? team2.length : team1.length} Players • Fraudulent
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <style>{`
+                                        @keyframes fadeUp {
+                                            from { opacity: 0; transform: translateY(10px); }
+                                            to { opacity: 1; transform: translateY(0); }
+                                        }
+                                    `}</style>
+                                </div>
+                            ) : (
+                                <div style={{ width: '100%', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+                                    <div style={{ marginBottom: '2rem', textAlign: 'center' }}>
+                                        <div style={{ fontSize: '0.875rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: '#64748b', fontWeight: 600, marginBottom: '0.5rem' }}>Match Concluded</div>
+                                        <h2 style={{ fontSize: '2.5rem', fontWeight: 800, margin: 0, letterSpacing: '-0.025em', color: '#0f172a' }}>Final Rankings</h2>
+                                    </div>
+                                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-end', gap: '1.5rem', minHeight: '220px' }}>
+                                        <div style={{ flex: 1, maxWidth: '160px', textAlign: 'center', animation: 'fadeUp 0.6s ease-out 0.2s forwards', opacity: 0 }}>
+                                            <div style={{ fontWeight: 700, marginBottom: '0.75rem', color: '#0f172a', wordBreak: 'break-word', fontSize: '1.1rem' }}>
+                                                {totalScores && (totalScores as any).length > 1 ? (totalScores as any)[1][0] : '-'}
+                                            </div>
+                                            <div style={{ background: 'linear-gradient(135deg, #f1f5f9, #e2e8f0)', borderRadius: '1rem', padding: '1.25rem', minHeight: '120px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', border: '1px solid #cbd5e1', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)' }}>
+                                                <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#64748b', marginBottom: '0.25rem', letterSpacing: '0.05em' }}>2ND</div>
+                                                <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#475569' }}>
+                                                    {totalScores && (totalScores as any).length > 1 ? (totalScores as any)[1][1] : ''}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div style={{ flex: 1, maxWidth: '180px', textAlign: 'center', animation: 'fadeUp 0.6s ease-out forwards', opacity: 0 }}>
+                                            <div style={{ fontWeight: 800, marginBottom: '0.75rem', color: '#0f172a', wordBreak: 'break-word', fontSize: '1.25rem' }}>
+                                                {totalScores && (totalScores as any).length > 0 ? (totalScores as any)[0][0] : '-'}
+                                            </div>
+                                            <div style={{ background: 'linear-gradient(135deg, #fbbf24, #f59e0b)', borderRadius: '1rem', padding: '1.5rem', minHeight: '160px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', border: '1px solid #f59e0b', boxShadow: '0 10px 25px -5px rgba(245, 158, 11, 0.4)' }}>
+                                                <div style={{ fontSize: '1.75rem', fontWeight: 900, color: 'white', marginBottom: '0.25rem', letterSpacing: '0.05em' }}>1ST</div>
+                                                <div style={{ fontSize: '1.5rem', fontWeight: 900, color: '#fffbeb' }}>
+                                                    {totalScores && (totalScores as any).length > 0 ? (totalScores as any)[0][1] : ''}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div style={{ flex: 1, maxWidth: '160px', textAlign: 'center', animation: 'fadeUp 0.6s ease-out 0.4s forwards', opacity: 0 }}>
+                                            <div style={{ fontWeight: 700, marginBottom: '0.75rem', color: '#0f172a', wordBreak: 'break-word', fontSize: '1.1rem' }}>
+                                                {totalScores && (totalScores as any).length > 2 ? (totalScores as any)[2][0] : '-'}
+                                            </div>
+                                            <div style={{ background: 'linear-gradient(135deg, #fed7aa, #fdba74)', borderRadius: '1rem', padding: '1.25rem', minHeight: '100px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', border: '1px solid #fdba74', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)' }}>
+                                                <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#9a3412', marginBottom: '0.25rem', letterSpacing: '0.05em' }}>3RD</div>
+                                                <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#78350f' }}>
+                                                    {totalScores && (totalScores as any).length > 2 ? (totalScores as any)[2][1] : ''}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )
+                        }
+
+                        <style>{`
+                            @keyframes fadeUp {
+                                from { opacity: 0; transform: translateY(10px); }
+                                to { opacity: 1; transform: translateY(0); }
+                            }
+                        `}</style>
+                    </div>
+                )
+                
+            }
+
 
             {
-                resultsRequested && (
+                state === "results" && (
                    <div style={{
                         position: 'fixed',
                         top: '50%',
@@ -728,33 +852,113 @@ export default function Lobby() {
                         background: 'white',
                         borderRadius: '1rem',
                         boxShadow: '0 8px 32px rgba(0,0,0,0.25)',
-                        padding: '2rem 2.5rem 1.5rem 2.5rem',
+                        padding: '2rem',
                         zIndex: 10000,
-                        minWidth: '320px',
-                        minHeight: '120px',
+                        width: `max(560px, min(${560 + ((allRoundScores as any)?.length ?? 0) * 60}px, 95vw))`,
+                        maxHeight: '90vh',
+                        overflow: 'auto',
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
-                        justifyContent: 'center',
-                        color: "black",
+                        color: 'black',
+                        gap: '1.25rem',
                     }}>
-                        {
-                            winner === "team1" ? (
-                                <div>
-                                    Congrats Team1
+                        
+
+                        {allRoundScores && (
+                            <div style={{ width: '100%', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+                                <div style={{ marginBottom: '2rem', textAlign: 'center' }}>
+                                    <div style={{ fontSize: '0.875rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: '#64748b', fontWeight: 600, marginBottom: '0.5rem' }}>Match Details</div>
+                                    <h2 style={{ fontSize: '2rem', fontWeight: 800, margin: 0, letterSpacing: '-0.025em', color: '#0f172a' }}>Round-by-Round Breakdown</h2>
                                 </div>
-                            ) : (
-                                <div>
-                                    Congrats Team2
+
+                                <div style={{ overflowX: 'auto', borderRadius: '0.75rem', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)' }}>
+                                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                                        <thead>
+                                            <tr style={{ borderBottom: '2px solid #e2e8f0', backgroundColor: '#f8fafc' }}>
+                                                <th style={{ padding: '1rem', textAlign: 'left', fontWeight: 700, color: '#64748b', fontSize: '0.875rem', textTransform: 'uppercase', letterSpacing: '0.05em', minWidth: '120px' }}>Player</th>
+                                                {Array.from({ length: (allRoundScores as any).length - 1 }).map((_, roundIdx) => (
+                                                    <th key={roundIdx} style={{ padding: '1rem', textAlign: 'center', fontWeight: 700, color: '#64748b', fontSize: '0.875rem', textTransform: 'uppercase', letterSpacing: '0.05em', minWidth: '80px', borderLeft: '1px solid #e2e8f0' }}>
+                                                        R{roundIdx + 1}
+                                                    </th>
+                                                ))}
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {totalScores && totalScores.length > 0 && totalScores.map((score, playerIdx) => {
+                                                const playerName = score[0];
+                                                return (
+                                                    <tr key={playerIdx} style={{ borderBottom: '1px solid #e2e8f0', backgroundColor: playerIdx % 2 === 0 ? 'white' : '#f8fafc' }}>
+                                                        <td style={{ padding: '1rem', fontWeight: 600, color: '#0f172a', minWidth: '120px' }}>{playerName}</td>
+                                                        {Array.from({ length: (allRoundScores as any).length - 1 }).map((_, roundIdx) => {
+                                                            const roundData = (allRoundScores as any)[roundIdx];
+                                                            let playerRoundScore = 0;
+                                                            let maxScoreInRound = -Infinity;
+                                                            let isHighestScorer = false;
+
+                                                            if (Array.isArray(roundData)) {
+                                                                roundData.forEach((entry: any) => {
+                                                                    if (entry && Array.isArray(entry) && entry[0] === playerName) {
+                                                                        playerRoundScore = entry[1] ?? 0;
+                                                                    }
+                                                                    if (entry && Array.isArray(entry) && entry[1] !== undefined && entry[1] > maxScoreInRound) {
+                                                                        maxScoreInRound = entry[1];
+                                                                    }
+                                                                });
+                                                                isHighestScorer = playerRoundScore === maxScoreInRound && playerRoundScore > 0;
+                                                            }
+
+                                                            return (
+                                                                <td key={roundIdx} style={{
+                                                                    padding: '1rem',
+                                                                    textAlign: 'center',
+                                                                    fontWeight: 600,
+                                                                    backgroundColor: isHighestScorer ? '#f0fdf4' : 'inherit',
+                                                                    color: playerRoundScore > 0 ? '#16a34a' : '#ef4444',
+                                                                    borderLeft: '1px solid #e2e8f0',
+                                                                    minWidth: '80px'
+                                                                }}>
+                                                                    <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '0.375rem', width: '100%' }}>
+                                                                        {playerRoundScore > 0 ? `+${playerRoundScore}` : playerRoundScore}
+                                                                        {isHighestScorer && <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#22c55e' }} title="Highest Score in Round"></span>}
+                                                                    </span>
+                                                                </td>
+                                                            );
+                                                        })}
+                                                    </tr>
+                                                );
+                                            })}
+                                        </tbody>
+                                    </table>
                                 </div>
-                            )
-                        }
+                            </div>
+                        )}
+
+                        <button
+                            onClick={() => {
+                                setState('lobby');
+                                setAllRoundScores(null);
+                                setResultsRequested(false);
+                            }}
+                            style={{
+                                width: '100%',
+                                marginTop: '0.25rem',
+                                padding: '0.75rem',
+                                borderRadius: '0.5rem',
+                                border: 'none',
+                                background: '#4f46e5',
+                                color: 'white',
+                                fontWeight: 600,
+                                cursor: 'pointer',
+                                fontSize: '1rem'
+                            }}
+                        >
+                            Close
+                        </button>
                    </div>
                 )
             }
             
-
-
         </>
     );
 }

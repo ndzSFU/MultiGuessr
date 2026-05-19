@@ -1,11 +1,14 @@
+import { Property } from "csstype";
+
 interface HPBarProps {
     label: string;
     hp: number | null;
     maxHp: number;
     position: 'left' | 'right';
+    colour: Property.Color;
 }
 
-export default function HPBar({ label, hp, maxHp, position}: HPBarProps) {
+export default function HPBar({ label, hp, maxHp, position, colour}: HPBarProps) {
     const currentHp = hp ?? maxHp;
     const hpPercentage = Math.max(0, Math.min(100, (currentHp / maxHp) * 100));
     
@@ -28,7 +31,7 @@ export default function HPBar({ label, hp, maxHp, position}: HPBarProps) {
                 zIndex: 1000,
             }}
         >
-            <div style={{ marginBottom: '0.25rem', fontSize: '0.75rem', fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase' }}>
+            <div style={{ marginBottom: '0.25rem', fontSize: '0.75rem', fontWeight: 700, color: colour, textTransform: 'uppercase' }}>
                 {label}
             </div>
             <div style={{ marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 600, color: '#e5e7eb' }}>

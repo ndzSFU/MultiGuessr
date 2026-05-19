@@ -492,6 +492,8 @@ wsServer.on("request", (request) => {
                         scores: totalScores,
                         roundScores: lobby.roundScores[curRoundIdx],
                         roundLatLngs: lobby.roundLatLngs[curRoundIdx],
+                        allRoundScores: lobby.roundScores,
+                        allRoundLatLngs: lobby.roundLatLngs,
                     }
                     broadcastToLobby(curLobbyId, JSON.stringify(gameOverPayload));
                 }
@@ -571,10 +573,12 @@ wsServer.on("request", (request) => {
                         const gameOverPayload = {
                             method: "gameOver",
                             clientId: clientId,
-                            roundScores: lobby.roundScores[curRoundIdx],
-                            roundLatLngs: lobby.roundLatLngs[curRoundIdx],
+                            allRoundScores: lobby.roundScores,
+                            allRoundLatLngs: lobby.roundLatLngs,
                             winner: lobby.team1HP > lobby.team2HP ? "team1" : "team2",
                         }
+                        console.log(lobby.roundLatLngs);
+                        console.log(lobby.roundScores);
                         broadcastToLobby(curLobbyId, JSON.stringify(gameOverPayload));
                     }
 
@@ -673,9 +677,6 @@ wsServer.on("request", (request) => {
         if(res.method === "joinTeam2"){
             handleJoinTeam("team2");
         }
-
-        // console.log(res);
-        // console.log(clients.size);
     });
 
     

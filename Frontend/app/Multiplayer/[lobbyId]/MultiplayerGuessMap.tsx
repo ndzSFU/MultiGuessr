@@ -19,12 +19,11 @@ interface MultiplayerGuessMapProps{
     isHost: boolean,
     setLoadGame: (bool: boolean) => void,
     timeHasExpired: boolean,
-    setResultsRequested: (bool: boolean) => void,
-    setState: (state: "noName" | "lobby" | "error" | "inGame" | "gameOver") => void,
+    setState: (state: "noName" | "lobby" | "error" | "inGame" | "gameOver" | "results") => void,
 }
 
 
-export default function MultiplayerGuessMap({lat, long, rerollCity, ws, isHost, setLoadGame, timeHasExpired, setResultsRequested, setState}: MultiplayerGuessMapProps): React.ReactNode{
+export default function MultiplayerGuessMap({lat, long, rerollCity, ws, isHost, setLoadGame, timeHasExpired, setState}: MultiplayerGuessMapProps): React.ReactNode{
     const divRef = useRef<HTMLDivElement>(null);
     const mapRef = useRef<L.Map | null>(null);
     const curMarker = useRef<L.Marker<any> | null>(null);
@@ -132,8 +131,7 @@ export default function MultiplayerGuessMap({lat, long, rerollCity, ws, isHost, 
     }
 
     function handleGameOver(): void{
-        setResultsRequested(true);
-        setState("gameOver");
+        setState("results");
     }
 
     useEffect(() => {
@@ -164,6 +162,7 @@ export default function MultiplayerGuessMap({lat, long, rerollCity, ws, isHost, 
 
             if(data.method === "gameOver"){
                 console.log("Game Over");
+                console.log(data.scores)
                 setGameOver(true);
             }
         }
@@ -197,7 +196,7 @@ export default function MultiplayerGuessMap({lat, long, rerollCity, ws, isHost, 
                     gameOver && (
                         <>
                             <p style={{ color: '#ef4444' }}>Game Over</p>
-                            <button className="gameOverBtn" onClick={handleGameOver} style={{padding: '2px 4px', cursor: 'pointer'}}>See Results</button> 
+                            <button className="gameOverBtn" onClick={handleGameOver} style={{padding: '2px 4px', cursor: 'pointer'}}>View Stats</button> 
                         </>
                     )
                 }
