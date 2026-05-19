@@ -130,10 +130,6 @@ export default function MultiplayerGuessMap({lat, long, rerollCity, ws, isHost, 
         if (isHost) rerollCity();
     }
 
-    function handleGameOver(): void{
-        setState("results");
-    }
-
     useEffect(() => {
         if(!ws) return;
 
@@ -192,14 +188,6 @@ export default function MultiplayerGuessMap({lat, long, rerollCity, ws, isHost, 
                         </>
                     ) 
                 } 
-                {
-                    // gameOver && (
-                    //     <>
-                    //         <p style={{ color: '#ef4444' }}>Game Over</p>
-                    //         <button className="gameOverBtn" onClick={handleGameOver} style={{padding: '2px 4px', cursor: 'pointer'}}>View Stats</button> 
-                    //     </>
-                    // )
-                }
                 {
                     hasGuessed && (
                         <ScoreBox chosenLatLng={{lat: curMarker.current?.getLatLng().lat || 0, long: curMarker.current?.getLatLng().lng || 0}} actualLatLng={{lat: lat, long: long}} ws={ws}></ScoreBox>

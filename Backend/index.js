@@ -46,7 +46,7 @@ function getMapillaryCacheKey(lat, lon){
 
 //Returns a promise
 async function fetchMapillaryImageIds(lat, lon, accessToken){
-    const bboxOffset = 0.002;
+    const bboxOffset = 0.003;
 
     const minLon = lon - bboxOffset;
     const maxLon = lon + bboxOffset;

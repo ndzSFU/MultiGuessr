@@ -92,7 +92,7 @@ const maxPlayersOptions = [
 
 export default function Multiplayer() {
 
-    const [mode, setMode] = useState<'menu' | 'create' | 'settings' | 'join'>('menu');
+    const [state, setState] = useState<'multiplayerMenu' | 'create' | 'settings' | 'join'>('multiplayerMenu');
     const [lobbyId, setLobbyId] = useState<string | null>(null);
     const [maxPlayers, setMaxPlayers] = useState<{ value: string, label: string } | null>(null);
     const [maxRounds, setMaxRounds] = useState<{ value: string, label: string } | null>(null);
@@ -159,7 +159,7 @@ export default function Multiplayer() {
             if(value === true){
                 setLobbyId(lobbyId);
                 console.log("Lobby Code: " + lobbyId);
-                setMode('create');
+                setState('create');
             } else {
                 console.log("Error lobbyId not found in server.")
                 setBadLobbyId(true);
@@ -189,7 +189,7 @@ export default function Multiplayer() {
         });
         const status = await response.text();
         console.log(status);
-        setMode('create');
+        setState('create');
     }
 
     async function handleLobbySettingsCreation() {
@@ -197,14 +197,14 @@ export default function Multiplayer() {
         const newLobbyID = await response.text();
         setLobbyId(newLobbyID);
         console.log(newLobbyID);
-        setMode('settings');
+        setState('settings');
     }
 
     useEffect(() => {
-        if (mode === 'create' && lobbyId) {
+        if (state === 'create' && lobbyId) {
             router.push(`/Multiplayer/${lobbyId}`);
         }
-    }, [mode, router]);
+    }, [state, router]);
 
         return (
                 <div
@@ -218,8 +218,10 @@ export default function Multiplayer() {
                         backgroundPosition: 'center',
                     }}
                 >
+
                     <div
                         style={{
+                            position: 'relative',
                             width: 720,
                             maxWidth: '92%',
                             padding: '2.5rem',
@@ -230,10 +232,44 @@ export default function Multiplayer() {
                             textAlign: 'left',
                         }}
                     >
+
+                        <button
+                            onClick={() => {
+                                if(state === "multiplayerMenu"){
+                                    router.push(`/`);
+                                } else if (state === "settings"){
+                                    setState("multiplayerMenu");
+                                }
+                                
+                            }}
+                            title={"Return to Main Menu"}
+                            style={{
+                                position: 'absolute',
+                                top: '1rem',
+                                right: '1.25rem',
+                                background: 'transparent',
+                                border: 'none',
+                                fontSize: '1.5rem',
+                                color: '#ef4444',
+                                cursor: 'pointer',
+                                fontWeight: 'bold',
+                                padding: '0.25rem',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                            }}
+                            aria-label="Return to Main Menu"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                            </svg>
+                        </button>
+
+
                         <h1 style={{ margin: 0, fontSize: '1.5rem', letterSpacing: '0.6px', color: '#0b1220' }}>Multiplayer</h1>
                         <p style={{ marginTop: '0.25rem', marginBottom: '1rem', color: '#111827' }}>See who knows cities the best!</p>
 
-                        {mode === 'menu' && (
+                        {state === 'multiplayerMenu' && (
                             <div style={{ display: 'flex', gap: '0.6rem' }}>
                                 <button
                                     onClick={handleLobbySettingsCreation}
@@ -251,7 +287,7 @@ export default function Multiplayer() {
                                     Create Lobby
                                 </button>
                                 <button
-                                    onClick={() => { setMode('join') }}
+                                    onClick={() => { setState('join') }}
                                     style={{
                                         flex: 1,
                                         padding: '0.8rem 1rem',
@@ -268,7 +304,7 @@ export default function Multiplayer() {
                             </div>
                         )}
 
-                        {mode === 'settings' && (
+                        {state === 'settings' && (
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginTop: '0.75rem' }}>
                                 {(lobbyId !== null) && (
                                     <div>
@@ -381,7 +417,7 @@ export default function Multiplayer() {
                             </div>
                         )}
 
-                        {mode === 'join' && (
+                        {state === 'join' && (
                             <div>
 
                                 <form onSubmit={handleJoinLobby} style={{ display: 'flex', padding: "0.0rem", alignItems: 'flex-end', gap: '0.5rem' }}>
@@ -398,6 +434,8 @@ export default function Multiplayer() {
 
                             </div>
                         )}
+
+                        
 
                     </div>
                 </div>

@@ -936,14 +936,14 @@ export default function Lobby() {
                                                                     padding: '1rem',
                                                                     textAlign: 'center',
                                                                     fontWeight: 600,
-                                                                    backgroundColor: isHighestScorer ? '#f0fdf4' : 'inherit',
+                                                                    backgroundColor: isHighestScorer ? '#d7fae2' : 'inherit',
                                                                     color: playerRoundScore > 0 ? '#16a34a' : '#ef4444',
                                                                     borderLeft: '1px solid #e2e8f0',
-                                                                    minWidth: '80px'
-                                                                }}>
+                                                                    minWidth: '80px',
+                                                                    
+                                                                }} title={isHighestScorer ? (gameMode === "knockout" ? "Damage Dealer this round" : "Highest Score this Round") : undefined}>
                                                                     <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '0.375rem', width: '100%' }}>
-                                                                        {playerRoundScore > 0 ? `+${playerRoundScore}` : playerRoundScore}
-                                                                        {isHighestScorer && <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#22c55e' }} title="Highest Score in Round"></span>}
+                                                                        {playerRoundScore > 0 ? `${playerRoundScore}` : playerRoundScore}
                                                                     </span>
                                                                 </td>
                                                             );
