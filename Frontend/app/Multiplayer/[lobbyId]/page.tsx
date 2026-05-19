@@ -912,7 +912,7 @@ export default function Lobby() {
                                                 const playerName = score[0];
                                                 return (
                                                     <tr key={playerIdx} style={{ borderBottom: '1px solid #e2e8f0', backgroundColor: playerIdx % 2 === 0 ? 'white' : '#f8fafc' }}>
-                                                        <td style={{ padding: '1rem', fontWeight: 600, color: '#0f172a', minWidth: '120px' }}>{playerName}</td>
+                                                        <td style={{ padding: '1rem', fontWeight: 600, color: team1.includes(playerName) ? '#2563eb' : '#dc2626', minWidth: '120px' }}>{playerName}</td>
                                                         {Array.from({ length: (allRoundScores as any).length - 1 }).map((_, roundIdx) => {
                                                             const roundData = (allRoundScores as any)[roundIdx];
                                                             let playerRoundScore = 0;
