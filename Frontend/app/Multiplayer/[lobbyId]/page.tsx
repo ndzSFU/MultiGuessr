@@ -331,9 +331,15 @@ export default function Lobby() {
                                     
                                     
                                     <div style={gameMode === "knockout" ? knockoutStylePlayerList : noTeamsStylePlayerList}>
-                                        {playerList?.map((username) => {
+                                        {playerList?.map((username: string) => {
                                             if (!team1.includes(username) && !team2.includes(username)) {
+                                                if(username === null){
+                                                    return;
+                                                }
+
                                                 let usernameDisplay = currentUsername === username ? username + " (You)" : username;
+
+                                                
                                                                                
                                                 return (
                                                     <div key={username} style={{ padding: '0.55rem 0.75rem', borderRadius: 7, background: '#f8fafc', border: '1px solid #e2e8f0', width: 'fit-content', maxWidth: '100%' }}>
@@ -353,6 +359,9 @@ export default function Lobby() {
                                                 <h2 style={{ margin: 0, marginBottom: '0.75rem', color: '#2563eb', fontSize: '1.1rem' }}>Team 1</h2>
                                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                                                     {team1?.map((username) => {
+                                                        if(username === null){
+                                                            return;
+                                                        }
                                                         let usernameDisplay = currentUsername === username ? username + " (You)" : username;
                                                         return(
                                                             <div key={username} style={{ padding: '0.55rem 0.7rem', borderRadius: 8, background: '#eff6ff', border: '1px solid #bfdbfe' }}>
@@ -367,6 +376,10 @@ export default function Lobby() {
                                                 <h2 style={{ margin: 0, marginBottom: '0.75rem', color: '#dc2626', fontSize: '1.1rem' }}>Team 2</h2>
                                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                                                     {team2?.map((username) => {
+                                                        if(username === null){
+                                                            return;
+                                                        }
+                                                        
                                                         let usernameDisplay = currentUsername === username ? username + " (You)" : username;
                                                         return(
                                                             <div key={username} style={{ padding: '0.55rem 0.7rem', borderRadius: 8, background: '#fef2f2', border: '1px solid #fecaca' }}>
@@ -383,25 +396,48 @@ export default function Lobby() {
                                 
                             </div>
 
-                            <div style={{ marginTop: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                            <div style={{ marginTop: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                                 <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                                    {isHost && (gameMode !== "knockout" || (team1.length > 0 && team2.length > 0)) ? (
+                                        <button onClick={handleStartGame} style={{ marginRight: 'auto', padding: '0.75rem 1.25rem', borderRadius: 10, border: 'none', background: 'linear-gradient(90deg,#06b6d4,#3b82f6)', color: 'white', fontWeight: 700, cursor: 'pointer' }}>
+                                            Start Game
+                                        </button>
+                                    ) : (
+                                        <div
+                                            aria-hidden="true"
+                                            style={{
+                                                visibility: 'hidden',
+                                                marginRight: 'auto',
+                                                padding: '0.75rem 0.85rem',
+                                                borderRadius: 10,
+                                                border: 'none',
+                                                background: 'linear-gradient(90deg,#06b6d4,#3b82f6)',
+                                                color: 'white',
+                                                fontWeight: 700,
+                                                cursor: 'default',
+                                            }}
+                                        >
+                                            Start Game
+                                        </div>
+                                    )
+                                
+                                }
+
+                                 
+
                                     {gameMode === "knockout" && (
                                         <>
-                                            <button type="button" onClick={handleJoinTeam1} style={{ padding: '0.65rem 1rem', borderRadius: 10, border: '1px solid #bfdbfe', background: '#eff6ff', color: '#2563eb', fontWeight: 700, cursor: 'pointer' }}>
+                                            <button type="button" onClick={handleJoinTeam1} style={{ padding: '0.65rem 1rem', marginLeft: '186px', borderRadius: 10, border: '1px solid #bfdbfe', background: '#eff6ff', color: '#2563eb', fontWeight: 700, cursor: 'pointer' }}>
                                                 Join Team 1
                                             </button>
-                                            <button type="button" onClick={handleJoinTeam2} style={{ padding: '0.65rem 1rem', borderRadius: 10, border: '1px solid #fecaca', background: '#fef2f2', color: '#dc2626', fontWeight: 700, cursor: 'pointer' }}>
+                                            <button type="button" onClick={handleJoinTeam2} style={{ padding: '0.65rem 1rem', marginLeft: '188px', borderRadius: 10, border: '1px solid #fecaca', background: '#fef2f2', color: '#dc2626', fontWeight: 700, cursor: 'pointer' }}>
                                                 Join Team 2
                                             </button>
                                         </>
                                     )}
                                 </div>
 
-                                {isHost && (gameMode !== "knockout" || (team1.length > 0 && team2.length > 0)) && (
-                                    <button onClick={handleStartGame} style={{ marginLeft: 'auto', padding: '0.75rem 1.25rem', borderRadius: 10, border: 'none', background: 'linear-gradient(90deg,#06b6d4,#3b82f6)', color: 'white', fontWeight: 700, cursor: 'pointer' }}>
-                                        Start Game
-                                    </button>
-                                )}
+                                
                             </div>
                         </div>
                     </div>

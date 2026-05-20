@@ -45,8 +45,8 @@ function getMapillaryCacheKey(lat, lon){
 }
 
 //Returns a promise
-async function fetchMapillaryImageIds(lat, lon, accessToken){
-    const bboxOffset = 0.003;
+async function fetchMapillaryImageIds(lat, lon, accessToken, bboxOffset = 0.003){
+    
 
     const minLon = lon - bboxOffset;
     const maxLon = lon + bboxOffset;
@@ -54,17 +54,36 @@ async function fetchMapillaryImageIds(lat, lon, accessToken){
     const maxLat = lat + bboxOffset;
 
     const bbox = `${minLon},${minLat},${maxLon},${maxLat}`;
-    const url = 'https://graph.mapillary.com/images?' +
+    let url = 'https://graph.mapillary.com/images?' +
         'access_token=' + accessToken +
         '&fields=id&bbox=' + bbox +
-        '&limit=400';
+        '&limit=600';
 
-    const retryMax = 8;
+    const retryMax = 9;
     let response = await fetch(url);
     let retryCount = 0;
+    let bboxShrink = 0.0004
 
-    while(!response.ok && retryCount < retryMax){
+    while(!response.ok && retryCount < retryMax && bboxOffset > 0){
         console.log(`Mapillary fetch retry ${retryCount + 1} for ${lat}, ${lon}`);
+
+        if(retryCount > 1){
+            bboxOffset -= bboxShrink;
+
+            const smaller_minLon = lon - bboxOffset;
+            const samller_maxLon = lon + bboxOffset;
+            const smaller_minLat = lat - bboxOffset;
+            const samller_maxLat = lat + bboxOffset;
+
+            let smaller_bbox = `${smaller_minLon},${smaller_minLat},${samller_maxLon},${samller_maxLat}`;
+            url = 'https://graph.mapillary.com/images?' +
+            'access_token=' + accessToken +
+            '&fields=id&bbox=' + smaller_bbox +
+            '&limit=300';
+            console.log("shrunk bbox to: " + bboxOffset);
+        }
+        
+
         response = await fetch(url);
         retryCount++;
     }
@@ -72,14 +91,22 @@ async function fetchMapillaryImageIds(lat, lon, accessToken){
     // console.log(response);
 
     if(!response.ok){
-        throw new Error(`Mapillary request failed after ${retryCount + 1} attempts`);
+        const body = await response.text();
+        console.log("Response status: " + response.status);
+        console.log("Response text: " + body);
+        throw new Error(`Mapillary request failed after ${retryCount} attempts`);
     }
 
     const payload = await response.json();
 
     console.log(payload);
     if(!Array.isArray(payload?.data)){
+        console.error('Mapillary payload shape unexpected', { url, status: response.status, payload });
         throw new Error('Mapillary response did not contain image data');
+    }
+
+    if(Array(payload?.data).length < 1){
+        throw new Error('Mapillary response array had 0 image ids');
     }
 
     return payload.data.map((entry) => entry.id).filter(Boolean);
@@ -266,6 +293,8 @@ wsServer.on("request", (request) => {
                 removeFromTeam(lobby.team1, departingUsername);
                 removeFromTeam(lobby.team2, departingUsername);
 
+                console.log("Remaining Usernames: ", remainingUsernames);
+
                 if (lobby.playerIDS.length > 0) {
                     broadcastToLobby(curLobbyId, JSON.stringify({
                         method: "playerLeft",
@@ -273,6 +302,11 @@ wsServer.on("request", (request) => {
                         username: departingUsername,
                         remainingUsernames,
                         hostId: lobby.host,
+                    }));
+                    broadcastToLobby(curLobbyId, JSON.stringify({
+                        method: "updateTeams",
+                        team1: lobby.team1,
+                        team2: lobby.team2,
                     }));
                 }
                 
