@@ -62,10 +62,13 @@ async function fetchMapillaryImageIds(lat, lon, accessToken, bboxOffset = 0.003)
     const retryMax = 9;
     let response = await fetch(url);
     let retryCount = 0;
-    let bboxShrink = 0.0004
+    let bboxShrink = 0.00035
+    let limmit = 300;
 
     while(!response.ok && retryCount < retryMax && bboxOffset > 0){
         console.log(`Mapillary fetch retry ${retryCount + 1} for ${lat}, ${lon}`);
+
+        
 
         if(retryCount > 1){
             bboxOffset -= bboxShrink;
@@ -79,8 +82,17 @@ async function fetchMapillaryImageIds(lat, lon, accessToken, bboxOffset = 0.003)
             url = 'https://graph.mapillary.com/images?' +
             'access_token=' + accessToken +
             '&fields=id&bbox=' + smaller_bbox +
-            '&limit=300';
+            '&limit=' + limmit;
             console.log("shrunk bbox to: " + bboxOffset);
+            
+            limmit = 200
+
+            if(retryCount > 5){
+                limmit = 100;
+                console.log("Shrinking limmit to 100");
+            }else{
+                console.log("Shrinking limmit to 200");
+            }
         }
         
 

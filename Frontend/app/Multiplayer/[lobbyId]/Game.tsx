@@ -3,7 +3,21 @@
 import { JSX, useEffect, useRef, useState } from 'react';
 import RenderMapillary from '../../Map/renderMapillary';
 import { NextResponse } from 'next/server';
-import {cities, canada_cities, usa_cities, na_cities, City} from '../../Map/cities';
+import {
+    City,
+    africa,
+    asia,
+    canada,
+    cities,
+    centralAmericaCaribbean,
+    europe,
+    latinAmerica,
+    middleEast,
+    na_cities,
+    oceania,
+    southAmerica,
+    usa,
+} from '../../Map/cities';
 import MultiplayerGuessMap from './MultiplayerGuessMap';
 import TimerBox from './TimerBox';
 
@@ -41,11 +55,27 @@ function mapRegionToCityArr(region: string): City[]{
 
     switch(region){
         case "canada":
-            return canada_cities;
+            return canada;
         case "usa":
-            return usa_cities;
+            return usa;
         case "na":
             return na_cities;
+        case "europe":
+            return europe;
+        case "southAmerica":
+            return southAmerica;
+        case "centralAmericaCaribbean":
+            return centralAmericaCaribbean;
+        case "latinAmerica":
+            return latinAmerica;
+        case "asia":
+            return asia;
+        case "middleEast":
+            return middleEast;
+        case "africa":
+            return africa;
+        case "oceania":
+            return oceania;
         default:
             return cities;
     }

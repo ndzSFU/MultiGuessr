@@ -88,6 +88,14 @@ const maxPlayersOptions = [
         { value: "canada", label: "Canada" },
         { value: "usa", label: "USA" },
         { value: "na", label: "North America" },
+        { value: "europe", label: "Europe" },
+        { value: "southAmerica", label: "South America" },
+        { value: "centralAmericaCaribbean", label: "Central America & Caribbean" },
+        { value: "latinAmerica", label: "Latin America" },
+        { value: "asia", label: "Asia" },
+        { value: "middleEast", label: "Middle East" },
+        { value: "africa", label: "Africa" },
+        { value: "oceania", label: "Oceania" },
     ];
 
 export default function Multiplayer() {
