@@ -8,7 +8,7 @@ let final_failures = [];
 const cities = [
   { name: 'Vancouver', lat: 49.2827, long: -123.1207 },
   { name: 'Burnaby', lat: 49.2488, long: -122.9805 },
-  { name: 'Surrey', lat: 49.1913, long: -122.8490 },
+  { name: 'Surrey', lat: 49.1948, long: -122.8530 },
   { name: 'Richmond', lat: 49.1666, long: -123.1336 },
   { name: 'Coquitlam', lat: 49.2838, long: -122.7932 },
   { name: 'Port Coquitlam', lat: 49.2628, long: -122.7811 },
@@ -182,7 +182,7 @@ const cities = [
   { name: 'Brno', lat: 49.1951, long: 16.6068 },
   { name: 'Warsaw', lat: 52.2297, long: 21.0122 },
   { name: 'Kraków', lat: 50.0647, long: 19.9450 },
-  { name: 'Budapest', lat: 47.4979, long: 19.0402 },
+  { name: 'Budapest', lat: 47.4968, long: 19.0511 },
   { name: 'Debrecen', lat: 47.5316, long: 21.6273 },
   { name: 'Bucharest', lat: 44.4268, long: 26.1025 },
   { name: 'Cluj-Napoca', lat: 46.7712, long: 23.6236 },
@@ -200,7 +200,7 @@ cities.push(
   { name: 'Barranquilla', lat: 10.9685, long: -74.7810 },
   { name: 'Bucaramanga', lat: 7.1193, long: -73.1227 },
   { name: 'Cali', lat: 3.4516, long: -76.5320 },
-  { name: 'Quito', lat: -0.1807, long: -78.4678 },
+  { name: 'Quito', lat: -0.2161, long: -78.5098 },
   { name: 'Guayaquil', lat: -2.170998, long: -79.922359 },
   { name: 'Lima', lat: -12.0464, long: -77.0428 },
   { name: 'Trujillo', lat: -8.1083, long: -79.0215 },
@@ -252,23 +252,23 @@ cities.push(
   { name: 'Santiago de los Caballeros', lat: 19.4517, long: -70.6970 },
   { name: 'Kingston', lat: 17.9712, long: -76.7936 },
   { name: 'Nassau', lat: 25.0443, long: -77.3504 },
-  { name: 'Port-au-Prince', lat: 18.5944, long: -72.3074 }
+  { name: 'Port-au-Prince', lat: 18.5444, long: -72.3151 }
 );
 
 // Africa (single city per country unless large or well-covered)
 cities.push(
   { name: 'Lagos', lat: 6.5244, long: 3.3792 },
   { name: 'Abuja', lat: 9.0765, long: 7.3986 },
-  { name: 'Kano', lat: 12.0022, long: 8.5919 },
+  { name: 'Kano', lat: 12.0126, long: 8.5264 },
   { name: 'Port Harcourt', lat: 4.8156, long: 7.0498 },
   { name: 'Nairobi', lat: -1.2864, long: 36.8172 },
-  { name: 'Mombasa', lat: -4.0435, long: 39.6682 },
+  { name: 'Mombasa', lat: -4.0619, long: 39.6657 },
   { name: 'Johannesburg', lat: -26.2041, long: 28.0473 },
   { name: 'Cape Town', lat: -33.9249, long: 18.4241 },
   { name: 'Durban', lat: -29.8587, long: 31.0218 },
   { name: 'Cairo', lat: 30.0444, long: 31.2357 },
   { name: 'Alexandria', lat: 31.2001, long: 29.9187 },
-  { name: 'Algiers', lat: 36.7538, long: 3.0588 },
+  { name: 'Algiers', lat: 36.7698, long: 3.0570 },
   { name: 'Oran', lat: 35.6971, long: -0.6308 },
   { name: 'Tunis', lat: 36.8065, long: 10.1815 },
   { name: 'Rabat', lat: 33.9716, long: -6.8498 },
@@ -280,7 +280,7 @@ cities.push(
   { name: 'Lusaka', lat: -15.3875, long: 28.3228 },
   { name: 'Harare', lat: -17.8252, long: 31.0335 },
   { name: 'Maputo', lat: -25.9692, long: 32.5732 },
-  { name: 'Windhoek', lat: -22.5609, long: 17.0658 },
+  { name: 'Windhoek', lat: -22.5685, long: 17.0841 },
   { name: 'Gaborone', lat: -24.6282, long: 25.9231 },
   { name: 'Lilongwe', lat: -13.9626, long: 33.7741 },
   { name: 'Antananarivo', lat: -18.8792, long: 47.5079 },
@@ -297,7 +297,8 @@ cities.push(
   { name: 'Guangzhou', lat: 23.1291, long: 113.2644 },
   { name: 'Shenzhen', lat: 22.5431, long: 114.0579 },
   { name: 'Chengdu', lat: 30.5728, long: 104.0668 },
-  { name: 'Xi\'an', lat: 34.3416, long: 108.9398 },
+  { name: 'Xi\'an', lat: 34.2662, long: 108.9335 },
+  { name: 'Puyang', lat: 35.7893, long: 115.0845 },
   // Japan
   { name: 'Tokyo', lat: 35.6762, long: 139.6503 },
   { name: 'Osaka', lat: 34.6937, long: 135.5023 },
@@ -305,7 +306,7 @@ cities.push(
   { name: 'Sapporo', lat: 43.0618, long: 141.3545 },
   { name: 'Fukuoka', lat: 33.5904, long: 130.4017 },
   // Korea
-  { name: 'Busan', lat: 35.1796, long: 129.0756 },
+  { name: 'Busan', lat: 35.1746, long: 128.9560 },
   { name: 'Seoul', lat: 37.5706, long: 126.9737 },
   { name: 'Daegu', lat: 35.8607, long: 128.6376 },
   // Taiwan
@@ -319,10 +320,10 @@ cities.push(
   { name: 'Jaipur', lat: 26.9124, long: 75.7873 },
   // Pakistan
   { name: 'Islamabad', lat: 33.6844, long: 73.0479 },
-  { name: 'Peshawar', lat: 34.0151, long: 71.5249 },
+  { name: 'Peshawar', lat: 34.0122, long: 71.5838 },
   // Bangladesh
   { name: 'Dhaka', lat: 23.8103, long: 90.4125 },
-  { name: 'Chittagong', lat: 22.3569, long: 91.7832 },
+  { name: 'Chittagong', lat: 22.3713, long: 91.7827 },
   // Southeast Asia additions
   { name: 'Surabaya', lat: -7.2575, long: 112.7521 },
   { name: 'Bandung', lat: -6.9175, long: 107.6191 },
@@ -344,7 +345,7 @@ cities.push(
   { name: 'Tashkent', lat: 41.2995, long: 69.2401 },
   { name: 'Samarkand', lat: 39.6542, long: 66.9597 },
   { name: 'Ulaanbaatar', lat: 47.8864, long: 106.9057 },
-  { name: 'Astana', lat: 51.1710, long: 74.4135 },
+  { name: 'Astana', lat: 51.1360, long: 71.4168 },
 );
 
 // Middle East & Russia (expanded)
@@ -365,7 +366,7 @@ cities.push(
   { name: 'Beirut', lat: 33.8938, long: 35.5018 },
   { name: 'Amman', lat: 31.9454, long: 35.9284 },
   { name: 'Zarqa', lat: 32.0728, long: 36.0880 },
-  { name: 'Baghdad', lat: 33.3152, long: 44.3661 },
+  { name: 'Baghdad', lat: 33.3147, long: 44.3445 },
   { name: 'Basra', lat: 30.5260, long: 47.7740 },
   { name: 'Tehran', lat: 35.7271, long: 51.3731 },
   { name: 'Mashhad', lat: 36.2605, long: 59.6168 },
@@ -567,8 +568,9 @@ rl.on('line', async (input) => {
         } else if(imageIds.length === 0){
           console.log(city.name + " Had 0 image ids")
           failCnt++;
-        } else if(imageIds.length < 5){
-          console.log(city.name + " Had sub 5 image ids")
+        } else if(imageIds.length < 10){
+          console.log(city.name + " Had sub " + imageIds.length + " image ids");
+
           lowIamgeCnt++;
         }
 
