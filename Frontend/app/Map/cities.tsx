@@ -36,7 +36,7 @@ export const canada: City[] = [
   { name: 'Winnipeg', lat: 49.8951, long: -97.1384 },
   { name: 'Victoria', lat: 48.4284, long: -123.3656 },
   { name: 'Red Deer', lat: 52.2681, long: -113.8112 },
-  { name: 'Lethbridge', lat: 49.6956, long: -112.8451 },
+  { name: 'Medicine Hat', lat: 50.0012, long: -110.6478 },
   { name: 'Kamloops', lat: 50.6745, long: -120.3273 },
   { name: 'Kelowna', lat: 49.8880, long: -119.4960 },
   { name: 'Nanaimo', lat: 49.1659, long: -123.9401 },
