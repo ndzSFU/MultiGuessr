@@ -261,11 +261,11 @@ export default function Multiplayer() {
                             title={"Return to previous page"}
                             style={{
                                 position: 'absolute',
-                                top: '1rem',
-                                right: '1.25rem',
+                                top: '1.2rem',
+                                right: '1.5rem',
                                 background: 'transparent',
                                 border: 'none',
-                                fontSize: '1.5rem',
+                                fontSize: '2rem',
                                 color: '#ef4444',
                                 cursor: 'pointer',
                                 fontWeight: 'bold',
@@ -273,12 +273,11 @@ export default function Multiplayer() {
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
+                                
                             }}
                             aria-label="Return to Main Menu"
                         >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                            </svg>
+                            x
                         </button>
 
 
