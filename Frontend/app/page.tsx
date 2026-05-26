@@ -25,7 +25,7 @@ export default function Home() {
           textAlign: 'center',
         }}
       >
-        <h1 style={{ margin: 0, fontSize: '2rem', letterSpacing: '0.6px', color: '#0b1220' }}>MultiGuesser</h1>
+        <h1 style={{ margin: 0, fontSize: '2rem', letterSpacing: '0.6px', color: '#0b1220' }}>MultiGuessr</h1>
         <p style={{ marginTop: '0.5rem', marginBottom: '1.25rem', color: '#111827' }}>Guess the city, beat your friends.</p>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
