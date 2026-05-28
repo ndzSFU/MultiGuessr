@@ -702,12 +702,10 @@ async function warmMapillaryCache() {
   await checkCities();
   
   console.log("Cache warms done!");
-  
-  // console.log(mapillaryImageCache);
 }
 
 const PORT = 9090;
-httpServer.listen(PORT, async () => {
+httpServer.listen(PORT, "127.0.0.1", async () => {
   console.log(`Server is listening on port ${PORT}`);
   await warmMapillaryCache();
 });
