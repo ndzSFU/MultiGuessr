@@ -29,6 +29,43 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+.landing-button {
+  padding: 0.6rem 1.4rem;
+  border-radius: 8px;
+  border: 1px solid rgba(30, 58, 138, 0.2);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #1e3a8a;
+  background: rgba(30, 58, 138, 0.08);
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.landing-button:hover {
+  background: rgba(30, 58, 138, 0.14);
+  border-color: rgba(30, 58, 138, 0.35);
+  color: #1e40af;
+}
+
+.landing-button:active {
+  transform: scale(0.97);
+}
+
+.landing-button.primary {
+  color: #f8fafc;
+  background: linear-gradient(135deg, #1e40af, #1e3a8a);
+  border-color: rgba(30, 58, 138, 0.45);
+  box-shadow: 0 4px 12px rgba(30, 58, 138, 0.3);
+}
+
+.landing-button.primary:hover {
+  box-shadow: 0 6px 16px rgba(30, 58, 138, 0.4);
+  border-color: rgba(30, 58, 138, 0.65);
+}
+
 .guessing-map-overlay {
   position: fixed !important;
   z-index: 9999 !important;
@@ -154,18 +191,38 @@ body {
 
 /* Landing page button styles */
 .landing-button {
-  transition: transform 180ms cubic-bezier(.2,.9,.2,1), box-shadow 180ms ease;
-  transform-origin: center;
-  will-change: transform;
+  padding: 0.65rem 1.6rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #d1d5db;
+  background: rgba(255, 255, 255, 0.05);
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+  white-space: nowrap;
 }
+
 .landing-button:hover {
-  transform: scale(1.02);
-  box-shadow: 0 12px 30px rgba(2,6,23,0.18);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.25);
+  color: #f9fafb;
 }
+
 .landing-button:active {
-  transform: scale(0.995);
+  transform: scale(0.98);
 }
-.landing-button:focus {
-  outline: 3px solid rgba(59,130,246,0.18);
-  outline-offset: 2px;
+
+.landing-button.primary {
+  color: #f9fafb;
+  background: linear-gradient(135deg, #3b82f6, #1e40af);
+  border-color: rgba(59, 130, 246, 0.4);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+}
+
+.landing-button.primary:hover {
+  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.35);
+  border-color: rgba(59, 130, 246, 0.6);
 }

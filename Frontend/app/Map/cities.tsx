@@ -4,7 +4,7 @@
 export type City = { name: string; lat: number; long: number };
 
 export const canada: City[] = [
-   { name: 'Vancouver', lat: 49.2827, long: -123.1207 },
+  { name: 'Vancouver', lat: 49.2827, long: -123.1207 },
   { name: 'Burnaby', lat: 49.2488, long: -122.9805 },
   { name: 'Surrey', lat: 49.1913, long: -122.8490 },
   { name: 'Richmond', lat: 49.1666, long: -123.1336 },
@@ -379,6 +379,8 @@ export const oceania: City[] = [
   { name: 'Lae', lat: -6.7221, long: 146.9847 }
 ];
 
+export const na_cities = [...canada, ...usa];
+
 // Combine into a deduped general list
 function uniqueByName(arr: City[]) {
   const seen = new Set<string>();
@@ -402,6 +404,3 @@ export const cities: City[] = uniqueByName([
 ]);
 
 export default cities;
-
-
-export const na_cities = [...canada, ...usa];

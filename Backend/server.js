@@ -3,8 +3,6 @@ require('dotenv').config({ path: '.env', override: true });
 
 let final_failures = [];
 
-// IMPORTANT: Do NOT modify the `cities` list unless the user explicitly asks.
-// The user requested this file remain unchanged for city data edits.
 const cities = [
   { name: 'Vancouver', lat: 49.2827, long: -123.1207 },
   { name: 'Burnaby', lat: 49.2488, long: -122.9805 },
@@ -187,9 +185,7 @@ const cities = [
   { name: 'Bucharest', lat: 44.4268, long: 26.1025 },
   { name: 'Cluj-Napoca', lat: 46.7712, long: 23.6236 },
   { name: 'Athens', lat: 37.9838, long: 23.7275 },
-  { name: 'Thessaloniki', lat: 40.6401, long: 22.9444 },
-
-  
+  { name: 'Thessaloniki', lat: 40.6401, long: 22.9444 },  
 ];
 
 // Additional global cities to improve coverage in underrepresented regions

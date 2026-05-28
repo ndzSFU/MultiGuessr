@@ -28,7 +28,7 @@ function playAudio(pathToAudio: string): void{
 }
 
 async function getImageIds(Lat: number, Lon: number): Promise<any> {
-    const URL: string = `http://localhost:9090/api/mapillary-images?lat=${Lat}&lon=${Lon}`;
+    const URL: string = process.env.NEXT_PUBLIC_API_BASE_URL + `/api/mapillary-images?lat=${Lat}&lon=${Lon}`;
 
     console.log("Calling backend...");
     let res = await fetch(URL);
@@ -54,28 +54,28 @@ function getRandomIdx(array_size: number): number{
 function mapRegionToCityArr(region: string): City[]{
 
     switch(region){
-        case "canada":
-            return canada;
-        case "usa":
-            return usa;
-        case "na":
-            return na_cities;
-        case "europe":
-            return europe;
-        case "southAmerica":
-            return southAmerica;
-        case "centralAmericaCaribbean":
-            return centralAmericaCaribbean;
-        case "latinAmerica":
-            return latinAmerica;
-        case "asia":
-            return asia;
-        case "middleEast":
-            return middleEast;
-        case "africa":
-            return africa;
-        case "oceania":
-            return oceania;
+        // case "canada":
+        //     return canada;
+        // case "usa":
+        //     return usa;
+        // case "na":
+        //     return na_cities;
+        // case "europe":
+        //     return europe;
+        // case "southAmerica":
+        //     return southAmerica;
+        // case "centralAmericaCaribbean":
+        //     return centralAmericaCaribbean;
+        // case "latinAmerica":
+        //     return latinAmerica;
+        // case "asia":
+        //     return asia;
+        // case "middleEast":
+        //     return middleEast;
+        // case "africa":
+        //     return africa;
+        // case "oceania":
+        //     return oceania;
         default:
             return cities;
     }
@@ -98,7 +98,6 @@ function Game({ ws, isHost, setShowRoundScores, gameMode, showRoundScores, setSt
     const [timeHasExpired, setTimeHasExpired] = useState<boolean>(false);
     const failedImageIdsRef = useRef<Set<string>>(new Set());
     const [roundTimerSeconds, setRoundTimerSeconds] = useState<number>(90);
-
     const [imageIds, setImageIds] = useState<string[]>([]);
     const [chosenCitiesIdxs, setChosenCitiesIdxs] = useState<number[]>([]);
     const [chosenCity, setChosenCity] = useState<City>();

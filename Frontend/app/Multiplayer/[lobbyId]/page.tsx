@@ -74,7 +74,8 @@ export default function Lobby() {
 
 
     useEffect(() => {
-        const socket = new WebSocket('ws://localhost:9090');
+        const url = String(process.env.NEXT_PUBLIC_WS_BASE_URL);
+        const socket = new WebSocket(url);
         setWs(socket);
 
         socket.onopen = () => {
