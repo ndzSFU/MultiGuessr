@@ -6,7 +6,7 @@ export type City = { name: string; lat: number; long: number };
 export const canada: City[] = [
   { name: 'Vancouver', lat: 49.2827, long: -123.1207 },
   { name: 'Burnaby', lat: 49.2488, long: -122.9805 },
-  { name: 'Surrey', lat: 49.1913, long: -122.8490 },
+  { name: 'Surrey', lat: 49.1948, long: -122.8530 },
   { name: 'Richmond', lat: 49.1666, long: -123.1336 },
   { name: 'Coquitlam', lat: 49.2838, long: -122.7932 },
   { name: 'Port Coquitlam', lat: 49.2628, long: -122.7811 },
@@ -63,12 +63,12 @@ export const usa: City[] = [
   { name: 'Anaheim', lat: 33.8366, long: -117.9143 }, // suburb
   { name: 'Santa Ana', lat: 33.7455, long: -117.8677 }, // suburb
   { name: 'San Diego', lat: 32.7157, long: -117.1611 },
-  { name: 'San Jose', lat: 37.3382, long: -121.8863 },
+  { name: 'San Jose', lat: 37.3382, long: -121.8777 },
   { name: 'San Francisco', lat: 37.7749, long: -122.4194 },
   { name: 'Oakland', lat: 37.8044, long: -122.2711 }, // suburb
   { name: 'Fremont', lat: 37.5483, long: -121.9886 }, // suburb
   { name: 'Sacramento', lat: 38.5816, long: -121.4944 },
-  { name: 'Fresno', lat: 36.7378, long: -119.7871 },
+  { name: 'Fresno', lat: 36.7357, long: -119.7792 },
   { name: 'Phoenix', lat: 33.4484, long: -112.0740 },
   { name: 'Mesa', lat: 33.4152, long: -111.8315 }, // suburb
   { name: 'Chandler', lat: 33.3062, long: -111.8413 }, // suburb
@@ -150,7 +150,7 @@ export const europe: City[] = [
   { name: 'Utrecht', lat: 52.0907, long: 5.1214 },
   { name: 'Brussels', lat: 50.8503, long: 4.3517 },
   { name: 'Antwerp', lat: 51.2194, long: 4.4025 },
-  { name: 'Ghent', lat: 51.0543, long: 3.7173 },
+  { name: 'Ghent', lat: 51.0543, long: 3.7174 },
   { name: 'Vienna', lat: 48.2082, long: 16.3738 },
   { name: 'Graz', lat: 47.0707, long: 15.4395 },
   { name: 'Zurich', lat: 47.3769, long: 8.5417 },
@@ -172,7 +172,7 @@ export const europe: City[] = [
   { name: 'Venice', lat: 45.4408, long: 12.3155 },
   { name: 'Stockholm', lat: 59.3293, long: 18.0686 },
   { name: 'Gothenburg', lat: 57.7089, long: 11.9746 },
-  { name: 'Copenhagen', lat: 55.6761, long: 12.5683 },
+  { name: 'Copenhagen', lat: 55.6827, long: 12.5814 },
   { name: 'Aarhus', lat: 56.1567, long: 10.2108 },
   { name: 'Oslo', lat: 59.9139, long: 10.7522 },
   { name: 'Bergen', lat: 60.3913, long: 5.3221 },
@@ -182,12 +182,12 @@ export const europe: City[] = [
   { name: 'Brno', lat: 49.1951, long: 16.6068 },
   { name: 'Warsaw', lat: 52.2297, long: 21.0122 },
   { name: 'Kraków', lat: 50.0647, long: 19.9450 },
-  { name: 'Budapest', lat: 47.4979, long: 19.0402 },
+  { name: 'Budapest', lat: 47.4968, long: 19.0511 },
   { name: 'Debrecen', lat: 47.5316, long: 21.6273 },
   { name: 'Bucharest', lat: 44.4268, long: 26.1025 },
   { name: 'Cluj-Napoca', lat: 46.7712, long: 23.6236 },
   { name: 'Athens', lat: 37.9838, long: 23.7275 },
-  { name: 'Thessaloniki', lat: 40.6401, long: 22.9444 },
+  { name: 'Thessaloniki', lat: 40.6401, long: 22.9444 },  
   // Russia (moved into Europe region per request)
   { name: 'Moscow', lat: 55.7558, long: 37.6173 },
   { name: 'Saint Petersburg', lat: 59.9343, long: 30.3351 },
@@ -201,7 +201,7 @@ export const southAmerica: City[] = [
   { name: 'Barranquilla', lat: 10.9685, long: -74.7810 },
   { name: 'Bucaramanga', lat: 7.1193, long: -73.1227 },
   { name: 'Cali', lat: 3.4516, long: -76.5320 },
-  { name: 'Quito', lat: -0.1807, long: -78.4678 },
+  { name: 'Quito', lat: -0.2161, long: -78.5098 },
   { name: 'Guayaquil', lat: -2.170998, long: -79.922359 },
   { name: 'Lima', lat: -12.0464, long: -77.0428 },
   { name: 'Trujillo', lat: -8.1083, long: -79.0215 },
@@ -258,19 +258,19 @@ export const latinAmerica: City[] = [
 ];
 
 export const asia: City[] = [
-  { name: 'Beijing', lat: 39.9042, long: 116.4074 },
+  { name: 'Beijing', lat: 39.8955, long: 116.3919 },
   { name: 'Shanghai', lat: 31.2304, long: 121.4737 },
   { name: 'Guangzhou', lat: 23.1291, long: 113.2644 },
   { name: 'Shenzhen', lat: 22.5431, long: 114.0579 },
   { name: 'Chengdu', lat: 30.5728, long: 104.0668 },
-  { name: "Xi'an", lat: 34.3416, long: 108.9398 },
+  { name: 'Xi\'an', lat: 34.2662, long: 108.9335 },
    { name: 'Puyang', lat: 35.7893, long: 115.0845 },
   { name: 'Tokyo', lat: 35.6762, long: 139.6503 },
   { name: 'Osaka', lat: 34.6937, long: 135.5023 },
   { name: 'Yokohama', lat: 35.4437, long: 139.6380 },
   { name: 'Sapporo', lat: 43.0618, long: 141.3545 },
   { name: 'Fukuoka', lat: 33.5904, long: 130.4017 },
-  { name: 'Busan', lat: 35.1796, long: 129.0756 },
+  { name: 'Busan', lat: 35.1746, long: 128.9560 },
   { name: 'Seoul', lat: 37.5706, long: 126.9737 },
   { name: 'Daegu', lat: 35.8607, long: 128.6376 },
   { name: 'Taipei', lat: 25.0330, long: 121.5654 },
@@ -281,9 +281,9 @@ export const asia: City[] = [
   { name: 'Ahmedabad', lat: 23.0225, long: 72.5714 },
   { name: 'Jaipur', lat: 26.9124, long: 75.7873 },
   { name: 'Islamabad', lat: 33.6844, long: 73.0479 },
-  { name: 'Peshawar', lat: 34.0151, long: 71.5249 },
+  { name: 'Peshawar', lat: 34.0122, long: 71.5838 },
   { name: 'Dhaka', lat: 23.8103, long: 90.4125 },
-  { name: 'Chittagong', lat: 22.3569, long: 91.7832 },
+  { name: 'Chittagong', lat: 22.3713, long: 91.7827 },
   { name: 'Surabaya', lat: -7.2575, long: 112.7521 },
   { name: 'Bandung', lat: -6.9175, long: 107.6191 },
   { name: 'Medan', lat: 3.5952, long: 98.6722 },
@@ -303,7 +303,7 @@ export const asia: City[] = [
   { name: 'Tashkent', lat: 41.2995, long: 69.2401 },
   { name: 'Samarkand', lat: 39.6542, long: 66.9597 },
   { name: 'Ulaanbaatar', lat: 47.8864, long: 106.9057 },
-  { name: 'Astana', lat: 51.1710, long: 74.4135 }
+  { name: 'Astana', lat: 51.1360, long: 71.4168 },
 ];
 
 export const middleEast: City[] = [
@@ -334,7 +334,7 @@ export const middleEast: City[] = [
 export const africa: City[] = [
   { name: 'Lagos', lat: 6.5244, long: 3.3792 },
   { name: 'Abuja', lat: 9.0765, long: 7.3986 },
-  { name: 'Kano', lat: 12.0022, long: 8.5919 },
+  { name: 'Kano', lat: 12.0126, long: 8.5264 },
   { name: 'Port Harcourt', lat: 4.8156, long: 7.0498 },
   { name: 'Nairobi', lat: -1.2864, long: 36.8172 },
   { name: 'Mombasa', lat: -4.0435, long: 39.6682 },
