@@ -74,7 +74,11 @@ export default function Lobby() {
 
 
     useEffect(() => {
-        const url = String(process.env.NEXT_PUBLIC_WS_BASE_URL);
+        const base = String(process.env.NEXT_PUBLIC_WS_BASE_URL);
+        const url = base.includes("?")
+            ? `${base}&ngrok-skip-browser-warning=1`
+            : `${base}?ngrok-skip-browser-warning=1`;
+
         const socket = new WebSocket(url);
         setWs(socket);
 

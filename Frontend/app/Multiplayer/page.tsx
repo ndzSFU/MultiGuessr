@@ -149,7 +149,7 @@ export default function Multiplayer() {
     async function validLobbyId(lobbyId: string): Promise<boolean> {
          const response = await fetch(API_BASE + "/api/validateLobbyId", {
             method: "POST",
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json', "ngrok-skip-browser-warning": "true" },
             body: JSON.stringify(
                 {
                     lobbyId: lobbyId,
@@ -187,7 +187,7 @@ export default function Multiplayer() {
     async function sendSettings() {
         const response = await fetch(API_BASE + '/api/createLobby', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json', "ngrok-skip-browser-warning": "true" },
             body: JSON.stringify({
                 lobbyId: lobbyId,
                 gameMode: gameMode?.value,
@@ -208,7 +208,9 @@ export default function Multiplayer() {
     async function handleLobbySettingsCreation() {
         try {
             console.log('API_BASE:', API_BASE);
-            const response = await fetch(API_BASE + "/api/createLobbyId");
+            const response = await fetch(API_BASE + "/api/createLobbyId", {
+                headers: { "ngrok-skip-browser-warning": "true" },
+            });
             const newLobbyID = await response.text();
             setLobbyId(newLobbyID);
             console.log(newLobbyID);
