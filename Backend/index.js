@@ -6,7 +6,12 @@ const http = require("http");
 const websocketServer = require("websocket").server;
 
 const api = express();
-api.use(cors());
+api.use(cors({
+  origin: ['https://multiguessr.vercel.app'],
+  methods: ['GET','POST','OPTIONS'],
+}));
+
+api.options('*', cors());
 api.use(express.json());
 const httpServer = http.createServer(api);
 
