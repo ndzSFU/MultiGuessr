@@ -6,6 +6,11 @@ import { useRouter } from 'next/navigation';
 import Select from 'react-select'
 import { StylesConfig } from 'react-select';
 
+const API_BASE = (
+    (process.env.NEXT_PUBLIC_API_BASE_URL && process.env.NEXT_PUBLIC_API_BASE_URL.replace(/\/$/, '')) ||
+    (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:9090')
+);
+
 const maxPlayersOptions = [
         { value: "2", label: "2" },
         { value: "3", label: "3" },
@@ -142,7 +147,7 @@ export default function Multiplayer() {
 
 
     async function validLobbyId(lobbyId: string): Promise<boolean> {
-         const response = await fetch("http://localhost:9090/api/validateLobbyId", {
+         const response = await fetch(API_BASE + "/api/validateLobbyId", {
             method: "POST",
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(
@@ -180,7 +185,7 @@ export default function Multiplayer() {
     }
 
     async function sendSettings() {
-        const response = await fetch('http://localhost:9090/api/createLobby', {
+        const response = await fetch(API_BASE + '/api/createLobby', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -201,11 +206,17 @@ export default function Multiplayer() {
     }
 
     async function handleLobbySettingsCreation() {
-        const response = await fetch("http://localhost:9090/api/createLobbyId");
-        const newLobbyID = await response.text();
-        setLobbyId(newLobbyID);
-        console.log(newLobbyID);
-        setState('settings');
+        try {
+            console.log('API_BASE:', API_BASE);
+            const response = await fetch(API_BASE + "/api/createLobbyId");
+            const newLobbyID = await response.text();
+            setLobbyId(newLobbyID);
+            console.log(newLobbyID);
+            setState('settings');
+        } catch (err) {
+            console.error('Failed to create lobby id via', API_BASE + '/api/createLobbyId', err);
+            setBadLobbyId(true);
+        }
     }
 
     useEffect(() => {
