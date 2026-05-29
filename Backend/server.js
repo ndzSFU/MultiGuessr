@@ -709,10 +709,12 @@ async function warmMapillaryCache() {
 }
 
 async function start() {
-  await warmMapillaryCache();
-
   httpServer.listen(9090, "127.0.0.1", () => {
     console.log("Ready");
+  });
+
+  warmMapillaryCache().catch((err) => {
+    console.error("Cache warmup failed:", err);
   });
 }
 
