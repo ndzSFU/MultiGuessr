@@ -11,7 +11,7 @@ api.use(cors({
   methods: ['GET','POST','OPTIONS'],
 }));
 
-api.options('*', cors());
+api.options('/*', cors());
 api.use(express.json());
 const httpServer = http.createServer(api);
 
