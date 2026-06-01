@@ -710,7 +710,7 @@ async function warmMapillaryCache() {
 
 async function start() {
   httpServer.listen(9090, "127.0.0.1", () => {
-    console.log("Ready");
+    console.log("Listening on port 9090");
   });
 
   warmMapillaryCache().catch((err) => {

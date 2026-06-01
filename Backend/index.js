@@ -15,6 +15,11 @@ api.options(/.*/, cors());
 api.use(express.json());
 const httpServer = http.createServer(api);
 
+const wsServer = new websocketServer({
+    httpServer: httpServer,
+}); 
+
+
 const lobbies = new Map();
 const clients = new Map();
 const mapillaryImageCache = new Map();
@@ -136,10 +141,15 @@ api.get('/api/mapillary-images', async (req, res) => {
 
     console.log("Going to grab an imageID")
 
-    if(Number.isNaN(lat) || Number.isNaN(lon) || !accessToken){
+    if (Number.isNaN(lat) || Number.isNaN(lon)) {
         console.log("lat " + lat);
         console.log("lon " + lon);
-        res.status(400).json({ message: 'Invalid lat/lon or access token ' });
+        res.status(400).json({ message: 'Invalid lat/lon' });
+        return;
+    }
+
+    if (!accessToken) {
+        res.status(500).json({ message: 'Missing MAPILLARY_ACCESS_TOKEN' });
         return;
     }
 
@@ -201,9 +211,6 @@ api.post('/api/validateLobbyId', (req, res) => {
     res.json(Boolean(lobbies.has(req.body.lobbyId)));
 })
 
-const wsServer = new websocketServer({
-    httpServer: httpServer,
-}); 
 
 function roundToDecimals(num, decimals = 2) {
     return Number(Math.round(num * Math.pow(10, decimals)) / Math.pow(10, decimals));
