@@ -31,14 +31,19 @@ async function getImageIds(Lat: number, Lon: number): Promise<any> {
     let URL: string = process.env.NEXT_PUBLIC_API_BASE_URL + `/api/mapillary-images?lat=${Lat}&lon=${Lon}`;
     URL += "?ngrok-skip-browser-warning=1";
     console.log("Calling backend...");
-    let res = await fetch(URL);
+    let res = await fetch(URL, {
+                headers: { "ngrok-skip-browser-warning": "true" },
+            });
+
 
     const RETRY_MAX = 5;
     let retry_cnt = 0; 
 
     while(!res.ok && retry_cnt < RETRY_MAX){
         console.log("Trying backend image cache again...");
-        res = await fetch(URL);
+        res = await fetch(URL, {
+                headers: { "ngrok-skip-browser-warning": "true" },
+            });
         retry_cnt++;
     }
 
