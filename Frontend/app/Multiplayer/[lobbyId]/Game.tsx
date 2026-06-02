@@ -28,8 +28,7 @@ function playAudio(pathToAudio: string): void{
 }
 
 async function getImageIds(Lat: number, Lon: number): Promise<any> {
-    let URL: string = process.env.NEXT_PUBLIC_API_BASE_URL + `/api/mapillary-images?lat=${Lat}&lon=${Lon}`;
-    URL += "?ngrok-skip-browser-warning=1";
+    const URL: string = process.env.NEXT_PUBLIC_API_BASE_URL + `/api/mapillary-images?lat=${Lat}&lon=${Lon}`;
     console.log("Calling backend...");
     let res = await fetch(URL, {
                 headers: { "ngrok-skip-browser-warning": "true" },
