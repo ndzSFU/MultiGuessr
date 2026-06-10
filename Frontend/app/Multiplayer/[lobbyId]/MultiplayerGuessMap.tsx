@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import 'leaflet/dist/leaflet.css';
 import type L from "leaflet";
+import { MaptilerLayer } from "@maptiler/leaflet-maptilersdk";
 
 const iconUrl = 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png';
 const iconRetinaUrl = 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png';
@@ -9,7 +9,6 @@ const shadowUrl = 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png
 
 import {City} from '../../Map/cities';
 import ScoreBox from "../../Map/ScoreBox";
-import { Draggable } from "leaflet";
 
 interface MultiplayerGuessMapProps{
     lat: number,
@@ -71,11 +70,15 @@ export default function MultiplayerGuessMap({lat, long, rerollCity, ws, isHost, 
                 }).setView([0, 0], 1);
 
                 leafletRef.current = L;
-                
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-                    noWrap: true
+
+                const maptilerKey = process.env.NEXT_PUBLIC_MAPTILER_KEY;
+
+                const mtLayer = new MaptilerLayer({
+                    //Because type of env variable is string | undefined, and apiKey must be just type string
+                    apiKey: maptilerKey ? maptilerKey : "AHHHHH",
                 }).addTo(mapRef.current);
+                
+
 
                 function OnMapClick(e: L.LeafletMouseEvent): void {
                     if(!hasGuessedRef.current){
