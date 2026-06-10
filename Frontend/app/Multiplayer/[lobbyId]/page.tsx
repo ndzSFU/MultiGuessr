@@ -58,7 +58,6 @@ export default function Lobby() {
 
     const router = useRouter();
 
-
     //Map Use States
 
     const params = useParams();
@@ -71,7 +70,6 @@ export default function Lobby() {
     interface imageIdData {
         data: imageID[]
     }
-
 
     useEffect(() => {
         const base = String(process.env.NEXT_PUBLIC_WS_BASE_URL);
@@ -111,8 +109,7 @@ export default function Lobby() {
                 console.log(data.playerScoreMap);
                 setState("inGame");
                 console.log("Loading Game!");
-                console.log("Backend sent multiplierMode:", data.multiplierMode);
-                console.log("TESTSTST")
+                console.log("Backend sent multiplierMode: ", data.multiplierMode);
                 setCurTeam1HP(parseInt(data.team1HP, 10));
                 setMaxTeam1HP(parseInt(data.team1HP, 10));
                 setCurTeam2HP(parseInt(data.team2HP, 10));
@@ -225,6 +222,8 @@ export default function Lobby() {
             setUsernameErrorMsg("Username must be at least 1 character long.");
         }else if(playerList?.includes(username)){
             setUsernameErrorMsg("Name already in use in this lobby.");
+        }else if(username.length > 20){
+            setUsernameErrorMsg("Username must be 20 characters long or less");
         } else{
             setUsernameErrorMsg(null);
             if (ws && username) ws.send(JSON.stringify({ method: 'setUsername', username: username }));
@@ -516,7 +515,7 @@ export default function Lobby() {
             {
                 // Keep the game alive even when game's over so players can see the results on the map of the final round
                 (state === "inGame" || state === "gameOver") && ws && (
-                    <div>
+                    <div style={{ position: 'relative', zIndex: 1 }}>
                         <Game 
                             ws={ws} isHost={isHost} setShowRoundScores={setShowRoundScores} gameMode={gameMode} 
                             showRoundScores={showRoundScores} setState={setState} 
@@ -553,6 +552,8 @@ export default function Lobby() {
                         
                         }
                     </div>
+
+
                 )                
             }
 
@@ -565,8 +566,10 @@ export default function Lobby() {
             }
 
             {
-                state === "inGame" && gameMode === "knockout" && curTeam1HP !== null && maxTeam1HP !== null && curTeam2HP !== null && maxTeam2HP !== null && (
-                    <div>
+                
+                state === "inGame" && gameMode === "knockout" && curTeam1HP !== null && maxTeam1HP !== null && curTeam2HP !== null && maxTeam2HP !== null && team1 && team2 && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '1rem', position: 'relative', zIndex: 2 }}>
+                        
                         <div>
                             <HPBar
                                 label="Team 1"
@@ -574,6 +577,7 @@ export default function Lobby() {
                                 maxHp={maxTeam1HP}
                                 position="left"
                                 colour="#0066ff"
+                                team={team1}
                             />
                             {
                             //Note Next to Team1 hp it should show Team2's Dmg mult because the team 2 dmg mult represents how much more damage team 2 it taking because of team1's wins
@@ -582,6 +586,7 @@ export default function Lobby() {
                                 <MultiplierContainer Multiplier={team2DamageMultiplier} top="7%" left="84%"></MultiplierContainer>
                             )
                         }
+                       
                         </div>
                         
                         <div>
@@ -591,6 +596,7 @@ export default function Lobby() {
                                 maxHp={maxTeam2HP}
                                 position="right"
                                 colour="red"
+                                team={team2}
                             />
 
                             {
@@ -599,6 +605,8 @@ export default function Lobby() {
                                 )
                             }
                         </div>
+
+                    
                         
 
                         
