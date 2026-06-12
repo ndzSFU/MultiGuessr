@@ -5,9 +5,14 @@ const cors = require('cors');
 const http = require("http");
 const websocketServer = require("websocket").server;
 
+const allowedOrigins = [
+        'https://multiguessr.vercel.app',
+        'http://localhost:3000',
+];
+
 const api = express();
 api.use(cors({
-  origin: ['https://multiguessr.vercel.app'],
+    origin: allowedOrigins,
   methods: ['GET','POST','OPTIONS'],
 }));
 
@@ -461,6 +466,7 @@ wsServer.on("request", (request) => {
                     team2HP: lobby.team2HP,
                     multiplierMode: lobby.multiplierMode,
                     region: lobby.region,
+                    maxRounds: lobby.maxRounds,
                 }
 
                 console.log("MultiMode: " + lobby.multiplierMode);

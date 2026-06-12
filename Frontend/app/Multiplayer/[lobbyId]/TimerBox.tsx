@@ -41,7 +41,7 @@ export default function TimerBox({ seconds, isActive, onExpire }: TimerBoxProps)
         <div
             style={{
                 position: 'fixed',
-                top: '3rem',
+                top: '3.3rem',
                 left: '50%',
                 transform: 'translateX(-50%)',
                 zIndex: 9999,
@@ -51,7 +51,7 @@ export default function TimerBox({ seconds, isActive, onExpire }: TimerBoxProps)
                 padding: '0.5rem 1rem',
                 borderRadius: '0.75rem',
                 fontWeight: 700,
-                fontSize: '1.1rem',
+                fontSize: '1.5rem',
                 minWidth: '5.5rem',
                 textAlign: 'center',
                 boxShadow: '0 4px 16px rgba(0, 0, 0, 0.25)',

@@ -49,7 +49,7 @@ export default function GuessingMap({lat, long, rerollCity}: GuessingMapProps): 
 
                 leafletRef.current = L;
                 
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
                     noWrap: true
                 }).addTo(mapRef.current);

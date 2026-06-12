@@ -7,7 +7,6 @@ const iconUrl = 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png';
 const iconRetinaUrl = 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png';
 const shadowUrl = 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png';
 
-import {City} from '../../Map/cities';
 import ScoreBox from "../../Map/ScoreBox";
 
 interface MultiplayerGuessMapProps{
@@ -107,15 +106,6 @@ export default function MultiplayerGuessMap({lat, long, rerollCity, ws, isHost, 
         curMarker.current?.dragging?.disable();
         setHasGuessed(true);
         
-        if (leafletRef.current && mapRef.current) {
-            const redIcon = leafletRef.current.icon({
-                iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
-                shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-                iconSize: [25, 41],
-                iconAnchor: [12, 41],
-            });
-            actualMarker.current = leafletRef.current.marker([lat, long], {icon: redIcon, draggable: false}).addTo(mapRef.current);
-        }
     }
 
     function handleNext(): void{
@@ -155,6 +145,16 @@ export default function MultiplayerGuessMap({lat, long, rerollCity, ws, isHost, 
                         console.log([data.roundLatLngs[i][1][0], data.roundLatLngs[i][1][0]]);
                         leafletRef.current.marker([data.roundLatLngs[i][1][0], data.roundLatLngs[i][1][1]], {draggable: false}).addTo(mapRef.current).bindTooltip(data.roundLatLngs[i][0]).openTooltip();
                     }
+                }
+
+                if (leafletRef.current && mapRef.current) {
+                    const redIcon = leafletRef.current.icon({
+                        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+                        shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+                        iconSize: [25, 41],
+                        iconAnchor: [12, 41],
+                    });
+                    actualMarker.current = leafletRef.current.marker([lat, long], {icon: redIcon, draggable: false}).addTo(mapRef.current);
                 }
                 setRoundOver(true);
             }

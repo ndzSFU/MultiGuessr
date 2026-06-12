@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const Earth_Radius = 6371; 
 const Max_Guess_Dist = 4600;
@@ -19,12 +19,15 @@ function getDistanceKm(lat1: number, lon1: number, lat2: number, lon2: number): 
 interface ScoreBoxProps{
     chosenLatLng: {lat: number, long: number} | null,
     actualLatLng: {lat: number, long: number} | null,
-    ws?: WebSocket
+    ws?: WebSocket,
+    gameMode?: string,
 }
 
 export default function ScoreBox({chosenLatLng, actualLatLng, ws}: ScoreBoxProps){
 
     const hasSentScore = useRef(false);
+
+    const [showScore, setShowScore] = useState<boolean>(false);
 
     let latDiff: number = Math.abs(chosenLatLng!.lat - actualLatLng!.lat);
 
@@ -50,6 +53,28 @@ export default function ScoreBox({chosenLatLng, actualLatLng, ws}: ScoreBoxProps
     console.log("Score: " + score)
 
     useEffect(() => {
+            if(!ws) return;
+    
+            function handleMessage(event: MessageEvent){
+                const data = JSON.parse(event.data);
+               
+                if(data.method === "finalGuessMade"){
+                    setShowScore(true);
+                }
+
+                if(data.method === "setCity"){
+                    setShowScore(false);
+                }
+            }
+    
+            ws?.addEventListener("message", handleMessage);
+    
+            return () => {
+                ws.removeEventListener('message', handleMessage);
+            };
+        }, [ws]);
+
+    useEffect(() => {
         if (hasSentScore.current) return;
         hasSentScore.current = true;
         
@@ -58,7 +83,15 @@ export default function ScoreBox({chosenLatLng, actualLatLng, ws}: ScoreBoxProps
     }, []);
    
     return(
-        <p style={{color: 'black', padding: '0px', margin: '0px'}}>Your Score: {score}</p>
+        <div>
+            {
+                showScore && (
+                    <p style={{color: 'black', padding: '0px', margin: '0px'}}>Your Score: {score}</p>
+                )
+                
+            }
+        </div>
+        
 
     );
 }

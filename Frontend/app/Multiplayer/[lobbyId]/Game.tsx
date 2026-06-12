@@ -95,9 +95,10 @@ interface GameProps {
     setState: (state: "noName" | "lobby" | "error" | "inGame" | "gameOver" | "results") => void;
     region: string;
     setShowScoreCalculations: (bool: boolean) => void;
+    setRoundCounter: (value: number | ((prev: number) => number)) => void;
 }
 
-function Game({ ws, isHost, setShowRoundScores, gameMode, showRoundScores, setState, region, setShowScoreCalculations }: GameProps): JSX.Element {
+function Game({ ws, isHost, setShowRoundScores, gameMode, showRoundScores, setState, region, setShowScoreCalculations, setRoundCounter }: GameProps): JSX.Element {
     const hasInitialized = useRef(false);
     const [timeHasExpired, setTimeHasExpired] = useState<boolean>(false);
     const failedImageIdsRef = useRef<Set<string>>(new Set());
@@ -219,6 +220,7 @@ function Game({ ws, isHost, setShowRoundScores, gameMode, showRoundScores, setSt
                 setRoundTimerSeconds(data.timeLimit);
                 failedImageIdsRef.current.clear();
                 console.log("Setting city stats: " + data.startingImageIdx);
+                setRoundCounter((prev: number) =>  prev + 1);
                 setLoadGame(true);
 
             }

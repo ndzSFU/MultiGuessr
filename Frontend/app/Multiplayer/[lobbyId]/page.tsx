@@ -7,6 +7,7 @@ import HPBar from "./HPBar";
 import MultiplierContainer from './MultiplierContainer';
 import type { CSSProperties } from 'react';
 import { useRouter } from 'next/navigation';
+import RoundCounter from './RoundCounter';
 
 function getRandomIdx(array_size: number): number {
     return Math.floor(Math.random() * array_size);
@@ -55,6 +56,8 @@ export default function Lobby() {
     const [showResultAnim, setShowResultAnim] = useState<boolean>(false);
     const [currentUsername, setCurrentUsername] = useState<string | null>(null);
     const [allRoundScores, setAllRoundScores] = useState<[[[string, number]]] | null>(null);
+    const [roundCounter, setRoundCounter] = useState<number>(0);
+    const [maxRounds, setMaxRounds] = useState<number>(10);
 
     const router = useRouter();
 
@@ -121,6 +124,10 @@ export default function Lobby() {
                     console.log("WARNING: multiplierMode is undefined from backend");
                 }
                 setRegion(data.region);
+                if(data.maxRounds){
+                    setMaxRounds(data.maxRounds);
+                }
+                
             }
 
             if(data.method === "finalGuessMade"){
@@ -519,34 +526,41 @@ export default function Lobby() {
                         <Game 
                             ws={ws} isHost={isHost} setShowRoundScores={setShowRoundScores} gameMode={gameMode} 
                             showRoundScores={showRoundScores} setState={setState} 
-                            region={region} setShowScoreCalculations={setShowScoreCalculations}>
-
-                        </Game>
+                            region={region} setShowScoreCalculations={setShowScoreCalculations}
+                            setRoundCounter={setRoundCounter}
+                        />   
                     </div>
                 )                
             }
 
-            
+
 
             {
                 state === "inGame" && ws && (
                     <div>
                         {/* All other modes besides knockout */}
                         {totalScores && (totalScores.length > 0) && gameMode !== "knockout" && (
-                            <div className="scoreboard">
-                                <h3 className="scoreboard-title">Scoreboard</h3>
-                                <div className="scoreboard-header">
-                                    <span className="scoreboard-col-left">Username</span>
-                                    <span className="scoreboard-col-right">Score</span>
+                            <div>
+                                <div className="scoreboard">
+                                    <h3 className="scoreboard-title">Scoreboard</h3>
+                                    <div className="scoreboard-header">
+                                        <span className="scoreboard-col-left">Username</span>
+                                        <span className="scoreboard-col-right">Score</span>
+                                    </div>
+                                    <ul className="scoreboard-list">
+                                    {totalScores.map(([username, score], idx) => (
+                                        <li key={idx} className="scoreboard-item">
+                                            <span className="scoreboard-username">{username}</span>
+                                            <span className="scoreboard-score">{score}</span>
+                                        </li>
+                                    ))}
+                                    </ul>
                                 </div>
-                                <ul className="scoreboard-list">
-                                {totalScores.map(([username, score], idx) => (
-                                    <li key={idx} className="scoreboard-item">
-                                        <span className="scoreboard-username">{username}</span>
-                                        <span className="scoreboard-score">{score}</span>
-                                    </li>
-                                ))}
-                                </ul>
+
+                                    {/* Round counter */}
+                                <div>
+                                    <RoundCounter currentRound={roundCounter} totalRounds={maxRounds}></RoundCounter>
+                                </div>
                             </div>
                             ) 
                         
@@ -961,7 +975,7 @@ export default function Lobby() {
                                                 const playerName = score[0];
                                                 return (
                                                     <tr key={playerIdx} style={{ borderBottom: '1px solid #e2e8f0', backgroundColor: playerIdx % 2 === 0 ? 'white' : '#f8fafc' }}>
-                                                        <td style={{ padding: '1rem', fontWeight: 600, color: team1.includes(playerName) ? '#2563eb' : '#dc2626', minWidth: '120px' }}>{playerName}</td>
+                                                        <td style={{ padding: '1rem', fontWeight: 600, color: team2.includes(playerName) ? '#dc2626' : '#2563eb' , minWidth: '120px' }}>{playerName}</td>
                                                         {Array.from({ length: (allRoundScores as any).length - 1 }).map((_, roundIdx) => {
                                                             const roundData = (allRoundScores as any)[roundIdx];
                                                             let playerRoundScore = 0;

@@ -44,6 +44,30 @@ body {
   white-space: nowrap;
 }
 
+.round-counter {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+
+  background: rgba(0, 0, 0, 0.75);
+  color: white;
+
+  padding: 12px 20px;
+  border-radius: 12px;
+
+  font-size: 1.25rem;
+  font-weight: 600;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 140px;
+  z-index: 1000;
+
+  backdrop-filter: blur(4px);
+}
+
 .landing-button:hover {
   background: rgba(30, 58, 138, 0.14);
   border-color: rgba(30, 58, 138, 0.35);
