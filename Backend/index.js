@@ -288,6 +288,7 @@ wsServer.on("request", (request) => {
     const clientData = {
         connection: connection,
         username: null,
+        colour: null,
     };
 
     connection.on("close", () => {
@@ -451,7 +452,6 @@ wsServer.on("request", (request) => {
             console.log(`Client ${clientId} set username: ${res.username}`);
 
             sendUpdatedUsernames();
-            // console.log(clients);
         }
 
         if(res.method === "startGame"){
@@ -636,7 +636,7 @@ wsServer.on("request", (request) => {
                         console.log('Server reads game over');
                         const gameOverPayload = {
                             method: "gameOver",
-                            clientId: clientId,
+                            username: clients.get(clientId).username,
                             allRoundScores: lobby.roundScores,
                             allRoundLatLngs: lobby.roundLatLngs,
                             winner: lobby.team1HP > lobby.team2HP ? "team1" : "team2",
@@ -648,7 +648,7 @@ wsServer.on("request", (request) => {
 
                     payload = {
                         method: "finalGuessMade",
-                        clientId: clientId,
+                        username: clients.get(clientId).username,
                         score: res.score,
                         scores: totalScores,
                         roundScores: lobby.roundScores[curRoundIdx],
@@ -669,7 +669,7 @@ wsServer.on("request", (request) => {
                 } else{
                     payload = {
                         method: "finalGuessMade",
-                        clientId: clientId,
+                        username: clients.get(clientId).username,
                         score: res.score,
                         scores: totalScores,
                         roundScores: lobby.roundScores[curRoundIdx],
@@ -684,7 +684,7 @@ wsServer.on("request", (request) => {
                 console.log("ROUND CONTINUE");
                 payload = {
                     method: "guessMade",
-                    clientId: clientId,
+                    username: clients.get(clientId).username,
                     score: res.score,
                 }
             }

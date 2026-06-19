@@ -1,4 +1,6 @@
-First Commit already has all of this because I accidently pushed all the other stuff into a repo on my school github whoops.
+A free multiplayer geoguessr alternative.
+
+Try for yourself: https://multiguessr.vercel.app/
 
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 

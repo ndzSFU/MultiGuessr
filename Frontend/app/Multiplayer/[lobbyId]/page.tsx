@@ -112,7 +112,6 @@ export default function Lobby() {
                 console.log(data.playerScoreMap);
                 setState("inGame");
                 console.log("Loading Game!");
-                console.log("Backend sent multiplierMode: ", data.multiplierMode);
                 setCurTeam1HP(parseInt(data.team1HP, 10));
                 setMaxTeam1HP(parseInt(data.team1HP, 10));
                 setCurTeam2HP(parseInt(data.team2HP, 10));
@@ -139,7 +138,6 @@ export default function Lobby() {
                 if(data.team1HP !== undefined && data.team2HP !== undefined && data.team1Max !== undefined && data.team2Max !== undefined){
                     setPrevTeam1DamageMultiplier(data.prevTeam1DamageMultiplier);
                     setPrevTeam2DamageMultiplier(data.prevTeam2DamageMultiplier);
-                    console.log("Damage dealt!")
                     console.log("Received multipliers:", { team1: data.team1DamageMultiplier, team2: data.team2DamageMultiplier });
                     setCurTeam1HP(parseInt(data.team1HP, 10));
                     setCurTeam2HP(parseInt(data.team2HP, 10));
@@ -592,6 +590,7 @@ export default function Lobby() {
                                 position="left"
                                 colour="#0066ff"
                                 team={team1}
+                                ws={ws}
                             />
                             {
                             //Note Next to Team1 hp it should show Team2's Dmg mult because the team 2 dmg mult represents how much more damage team 2 it taking because of team1's wins
@@ -611,6 +610,7 @@ export default function Lobby() {
                                 position="right"
                                 colour="red"
                                 team={team2}
+                                ws={ws}
                             />
 
                             {
