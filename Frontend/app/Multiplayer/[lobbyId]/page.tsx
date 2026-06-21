@@ -24,7 +24,7 @@ function calculateNetDamage(team1Damage: number, team2Damage: number): number {
 export default function Lobby() {
     const [clientId, setClientId] = useState<string | null>(null);
     const [ws, setWs] = useState<WebSocket | null>(null);
-    const [state, setState] = useState<"noName" | "lobby" | "error" | "inGame" | "gameOver" | "results">("noName");
+    const [state, setState] = useState<"noName" | "lobby" | "error" | "inGame" | "gameOver" | "results" | "gameAlreadyStartedError">("noName");
     const [usernameErrorMsg, setUsernameErrorMsg] = useState<string | null>(null);
     const [isHost, setIsHost] = useState<boolean>(false);
     const [totalScores, setTotalScores] = useState<[[string, number]]>();
@@ -174,7 +174,17 @@ export default function Lobby() {
             }
         };
 
+        const handleClose = (event: CloseEvent) => {
+            switch (event.code){
+                case 4001:
+                    setState("gameAlreadyStartedError");
+                    break;
+            }
+        }
+
         socket.addEventListener("message", handleMessage);
+
+        socket.addEventListener("close", handleClose);
 
         return () => {
             socket.removeEventListener("message", handleMessage);
@@ -261,6 +271,14 @@ export default function Lobby() {
 
     return (
         <>
+
+            {
+                state === "gameAlreadyStartedError" && (
+                    <> 
+                        <span>This game has already started, please wait for them to finish.</span>
+                    </>
+                )
+            }
             {
                 state === "noName" && (
                     <div style={{

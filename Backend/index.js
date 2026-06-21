@@ -197,7 +197,7 @@ api.post('/api/createLobby', (req, res) => {
     lobbies.set(req.body.lobbyId, {gameMode: req.body.gameMode, timeLimit: req.body.timeLimit, maxPlayers: req.body.maxPlayers, maxRounds: req.body.maxRounds, curRound: 1, host: "",
                                    playerIDS: [], state: "lobby", scoreMap: new Map(), guessesMade: 0, roundScores: [[]], roundLatLngs: [[]], team1: [], team2: [], team1HP: req.body.HP, 
                                    team2HP: req.body.HP, region: req.body.region, multiplierMode: req.body.multiplierMode, damageMultiplierIncrement: parseFloat(req.body.multiplierIncrement), 
-                                   team1DamageMultiplier: 1, team2DamageMultiplier: 1, });
+                                   team1DamageMultiplier: 1, team2DamageMultiplier: 1, hasStared: false, });
     console.log(lobbies);
     res.send("1");
 })
@@ -407,6 +407,17 @@ wsServer.on("request", (request) => {
                         return;
                     }
 
+                    if(lobby.hasStared){
+                        safeSendConnection(connection, JSON.stringify({
+                            method: "error",
+                            message: "Game has already started",
+                        }));
+
+                        connection.close(4001, "Game has already started")
+
+                        return;
+                    }
+
                     curLobbyId = res.lobbyId;
                     lobby = getLobby();
 
@@ -477,6 +488,8 @@ wsServer.on("request", (request) => {
                 for(player of lobby.playerIDS){
                     lobby.scoreMap.set(player, 0);
                 }
+
+                lobby.hasStared = true;
                 
                 console.log("Sending loadGame signal");
                 broadcastToLobby(curLobbyId, JSON.stringify(payload));
