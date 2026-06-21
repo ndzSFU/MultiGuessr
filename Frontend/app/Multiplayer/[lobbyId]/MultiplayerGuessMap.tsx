@@ -18,10 +18,12 @@ interface MultiplayerGuessMapProps{
     setLoadGame: (bool: boolean) => void,
     timeHasExpired: boolean,
     setState: (state: "noName" | "lobby" | "error" | "inGame" | "gameOver" | "results") => void,
+    team1: string[],
+    team2: string[],
 }
 
 
-export default function MultiplayerGuessMap({lat, long, rerollCity, ws, isHost, setLoadGame, timeHasExpired, setState}: MultiplayerGuessMapProps): React.ReactNode{
+export default function MultiplayerGuessMap({lat, long, rerollCity, ws, isHost, setLoadGame, timeHasExpired, setState, team1, team2}: MultiplayerGuessMapProps): React.ReactNode{
     const divRef = useRef<HTMLDivElement>(null);
     const mapRef = useRef<L.Map | null>(null);
     const curMarker = useRef<L.Marker<any> | null>(null);
@@ -138,23 +140,48 @@ export default function MultiplayerGuessMap({lat, long, rerollCity, ws, isHost, 
             if (data.method === 'finalGuessMade'){
                 console.log("Final guess coords");
                 for(let i = 0; i < data.roundLatLngs.length; i++){
+
+                    
+
+                    //This dispalys where players guessed
                     if (leafletRef.current && mapRef.current){
+
+                        const redIcon = leafletRef.current.icon({
+                            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+                            shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+                            iconSize: [25, 41],
+                            iconAnchor: [12, 41],
+                        });
+
+                        const blueIcon = leafletRef.current.icon({
+                            iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+                            shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+                            iconSize: [25, 41],
+                            iconAnchor: [12, 41],
+                        });
+
+                        const username = data.roundLatLngs[i][0];
+
+                        const iconToDisplay = team1.includes(username) ? blueIcon : redIcon;
+
                         //Lat is first, Lng is second
                         //roundLatLngs = [[username, [res.lat, res.lng]], [username, [res.lat, res.lng]], ...]
                         //the first index i is per player, the next index choses username or lat lng, the third index chooses lat or lng (0 = lat)
                         console.log([data.roundLatLngs[i][1][0], data.roundLatLngs[i][1][0]]);
-                        leafletRef.current.marker([data.roundLatLngs[i][1][0], data.roundLatLngs[i][1][1]], {draggable: false}).addTo(mapRef.current).bindTooltip(data.roundLatLngs[i][0]).openTooltip();
+                        leafletRef.current.marker([data.roundLatLngs[i][1][0], data.roundLatLngs[i][1][1]], {icon: iconToDisplay, draggable: false}).addTo(mapRef.current).bindTooltip(username).openTooltip();
                     }
                 }
 
                 if (leafletRef.current && mapRef.current) {
-                    const redIcon = leafletRef.current.icon({
-                        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+                    
+
+                    const greenIcon = leafletRef.current.icon({
+                        iconUrl: 'https://cdn.jsdelivr.net/gh/pointhi/leaflet-color-markers@master/img/marker-icon-2x-green.png',
                         shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
                         iconSize: [25, 41],
                         iconAnchor: [12, 41],
                     });
-                    actualMarker.current = leafletRef.current.marker([lat, long], {icon: redIcon, draggable: false}).addTo(mapRef.current);
+                    actualMarker.current = leafletRef.current.marker([lat, long], {icon: greenIcon, draggable: false}).addTo(mapRef.current).bindTooltip("Actual Location").openTooltip();;
                 }
                 setRoundOver(true);
             }

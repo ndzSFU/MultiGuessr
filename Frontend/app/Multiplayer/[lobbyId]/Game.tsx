@@ -96,9 +96,11 @@ interface GameProps {
     region: string;
     setShowScoreCalculations: (bool: boolean) => void;
     setRoundCounter: (value: number | ((prev: number) => number)) => void;
+    team1: string[];
+    team2: string[];
 }
 
-function Game({ ws, isHost, setShowRoundScores, gameMode, showRoundScores, setState, region, setShowScoreCalculations, setRoundCounter }: GameProps): JSX.Element {
+function Game({ ws, isHost, setShowRoundScores, gameMode, showRoundScores, setState, region, setShowScoreCalculations, setRoundCounter, team1, team2}: GameProps): JSX.Element {
     const hasInitialized = useRef(false);
     const [timeHasExpired, setTimeHasExpired] = useState<boolean>(false);
     const failedImageIdsRef = useRef<Set<string>>(new Set());
@@ -265,7 +267,13 @@ function Game({ ws, isHost, setShowRoundScores, gameMode, showRoundScores, setSt
                             <RenderMapillary accessToken={process.env.NEXT_PUBLIC_MAPILLARY_ACCESS_TOKEN ?? ''} widthPercent={100} heightPercent={100} imageID={imageIds[startingImageIdx]} onImageError={handleMapillaryImageError} key={chosenCity.name}/>                
                         </div>
                         <div className="guessing-map-overlay" style={{bottom: '2rem', right: '2rem', backgroundColor: 'white', borderRadius: '0.5rem', boxShadow: '0 4px 20px rgba(0,0,0,0.3)', overflow: 'hidden'}}>
-                            <MultiplayerGuessMap lat={chosenCity.lat} long={chosenCity.long} rerollCity={rerollCity} ws={ws} isHost={isHost} setLoadGame={setLoadGame} timeHasExpired={timeHasExpired} setState={setState} key={chosenCity.name}></MultiplayerGuessMap>
+                            <MultiplayerGuessMap 
+                                lat={chosenCity.lat} long={chosenCity.long} 
+                                rerollCity={rerollCity} ws={ws} isHost={isHost} 
+                                setLoadGame={setLoadGame} timeHasExpired={timeHasExpired} 
+                                setState={setState} key={chosenCity.name}
+                                team1={team1} team2={team2}
+                                />
                         </div>
                     </div>
                 )                 

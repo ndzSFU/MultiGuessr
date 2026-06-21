@@ -526,6 +526,8 @@ export default function Lobby() {
                             showRoundScores={showRoundScores} setState={setState} 
                             region={region} setShowScoreCalculations={setShowScoreCalculations}
                             setRoundCounter={setRoundCounter}
+                            team1={team1}
+                            team2={team2}
                         />   
                     </div>
                 )                

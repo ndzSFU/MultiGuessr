@@ -81,3 +81,5 @@ Note should have a .env in backend and front end now (If you switch devices)
 When setting up env in backend just remove the NEXT_PUBLIC from the front end vars
 
 Current issue May 29th: Backend call to mapillayr is missing lat/lon or access token
+
+TEST IF LEAVING LOBBY CAUSES BUGS
