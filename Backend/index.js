@@ -197,8 +197,7 @@ api.post('/api/createLobby', (req, res) => {
     lobbies.set(req.body.lobbyId, {gameMode: req.body.gameMode, timeLimit: req.body.timeLimit, maxPlayers: req.body.maxPlayers, maxRounds: req.body.maxRounds, curRound: 1, host: "",
                                    playerIDS: [], state: "lobby", scoreMap: new Map(), guessesMade: 0, roundScores: [[]], roundLatLngs: [[]], team1: [], team2: [], team1HP: req.body.HP, 
                                    team2HP: req.body.HP, region: req.body.region, multiplierMode: req.body.multiplierMode, damageMultiplierIncrement: parseFloat(req.body.multiplierIncrement), 
-                                   team1DamageMultiplier: 1, team2DamageMultiplier: 1, hasStared: false, });
-    console.log(lobbies);
+                                   team1DamageMultiplier: 1, team2DamageMultiplier: 1, hasStared: false});
     res.send("1");
 })
 
@@ -511,6 +510,19 @@ wsServer.on("request", (request) => {
                 timeLimit: lobby.timeLimit,
             }
             broadcastToLobby(curLobbyId, JSON.stringify(payload));
+        }
+
+        if(res.method === "updateMarkerPos"){
+            const username = res.username;
+
+            const updateMarkerPosPayload = {
+                method: "updateMarkerPos",
+                lat: res.lat,
+                lng: res.lng,
+                username
+            }
+
+            broadcastToLobby(curLobbyId, JSON.stringify(updateMarkerPosPayload));
         }
 
         if(res.method === "sendScore"){

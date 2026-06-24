@@ -537,7 +537,7 @@ export default function Lobby() {
 
             {
                 // Keep the game alive even when game's over so players can see the results on the map of the final round
-                (state === "inGame" || state === "gameOver") && ws && (
+                (state === "inGame" || state === "gameOver") && ws && team1 && team2 && currentUsername && gameMode && (
                     <div style={{ position: 'relative', zIndex: 1 }}>
                         <Game 
                             ws={ws} isHost={isHost} setShowRoundScores={setShowRoundScores} gameMode={gameMode} 
@@ -546,6 +546,7 @@ export default function Lobby() {
                             setRoundCounter={setRoundCounter}
                             team1={team1}
                             team2={team2}
+                            currentUsername={currentUsername}
                         />   
                     </div>
                 )                

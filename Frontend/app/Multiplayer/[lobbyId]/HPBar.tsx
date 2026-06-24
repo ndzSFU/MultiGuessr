@@ -28,7 +28,6 @@ export default function HPBar({ label, hp, maxHp, position, colour, team, ws}: H
             function handleMessage(event: MessageEvent){
                 const data = JSON.parse(event.data);
                 console.log('Received:', data);
-                console.log("hpbar rcvr");
     
                 if(data.method === "guessMade" || data.method === "finalGuessMade"){
                     console.log("HP BAR GOT THE MESSAGE");

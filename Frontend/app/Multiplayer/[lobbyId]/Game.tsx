@@ -87,20 +87,21 @@ function mapRegionToCityArr(region: string): City[]{
 }
 
 interface GameProps {
-    ws: WebSocket | null;
-    isHost: true | false;
-    setShowRoundScores: (bool: boolean) => void;
-    gameMode: string;
-    showRoundScores: boolean;
-    setState: (state: "noName" | "lobby" | "error" | "inGame" | "gameOver" | "results") => void;
-    region: string;
-    setShowScoreCalculations: (bool: boolean) => void;
-    setRoundCounter: (value: number | ((prev: number) => number)) => void;
-    team1: string[];
-    team2: string[];
+    ws: WebSocket | null,
+    isHost: true | false,
+    setShowRoundScores: (bool: boolean) => void,
+    gameMode: string,
+    showRoundScores: boolean,
+    setState: (state: "noName" | "lobby" | "error" | "inGame" | "gameOver" | "results") => void,
+    region: string,
+    setShowScoreCalculations: (bool: boolean) => void,
+    setRoundCounter: (value: number | ((prev: number) => number)) => void,
+    team1: string[],
+    team2: string[],
+    currentUsername: string | null,
 }
 
-function Game({ ws, isHost, setShowRoundScores, gameMode, showRoundScores, setState, region, setShowScoreCalculations, setRoundCounter, team1, team2}: GameProps): JSX.Element {
+function Game({ ws, isHost, setShowRoundScores, gameMode, showRoundScores, setState, region, setShowScoreCalculations, setRoundCounter, team1, team2, currentUsername}: GameProps): JSX.Element {
     const hasInitialized = useRef(false);
     const [timeHasExpired, setTimeHasExpired] = useState<boolean>(false);
     const failedImageIdsRef = useRef<Set<string>>(new Set());
@@ -261,7 +262,7 @@ function Game({ ws, isHost, setShowRoundScores, gameMode, showRoundScores, setSt
                     />
             )}
             {
-                startingImageIdx !== undefined && imageIds.length > 0 && chosenCity && ws && loadGame && (
+                startingImageIdx !== undefined && imageIds.length > 0 && chosenCity && ws && loadGame && team1 && team2 && currentUsername && gameMode && (
                     <div className="relative w-full h-full">
                         <div className="absolute inset-0 z-0">
                             <RenderMapillary accessToken={process.env.NEXT_PUBLIC_MAPILLARY_ACCESS_TOKEN ?? ''} widthPercent={100} heightPercent={100} imageID={imageIds[startingImageIdx]} onImageError={handleMapillaryImageError} key={chosenCity.name}/>                
@@ -271,8 +272,10 @@ function Game({ ws, isHost, setShowRoundScores, gameMode, showRoundScores, setSt
                                 lat={chosenCity.lat} long={chosenCity.long} 
                                 rerollCity={rerollCity} ws={ws} isHost={isHost} 
                                 setLoadGame={setLoadGame} timeHasExpired={timeHasExpired} 
-                                setState={setState} key={chosenCity.name}
+                                key={chosenCity.name}
                                 team1={team1} team2={team2}
+                                currentUsername={currentUsername}
+                                gameMode={gameMode}
                                 />
                         </div>
                     </div>

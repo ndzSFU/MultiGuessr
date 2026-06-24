@@ -83,3 +83,5 @@ When setting up env in backend just remove the NEXT_PUBLIC from the front end va
 Current issue May 29th: Backend call to mapillayr is missing lat/lon or access token
 
 TEST IF LEAVING LOBBY CAUSES BUGS
+
+Note: on pm2 the the node.js app should use 96.7 mb of mem when it is fully up
