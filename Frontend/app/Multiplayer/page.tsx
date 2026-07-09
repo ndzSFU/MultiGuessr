@@ -192,7 +192,7 @@ export default function Multiplayer() {
                 lobbyId: lobbyId,
                 gameMode: gameMode?.value,
                 maxPlayers: maxPlayers?.value,
-                maxRounds: maxRounds?.value,
+                maxRounds: multiplierMode?.value === "knockout" ? 999 : maxRounds?.value,
                 timeLimit: timeLimit?.value,
                 HP: HP?.value,
                 multiplierMode: multiplierMode?.value,

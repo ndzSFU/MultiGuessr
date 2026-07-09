@@ -572,7 +572,7 @@ wsServer.on("request", (request) => {
                 totalScores.sort((a, b) => (b[1] - a[1]));
 
                 console.log("CURRENT ROUND: " + lobby.curRound);
-                if(lobby.curRound >= lobby.maxRounds){
+                if(lobby.curRound >= lobby.maxRounds && lobby.gameMode !== "knockout"){
                     console.log('Server reads game over');
                     const gameOverPayload = {
                         method: "gameOver",
